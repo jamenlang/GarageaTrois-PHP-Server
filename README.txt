@@ -22,7 +22,7 @@ Note: there are a lot of fake unsupported parellel adapters out there, By fake I
 
 Relay controller board (USB or Parallel) - $40
 Android device
-LAMP Server - I'm using MYSQL as the back end for user authentication, device authentication and logging. I mail out notifications from my personal FQDN on the server.
+LAMP Server - I'm using MYSQL as the back end for user authentication, device authentication and logging, the structure is contained in the MySQL Structure for documentation. I mail out notifications from my personal FQDN on the server.
 
 
 ############# Design #############
