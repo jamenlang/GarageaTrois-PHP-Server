@@ -1,6 +1,7 @@
 <?php
 
 //########### For MYSQL Database (Logging, User authentication and Device authentication) ##########//
+//########### Read the README and follow instructions before proceeding ##########//
 
 $hostnawme="localhost"; //replace with database hostname
 $username="USERNAME"; //replace with database username
@@ -16,6 +17,15 @@ $admin_email="admin@whereveryouwantthem.com"; //replace with an admin email addr
 $notification_email="notifications@fromtheserver.com"; //replace with a notification email address
 
 
+/************ Location Specific ***********/
+//This is a list of carriers in the US. Change to your country if necessary. 
+$carriers = array (
+	0 => 'tomomail.net',
+	1 => 'messaging.sprintpcs.com',
+	2 => 'vtext.com',
+	3 => 'txt.att.net',
+	4 => 'vmobl.com',
+);
 
 include('phpqrcode/qrlib.php');
 // this can be downloaded from http://sourceforge.net/projects/phpqrcode/
@@ -70,17 +80,18 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 	//all we need from them is a uid of 'nfc0' and the did to make sure it's an allowed device and nfc is allowed.
 	//first we'll see if the DID is in the allowed array since we have no user to tie it to.
 	//if it is then we'll want to check to see if it's also in the NFC allowed array.
-
+	$did_exists = '0';//we'll check this later
+	$nfc_allowed = '0';//we'll check this later
+	$did_allowed = '0';//we'll check this later
+	$hasnfc = '1';//we know this is true.
+	
 	$sql = 'Select * from device where did ="' . $did . '"';
 	$rows = mysql_fetch_row($sql);
-	$did_exists = '0';
-	$nfc_allowed = '0';
-	$did_allowed = '0';
-	$hasnfc = '1';
+	
 
 	if (isset($did) && $did !='')
 	{
-		//we need to run a select to find out if the user id already exists.
+		//we need to run a select to find out if the device id already exists in the devices database.
 		$sql = 'Select * from device where did="' . $did . '"';
 		//$reset = mysql_query("RESET QUERY CACHE");
 		$dbres = mysql_query($sql);
@@ -93,9 +104,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 				$did_exists = '1';
 				$nfc_allowed = $row['nfc'];
 				$did_allowed = $row['allowed'];
-				//echo 'uid exists';
-				//the user already exists; so we need to run an update query instead of insert.
-				//exit;
+				//echo 'did exists';
 			}
 
 		}
@@ -108,26 +117,16 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 
 	if (($did_exists == '0' && $did_allowed == '0') || ($did_exists == '1' && $nfc_allowed != '1')){
 		$sql = 'INSERT INTO log (uid, action,did,number,date) VALUES ( "' .
-		"NFC (" . $_POST['UID'] . ')","' .
-		'Denied' . '","' .
-		$_POST['DID'] . '","' .
-		$_POST['TelNum'] . '","' .
-		date('Y-m-d H:i:s') . '" )';
+		"NFC (" . $_POST['UID'] . ')","' . 'Denied' . '","' . $_POST['DID'] . '","' . $_POST['TelNum'] . '","' . date('Y-m-d H:i:s') . '" )';
+		
 		$retval = mysql_query( $sql );
 		if(! $retval )
 		{
 			die('Could not enter data: ' . mysql_error());
 		}
+		
 		//insert some helpful shit about the device here.
-		$sql = 'INSERT INTO device (alias, nfc, has_nfc, force_nfc, did, allowed, number, date) '.
-		'VALUES ( "' . $devicealias . '","' .
-		'0' . '", "' .
-		$hasnfc . '", "' .
-		'0' . '", "' .
-		$did . '", "' .
-		'1' . '", "' .
-		$number . '", "' .
-		date('Y-m-d H:i:s') . '" )';
+		$sql = 'INSERT INTO device (alias, nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . '0' . '", "' . $did . '", "' . '1' . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 		$retval = mysql_query( $sql );
 		if(! $retval )
 		{
@@ -144,17 +143,13 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 	//otherwise we can go ahead and open the door.
 	else if ($did_exists == '1' && $did_allowed == '1' && $nfc_allowed == '1'){
 		if ($_POST['switch'] == "door"){
+			//garage openers put a short on each pair for a breif period, that's what we'll do with the relay
 			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 1 write");
 			sleep(2);
 			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 1 write");
 			echo 'Door toggled';
 		}
-		$sql = 'INSERT INTO log (uid,action,did,number,date) VALUES ( "' .
-		$_POST['UID'] . '","' .
-		'Granted' . '","' .
-		$_POST['DID'] . '","' .
-		$_POST['TelNum'] . '","' .
-		date('Y-m-d H:i:s') . '" )';
+		$sql = 'INSERT INTO log (uid,action,did,number,date) VALUES ( "' . $_POST['UID'] . '","' . 'Granted' . '","' . $_POST['DID'] . '","' . $_POST['TelNum'] . '","' . date('Y-m-d H:i:s') . '" )';
 		$retval = mysql_query( $sql );
 		if(! $retval )
 		{
@@ -163,6 +158,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 		//maybe update the device shit too.
 
 		$sql = 'update device set alias="' . $devicealias . '", nfc="' . $nfc . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+		
 		$retval = mysql_query( $sql );
 		if(! $retval )
 		{
@@ -174,12 +170,14 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 		exit;
 	}
 	else {
-		//the user scanned has scanned the tag, maybe mutliple times, we've logged it every time and started a device profile. the default profile doesn't have rights so we don't do anything indefinitely.
+		//the user has scanned the tag, maybe mutliple times, we've logged it every time and started a device profile. the default profile doesn't have rights so we don't do anything indefinitely.
 		echo 'I have no idea what is happening. did exists: ' . $did_exists . ' did allowed: ' . $did_allowed;
 		exit;
 	}
 }
-//############################################################################################################################################
+//######################## ADMINISTRATIVE ACTION SENT BY APP ###########################//
+
+
 if (isset($adminaction) && $adminaction !='')
 {
 	if($adminaction != "Revok" && $adminaction != "Grant")
@@ -232,12 +230,7 @@ if (isset($adminaction) && $adminaction !='')
 				//this is experimental 5/29/14
 				file_put_contents("post.log", 'uid ' . $uid_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) '.
-				'VALUES ( "' . $name . '","' .
-				$uid . '", "' .
-				$allowed . '", "' .
-				date('Y-m-d H:i:s') . '" )';
-
+				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 
 				file_put_contents("post.log", $sql);
 
@@ -249,7 +242,6 @@ if (isset($adminaction) && $adminaction !='')
 
 				//echo 'User: ' . $name . ' UID: ' . $uid . ' ' . $allowed;
 				echo 'New User: ' . $name . ' UID: ' . $uid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
-
 
 				exit;
 			}
@@ -270,7 +262,7 @@ if (isset($adminaction) && $adminaction !='')
 					$old_name = $row[name];
 					$name_exists = '1';
 					//echo 'uid exists';
-					//the user already exists; so we need to run an update query instead of insert.
+					//the uid already exists; so we need to run an update query instead of insert.
 					//exit;
 				}
 
@@ -293,11 +285,7 @@ if (isset($adminaction) && $adminaction !='')
 				//this is experimental 5/29/14
 				file_put_contents("post.log", 'name ' . $name_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) '.
-				'VALUES ( "' . $name . '","' .
-				$uid . '", "' .
-				$allowed . '", "' .
-				date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 
 				file_put_contents("post.log", $sql);
 
@@ -351,8 +339,8 @@ if (isset($adminaction) && $adminaction !='')
 			//print_r($row);
 			if ($row[did] == $did){
 				$did_exists = '1';
-				//echo 'uid exists';
-				//the user already exists; so we need to run an update query instead of insert.
+				//echo 'did exists';
+				//the did already exists; so we need to run an update query instead of insert.
 				//exit;
 			}
 
@@ -380,7 +368,9 @@ if (isset($adminaction) && $adminaction !='')
 			//file_put_contents("post.log", 'uid exists: ' . $uid_exists . ' posted uid exists ' . $uid);
 			//update .. where uid = $uid
 			$sql = 'update auth set allowed="' . $allowed . '", name="' . $name . '", date="' . date('Y-m-d H:i:s') . '" where uid= "' . $uid . '"';
+			
 			$retval = mysql_query( $sql);
+			
 			if(! $retval )
 			{
 				die('Could not enter data: ' . mysql_error());
@@ -396,34 +386,27 @@ if (isset($adminaction) && $adminaction !='')
 
 			//file_put_contents("post.log", $sql);
 			$retval = mysql_query( $sql);
+			
 			if(! $retval )
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
 			echo "Privileges for " . $did . " " . $adminaction . "ed";
+			
 			exit;
 		}
 
 		if ($did_exists != '1' && $uid_exists != '1'){
 			//this is a new user. insert.
 			if ($uid != ''){
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) '.
-				'VALUES ( "' . $name . '","' .
-				$uid . '", "' .
-				$allowed . '", "' .
-				date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 			}
 			if ($did != ''){
-				$sql = 'INSERT INTO device (nfc, has_nfc, force_nfc, did, allowed, number, date) '.
-				'VALUES ( "' . $nfc . '","' .
-				$hasnfc . '", "' .
-				$forcenfc . '", "' .
-				$did . '", "' .
-				$allowed . '", "' .
-				$number . '", "' .
-				date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO device (nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $nfc . '","' . $hasnfc . '", "' . $forcenfc . '", "' . $did . '", "' . $allowed . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 			}
+			
 			$retval = mysql_query( $sql);
+			
 			if(! $retval )
 			{
 				die('Could not enter data: ' . mysql_error());
@@ -439,7 +422,7 @@ if (isset($adminaction) && $adminaction !='')
 				}
 				if (isset($name) && $name != '')
 				{
-				//return "Privileges for " . $_POST['Name'] . " (" . $_POST['UID'] . ") " . $_POST['AdminAction'] . "ed"; 
+					//return "Privileges for " . $_POST['Name'] . " (" . $_POST['UID'] . ") " . $_POST['AdminAction'] . "ed"; 
 
 					echo "Privileges for " . $name . " (" . $uid . ") " . $adminaction . "ed. " . (isset($number) && $number != '' ? "User has been notified @ " . $number : "");
 					exit;
@@ -653,13 +636,7 @@ else{
 	//$fh = fopen($myFile, 'a');
 	//$stringData = date("Y-m-d H:i:s") . " ";
 	//fwrite($fh, $stringData);
-	$sql = 'INSERT INTO log (name,uid,did,number,action,date) '.
-       'VALUES ( "' . $users[$_POST['UID']] . '","'.
-	$_POST['UID'] . '","' .
-	$_POST['DID'] . '","' .
-	$_POST['TelNum'] . '","' .
-	$granted . '","' .
-	date('Y-m-d H:i:s') . '" )';
+	$sql = 'INSERT INTO log (name,uid,did,number,action,date) ' . 'VALUES ( "' . $users[$_POST['UID']] . '","' .  $_POST['UID'] . '","' . $_POST['DID'] . '","' . $_POST['TelNum'] . '","' . $granted . '","' . date('Y-m-d H:i:s') . '" )';
 
 	$retval = mysql_query( $sql );
 	if(! $retval )
@@ -671,7 +648,9 @@ else{
 	{
 		//maybe update device shit here.
 		$sql = 'update device set allowed="1", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+		
 		$retval = mysql_query( $sql );
+		
 		if(! $retval )
 		{
 			die('Could not enter data: ' . mysql_error());
@@ -679,14 +658,10 @@ else{
 	}
 	else {
 		//insert some helpful shit about the device here.
-		$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) '.
-		'VALUES ( "' . $devicealias . '","' .
-		'1' . '", "' .
-		$hasnfc . '", "' .
-		$did . '", "' .
-		$number . '", "' .
-		date('Y-m-d H:i:s') . '" )';
+		$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '1' . '", "' . $hasnfc . '", "' . $did . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
+		
 		$retval = mysql_query( $sql );
+		
 		if(! $retval )
 		{
 			die('Could not enter data: ' . mysql_error());
@@ -699,18 +674,12 @@ else{
 	//fclose($fh);
 
 }
+
 function mailer($to, $subject, $message){
 	$from = $notification_email;
 	$headers = "From: $from\r\n" . "X-Mailer: php";
 	mail($to, $subject, $message, $headers, '-r ' . $from);
 }
-$carriers = array (
-	0 => 'tomomail.net',
-	1 => 'messaging.sprintpcs.com',
-	2 => 'vtext.com',
-	3 => 'txt.att.net',
-	4 => 'vmobl.com',
-);
 
 function mailer2($to, $subject, $message){
 	foreach($carriers as $carrier){
