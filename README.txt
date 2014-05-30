@@ -2,7 +2,7 @@
 
 Necessary Hardware:
 
-A server with a printer port (possibly a serial port with an adapter or a natively serial controlled relay)
+A desktop computer or server with a printer port (possibly a serial port with an adapter or a natively serial controlled relay)
 
 A Parallel/Serial port controlled relay with 3-4 modules (my garage door button had 3 buttons, light, lock and door).
 
@@ -12,7 +12,7 @@ A Raspberry Pi using GPIO, hell the RPi should be able to run the server stuff t
 
 - OR - 
 
-Anything else you can think of, a server using a z-wave or zigbee switch. but if you're getting that fancy you probably have your own project in mind :P
+Anything else you can think of, a server using a z-wave or zigbee switch... but if you're getting that fancy you probably have your own project in mind :P
  
 ############# Starting Off #############
 
