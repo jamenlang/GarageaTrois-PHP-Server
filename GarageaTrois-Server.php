@@ -6,8 +6,8 @@ $hostnawme="localhost"; //replace with database hostname
 $username="USERNAME"; //replace with database username
 $password="PASSWORD"; //replace with database password
 $db_name="garage"; //replace with database name
-$SUPER-SECRET-ADMIN-RESULT="SUPER-SECRET-ADMIN-RESULT" //replace with whatever is in the Control.java file in the android app.
-$SUPER-SECRET-USER-RESULT="SUPER-SECRET-USER-RESULT" //replace with whatever is in the Control.java file in the android app.
+$SUPER-SECRET-ADMIN-RESULT="SUPER-SECRET-ADMIN-RESULT" //replace with whatever is in the res/strings.xml file in the android app.
+$SUPER-SECRET-USER-RESULT="SUPER-SECRET-USER-RESULT" //replace with whatever is in the res/strings.xml file in the android app.
 
 //########### Configuration for notifications ###################//
 
