@@ -7,7 +7,7 @@ $username="USERNAME"; //replace with database username
 $password="PASSWORD"; //replace with database password
 $db_name="garage"; //replace with database name
 $SUPER-SECRET-ADMIN-RESULT="SUPER-SECRET-ADMIN-RESULT" //replace with whatever is in the Control.java file in the android app.
-$SUPER-SECRET-USER-RESULT="$SUPER-SECRET-USER-RESULT" //replace with whatever is in the Control.java file in the android app.
+$SUPER-SECRET-USER-RESULT="SUPER-SECRET-USER-RESULT" //replace with whatever is in the Control.java file in the android app.
 
 //########### Configuration for notifications ###################//
 
@@ -15,9 +15,15 @@ $admin_mobile="4033029392"; //replace with mobile number for recieving text mess
 $admin_email="admin@whereveryouwantthem.com" //replace with an admin email address
 $notification_email="notifications@fromtheserver.com" //replace with a notification email address
 
-//########### I don't believe anything else needs to be modified. ##############//
+
 
 include('phpqrcode/qrlib.php');
+// this can be downloaded from http://sourceforge.net/projects/phpqrcode/
+
+
+//########### I don't believe anything else needs to be modified. ##############//
+
+
 // outputs image directly into browser, as PNG stream
 // the code can be downloaded or this can be disabled, you can also use the google API line below.
 // I cannot get QR to launch an intent, I would like to get this working so a QR code can be scanned and give the app the server information to be stored locally on the device and get rid of hardcoded server strings altogether.
