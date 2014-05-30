@@ -6,14 +6,14 @@ $hostnawme="localhost"; //replace with database hostname
 $username="USERNAME"; //replace with database username
 $password="PASSWORD"; //replace with database password
 $db_name="garage"; //replace with database name
-$SUPER-SECRET-ADMIN-RESULT="SUPER-SECRET-ADMIN-RESULT" //replace with whatever is in the res/strings.xml file in the android app.
-$SUPER-SECRET-USER-RESULT="SUPER-SECRET-USER-RESULT" //replace with whatever is in the res/strings.xml file in the android app.
+$SUPER_SECRET_ADMIN_RESULT="SUPER_SECRET_ADMIN_RESULT"; //replace with whatever is in the res/strings.xml file in the android app.
+$SUPER_SECRET_USER_RESULT="SUPER_SECRET_USER_RESULT"; //replace with whatever is in the res/strings.xml file in the android app.
 
 //########### Configuration for notifications ###################//
 
 $admin_mobile="4033029392"; //replace with mobile number for recieving text messages
-$admin_email="admin@whereveryouwantthem.com" //replace with an admin email address
-$notification_email="notifications@fromtheserver.com" //replace with a notification email address
+$admin_email="admin@whereveryouwantthem.com"; //replace with an admin email address
+$notification_email="notifications@fromtheserver.com"; //replace with a notification email address
 
 
 
@@ -638,11 +638,11 @@ else{
 	}
 	else if (array_key_exists($_POST['UID'], $admin_users)){
 		$granted = 'Admin Granted';
-        	echo $SUPER-SECRET-ADMIN-RESULT;
+        	echo $SUPER_SECRET_ADMIN_RESULT;
 	}
 	else if (array_key_exists($_POST['UID'], $allowed_users)){
         	$granted = 'Granted';
-		echo $SUPER-SECRET-USER-RESULT;
+		echo $SUPER_SECRET_USER_RESULT;
 		//
 	}
 	else{
