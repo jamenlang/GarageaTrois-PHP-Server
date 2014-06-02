@@ -1,4 +1,11 @@
 ############# ReadMe #############
+Project Overview:
+
+The garage door is the gateway to the home. There are tons of DIY projects to make it easier to control, and tutorials for controlling it remotely.
+
+But I'm lazy, and I don't have money for kickstarter projects for this type of thing. I also like to make things harder than they need to be.
+Sometimes I need to let someone into my house for them to pick things up or drop things off, I don't want to be there all the time and if they don't have a key I'd like to be able to let them in remotely. 
+I've been able to do this with my garage door and a web page for a while but I needed something less cumbersome and a little more secure.
 
 Necessary Hardware:
 
