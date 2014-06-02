@@ -3,7 +3,7 @@
 //########### For MYSQL Database (Logging, User authentication and Device authentication) ##########//
 //########### Read the README and follow instructions before proceeding ##########//
 
-$hostnawme="localhost"; //replace with database hostname
+$hostname="localhost"; //replace with database hostname
 $username="USERNAME"; //replace with database username
 $password="PASSWORD"; //replace with database password
 $db_name="garage"; //replace with database name
