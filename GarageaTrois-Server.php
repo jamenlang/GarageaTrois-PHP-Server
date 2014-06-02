@@ -56,16 +56,16 @@ if(isset($_POST['initialtest']) && $_POST['initialtest'] == 'true')
 }
 
 //Get POST data and assign new variables.
-$name = $_POST['Name'];
-$nfc = $_POST['NFC'];
-$did = $_POST['DID'];
-$uid = $_POST['UID'];
-$switch = $_POST['switch'];
-$adminaction = $_POST['AdminAction'];
-$number = $_POST['TelNum'];
-$devicealias = $_POST['DeviceName'];
-$hasnfc = $_POST['hasNFC'];
-$change = $_POST['Change'];
+$name = sanitize($_POST['Name']);
+$nfc = sanitize($_POST['NFC']);
+$did = sanitize($_POST['DID']);
+$uid = sanitize($_POST['UID']);
+$switch = sanitize($_POST['switch']);
+$adminaction = sanitize($_POST['AdminAction']);
+$number = sanitize($_POST['TelNum']);
+$devicealias = sanitize($_POST['DeviceName']);
+$hasnfc = sanitize($_POST['hasNFC']);
+$change = sanitize($_POST['Change']);
 
 $dbhandle = mysql_connect($hostname, $username, $password)
 	or die("Unable to connect to MySQL");
@@ -681,5 +681,9 @@ function mailer2($to, $subject, $message){
 		$headers = "From: $from\r\n" . "X-Mailer: php";
 		mail($to, $subject, $message, $headers, '-r ' . $from);
 	}
+}
+// Sanitize input
+function sanitize($in) {
+ return addslashes(htmlspecialchars(strip_tags(trim($in))));
 }
 ?>
