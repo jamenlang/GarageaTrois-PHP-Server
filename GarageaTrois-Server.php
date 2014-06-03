@@ -628,7 +628,7 @@ else{
 	//$fh = fopen($myFile, 'a');
 	//$stringData = date("Y-m-d H:i:s") . " ";
 	//fwrite($fh, $stringData);
-	$sql = 'INSERT INTO log (name, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' .  $uid . '","' . $did . '","' . $number . '","' . $granted . '","' $latitude . '","' . $longitude . '","' . date('Y-m-d H:i:s') . '" )';
+	$sql = 'INSERT INTO log (name, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' .  $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $latitude . '","' . $longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
 	$retval = mysql_query( $sql );
 
