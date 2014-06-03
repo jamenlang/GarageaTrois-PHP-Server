@@ -93,5 +93,8 @@ CREATE TABLE IF NOT EXISTS `log` (
   `action` varchar(40) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `number` varchar(15) DEFAULT NULL,
+  `latitude` varchar(13) DEFAULT NULL,
+  `longitude` varchar(13) DEFAULT NULL,
   KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=298 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=339 ;
+
