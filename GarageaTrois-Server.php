@@ -10,6 +10,12 @@ $db_name="garage"; //replace with database name
 $SUPER_SECRET_ADMIN_RESULT="SUPER_SECRET_ADMIN_RESULT"; //replace with whatever is in the res/strings.xml file in the android app.
 $SUPER_SECRET_USER_RESULT="SUPER_SECRET_USER_RESULT"; //replace with whatever is in the res/strings.xml file in the android app.
 
+//########### Configuration for NFC ###################//
+//If you want to be able to open the door with an NFC tag, just write a tag to start the NFC activity of this app.
+//If you don't want to allow NFC or don't have a use for it, you can disable it here.
+
+$nfc_enabled = '1'; //set to 1 to enable or 0 to disable NFC.
+
 //########### Configuration for geofence ###################//
 
 $geofence_enabled = '1'; //set to 1 to enable or 0 to disable the geofence.
@@ -85,98 +91,105 @@ $selected = mysql_select_db($db_name,$dbhandle)
 
 if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 	//user is trying to open the door with nfc.
-	//all we need from them is a uid of 'nfc0' and the did to make sure it's an allowed device and nfc is allowed.
-	//first we'll see if the DID is in the allowed array since we have no user to tie it to.
-	//if it is then we'll want to check to see if it's also in the NFC allowed array.
 
-	$did_exists = '0';//we'll check this later
-	$nfc_allowed = '0';//we'll check this later
-	$did_allowed = '0';//we'll check this later
-	$hasnfc = '1';//we know this is true.
+	if(isset($nfc_enabled) && $nfc_enabled == '1'){
+		
+		//all we need from them is a uid of 'nfc0' and the did to make sure it's an allowed device and nfc is allowed.
+		//first we'll see if the DID is in the allowed array since we have no user to tie it to.
+		//if it is then we'll want to check to see if it's also in the NFC allowed array.
 
-	if (isset($did) && $did !='')
-	{
-		//we need to run a select to find out if the device id already exists in the devices database.
-		$sql = 'Select * from device where did="' . $did . '"';
-		//$reset = mysql_query("RESET QUERY CACHE");
-		$dbres = mysql_query($sql);
-		//$rows = mysql_fetch_row($dbres);
+		$did_exists = '0';//we'll check this later
+		$nfc_allowed = '0';//we'll check this later
+		$did_allowed = '0';//we'll check this later
+		$hasnfc = '1';//we know this is true.
 
-		while ($row = mysql_fetch_assoc($dbres))
+		if (isset($did) && $did !='')
 		{
-			//print_r($row);
-			if ($row[did] == $did){
-				$did_exists = '1';
-				$nfc_allowed = $row['nfc'];
-				$did_allowed = $row['allowed'];
-				//echo 'did exists';
+			//we need to run a select to find out if the device id already exists in the devices database.
+			$sql = 'Select * from device where did="' . $did . '"';
+			//$reset = mysql_query("RESET QUERY CACHE");
+			$dbres = mysql_query($sql);
+			//$rows = mysql_fetch_row($dbres);
+
+			while ($row = mysql_fetch_assoc($dbres))
+			{
+				//print_r($row);
+				if ($row[did] == $did){
+					$did_exists = '1';
+					$nfc_allowed = $row['nfc'];
+					$did_allowed = $row['allowed'];
+					//echo 'did exists';
+				}
 			}
 		}
+		//if it's not then we'll notify the user that when an administrator allows their device 
+
+		//they will be notified at the following number
+		//this will also need to be logged for the administrator to allow the device.
+
+		if (($did_exists == '0' && $did_allowed == '0') || ($did_exists == '1' && $nfc_allowed != '1')){
+			$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . "NFC (" . $uid . ')","' . 'Denied' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+
+			$retval = mysql_query( $sql );
+			if(! $retval )
+			{
+				die('Could not enter data: ' . mysql_error());
+			}
+
+			//insert some helpful shit about the device here.
+			$sql = 'INSERT INTO device (alias, nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . '0' . '", "' . $did . '", "' . '1' . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
+			$retval = mysql_query( $sql );
+			if(! $retval )
+			{
+				die('Could not enter data: ' . mysql_error());
+			}
+
+			echo 'Your device has not been allowed yet. ' . (isset($number) && $number !='' ? ' You will receive a text to ' . $number . ' when your device has been allowed. ' : '');
+
+			$stringData = 'New NFC request from ' . $did . "\n";
+			mailer2($admin_mobile, "NFC User " . "Denied",$stringData);
+
+			exit;
+		}
+		//otherwise we can go ahead and open the door.
+		else if ($did_exists == '1' && $did_allowed == '1' && $nfc_allowed == '1'){
+			if ($switch == "Door"){
+				//garage openers put a short on each pair for a breif period, that's what we'll do with the relay
+				shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 1 write");
+				sleep(2);
+				shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 1 write");
+				echo 'Door toggled';
+			}
+
+			$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . $uid . '","' . 'Granted' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+
+			$retval = mysql_query( $sql );
+			if(! $retval )
+			{
+				die('Could not enter data: ' . mysql_error());
+			}
+			//maybe update the device shit too.
+
+			$sql = 'update device set alias="' . $devicealias . '", nfc="' . $nfc . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+
+			$retval = mysql_query( $sql );
+			if(! $retval )
+			{
+				die('Could not enter data: ' . mysql_error());
+			}
+
+			$stringData = 'NFC request from ' . $_POST['DID'] . "\n";
+			mailer2($admin_mobile, "NFC User " . "Granted",$stringData);
+			exit;
+		}
+		else {
+			//the user has scanned the tag, maybe mutliple times, we've logged it every time and started a device profile. the default profile doesn't have rights so we don't do anything indefinitely.
+			echo 'I have no idea what is happening. did exists: ' . $did_exists . ' did allowed: ' . $did_allowed;
+			exit;
+		}
 	}
-	//if it's not then we'll notify the user that when an administrator allows their device 
-
-	//they will be notified at the following number
-	//this will also need to be logged for the administrator to allow the device.
-
-	if (($did_exists == '0' && $did_allowed == '0') || ($did_exists == '1' && $nfc_allowed != '1')){
-		$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . "NFC (" . $uid . ')","' . 'Denied' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
-
-		$retval = mysql_query( $sql );
-		if(! $retval )
-		{
-			die('Could not enter data: ' . mysql_error());
-		}
-
-		//insert some helpful shit about the device here.
-		$sql = 'INSERT INTO device (alias, nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . '0' . '", "' . $did . '", "' . '1' . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
-		$retval = mysql_query( $sql );
-		if(! $retval )
-		{
-			die('Could not enter data: ' . mysql_error());
-		}
-
-		echo 'Your device has not been allowed yet. ' . (isset($number) && $number !='' ? ' You will receive a text to ' . $number . ' when your device has been allowed. ' : '');
-
-		$stringData = 'New NFC request from ' . $did . "\n";
-		mailer2($admin_mobile, "NFC User " . "Denied",$stringData);
-
-		exit;
-	}
-	//otherwise we can go ahead and open the door.
-	else if ($did_exists == '1' && $did_allowed == '1' && $nfc_allowed == '1'){
-		if ($switch == "Door"){
-			//garage openers put a short on each pair for a breif period, that's what we'll do with the relay
-			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 1 write");
-			sleep(2);
-			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 1 write");
-			echo 'Door toggled';
-		}
-
-		$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . $uid . '","' . 'Granted' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
-
-		$retval = mysql_query( $sql );
-		if(! $retval )
-		{
-			die('Could not enter data: ' . mysql_error());
-		}
-		//maybe update the device shit too.
-
-		$sql = 'update device set alias="' . $devicealias . '", nfc="' . $nfc . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
-
-		$retval = mysql_query( $sql );
-		if(! $retval )
-		{
-			die('Could not enter data: ' . mysql_error());
-		}
-
-		$stringData = 'NFC request from ' . $_POST['DID'] . "\n";
-                mailer2($admin_mobile, "NFC User " . "Granted",$stringData);
-		exit;
-	}
-	else {
-		//the user has scanned the tag, maybe mutliple times, we've logged it every time and started a device profile. the default profile doesn't have rights so we don't do anything indefinitely.
-		echo 'I have no idea what is happening. did exists: ' . $did_exists . ' did allowed: ' . $did_allowed;
-		exit;
+	else{
+		echo 'NFC access has been disabled by an administrator.';
 	}
 }
 //######################## ADMINISTRATIVE ACTION SENT BY APP ###########################//
