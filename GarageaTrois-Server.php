@@ -563,7 +563,7 @@ if (isset($switch) && $switch != ''){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.	
 	if($geofence_enabled == '1')
         {
-		if(distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_units_of_measurement) >= $geofence_maximum_allowed_distance)
+		if(distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement) >= $geofence_maximum_allowed_distance)
                 {
                         $switch = 'geofence';
                         $sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
@@ -714,7 +714,7 @@ function mailer2($to, $subject, $message){
 }
 // Sanitize input
 function sanitize($in) {
- return addslashes(htmlspecialchars(strip_tags(trim($in))));
+	return addslashes(htmlspecialchars(strip_tags(trim($in))));
 }
 
 function distance($lat1, $lon1, $lat2, $lon2, $unit) {
@@ -723,8 +723,7 @@ function distance($lat1, $lon1, $lat2, $lon2, $unit) {
         $dist = acos($dist);
         $dist = rad2deg($dist);
         $miles = $dist * 60 * 1.1515;
-        $unit = strtoupper($unit);
-
+        $unit = strtolower($unit);
         if ($unit == "kilometers") {
                 return ($miles * 1.609344);
         } else if ($unit == "meters") {
