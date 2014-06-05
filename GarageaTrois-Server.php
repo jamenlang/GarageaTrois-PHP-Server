@@ -10,6 +10,14 @@ $db_name="garage"; //replace with database name
 $SUPER_SECRET_ADMIN_RESULT="SUPER_SECRET_ADMIN_RESULT"; //replace with whatever is in the res/strings.xml file in the android app.
 $SUPER_SECRET_USER_RESULT="SUPER_SECRET_USER_RESULT"; //replace with whatever is in the res/strings.xml file in the android app.
 
+//########### Configuration for geofence ###################//
+
+$geofence_enabled = '1'; //set to 1 to enable or 0 to disable the geofence.
+$garage_latitude = '32.9697'; //set to garage latitude
+$garage_longitude = '-96.80322'; //set to garage longitude
+$geofence_unit_of_measurement = 'meters'; // use meters, kilometers or miles;
+$geofence_maximum_allowed_distance= '30'; //distance in units from the garage door latitude/longitude.
+
 //########### Configuration for notifications ###################//
 
 $admin_mobile="4033029392"; //replace with mobile number for recieving text messages
@@ -552,6 +560,26 @@ while ($row = mysql_fetch_array($result)) {
 }
 
 if (isset($switch) && $switch != ''){
+	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.	
+	if($geofence_enabled == '1')
+        {
+		if(distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_units_of_measurement) >= $geofence_maximum_allowed_distance)
+                {
+                        $switch = 'geofence';
+                        $sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+
+                        $retval = mysql_query( $sql);
+
+                        if(! $retval )
+                        {
+                                die('Could not enter data: ' . mysql_error());
+                        }
+
+                        echo 'Geofence Enabled: Out of bounds.';
+                        exit;
+                        //this will effectively disable the button in the app. The only thing available is administration of users and devices.
+                }
+        }
 
 	if ($switch == "light"){
 		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 0 write");
@@ -688,4 +716,22 @@ function mailer2($to, $subject, $message){
 function sanitize($in) {
  return addslashes(htmlspecialchars(strip_tags(trim($in))));
 }
+
+function distance($lat1, $lon1, $lat2, $lon2, $unit) {
+        $theta = $lon1 - $lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $unit = strtoupper($unit);
+
+        if ($unit == "kilometers") {
+                return ($miles * 1.609344);
+        } else if ($unit == "meters") {
+                return ($miles * 1609.34);
+        } else {
+                return $miles;
+        }
+}
+
 ?>
