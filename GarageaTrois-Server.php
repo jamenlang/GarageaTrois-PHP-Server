@@ -17,6 +17,8 @@ $SUPER_SECRET_USER_RESULT="SUPER_SECRET_USER_RESULT"; //replace with whatever is
 $nfc_enabled = '1'; //set to 1 to enable or 0 to disable NFC.
 
 //########### Configuration for geofence ###################//
+//Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points. 
+//If you have a use for it, by all means try it out.
 
 $geofence_enabled = '1'; //set to 1 to enable or 0 to disable the geofence.
 $garage_latitude = '32.9697'; //set to garage latitude
