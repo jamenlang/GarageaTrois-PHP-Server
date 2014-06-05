@@ -69,8 +69,8 @@ $nfc = sanitize($_POST['NFC']);
 $did = sanitize($_POST['DID']);
 $uid = sanitize($_POST['UID']);
 $switch = sanitize($_POST['switch']);
-$latitude = sanitize($_POST['Latitude']);
-$longitude = sanitize($_POST['Longitude']);
+$device_latitude = sanitize($_POST['Latitude']);
+$device_longitude = sanitize($_POST['Longitude']);
 $adminaction = sanitize($_POST['AdminAction']);
 $number = sanitize($_POST['TelNum']);
 $devicealias = sanitize($_POST['DeviceName']);
@@ -119,7 +119,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 	//this will also need to be logged for the administrator to allow the device.
 
 	if (($did_exists == '0' && $did_allowed == '0') || ($did_exists == '1' && $nfc_allowed != '1')){
-		$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . "NFC (" . $uid . ')","' . 'Denied' . '","' . $did . '","' . $number . '","' . $latitude . '","' . $longitude . '","' . date('Y-m-d H:i:s') . '" )';
+		$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . "NFC (" . $uid . ')","' . 'Denied' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
 		$retval = mysql_query( $sql );
 		if(! $retval )
@@ -152,7 +152,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 			echo 'Door toggled';
 		}
 
-		$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . $uid . '","' . 'Granted' . '","' . $did . '","' . $number . '","' . $latitude . '","' . $longitude . '","' . date('Y-m-d H:i:s') . '" )';
+		$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . $uid . '","' . 'Granted' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
 		$retval = mysql_query( $sql );
 		if(! $retval )
@@ -602,7 +602,7 @@ if (isset($switch) && $switch != ''){
 		echo 'Lock toggled';
 	}
 
-	$sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $latitude . '","' . $longitude . '","'. date('Y-m-d H:i:s') . '" )';
+	$sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","'. date('Y-m-d H:i:s') . '" )';
 
 	$retval = mysql_query( $sql);
 
@@ -656,7 +656,7 @@ else{
 	//$fh = fopen($myFile, 'a');
 	//$stringData = date("Y-m-d H:i:s") . " ";
 	//fwrite($fh, $stringData);
-	$sql = 'INSERT INTO log (name, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' .  $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $latitude . '","' . $longitude . '","' . date('Y-m-d H:i:s') . '" )';
+	$sql = 'INSERT INTO log (name, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' .  $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
 	$retval = mysql_query( $sql );
 
