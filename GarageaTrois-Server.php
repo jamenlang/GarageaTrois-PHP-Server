@@ -16,6 +16,15 @@ $SUPER_SECRET_USER_RESULT="SUPER_SECRET_USER_RESULT"; //replace with whatever is
 
 $nfc_enabled = '1'; //set to 1 to enable or 0 to disable NFC.
 
+//########### Configuration for QR ###################//
+//An easy way to get the app onto other devices would be to use a QR code, set it and forget it.
+include('phpqrcode/qrlib.php');
+// this can be downloaded from http://sourceforge.net/projects/phpqrcode/
+
+//when this page is visited in a browser, a QR code will be generated for you to download the APK based on this link.
+
+$apk_link = "files.myawesomedomain.net/garageatrois.apk";
+
 //########### Configuration for geofence ###################//
 //Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points. 
 //If you have a use for it, by all means try it out.
@@ -57,11 +66,11 @@ include('phpqrcode/qrlib.php');
 file_put_contents("post.log",print_r($_POST,true));
 if (!isset($_POST) || empty($_POST)){
 	//might as well generate a qr code for the server address since no post data was received
-	$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+	//$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 	//OR echo "http://chart.apis.google.com/chart?chf=a,s,000000&chs=200x200&chld=%7C2&cht=qr&chl=" . $link;
 	define('IMAGE_WIDTH',250);
 	define('IMAGE_HEIGHT',250);
-	QRcode::png($link);
+	QRcode::png($apk_link);
 	exit;
 }
 
