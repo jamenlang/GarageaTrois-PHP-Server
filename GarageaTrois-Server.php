@@ -144,7 +144,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 	}
 	//otherwise we can go ahead and open the door.
 	else if ($did_exists == '1' && $did_allowed == '1' && $nfc_allowed == '1'){
-		if ($switch == "door"){
+		if ($switch == "Door"){
 			//garage openers put a short on each pair for a breif period, that's what we'll do with the relay
 			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 1 write");
 			sleep(2);
@@ -581,21 +581,21 @@ if (isset($switch) && $switch != ''){
                 }
         }
 
-	if ($switch == "light"){
+	if ($switch == "Light"){
 		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 0 write");
 		sleep(2);
 		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 0 write");
 		echo 'Light toggled';
 	}
 
-	if ($switch == "door"){
+	if ($switch == "Door"){
 		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 1 write");
 		sleep(2);
 		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 1 write");
 		echo 'Door toggled';
 	}
 
-	if ($switch == "lock"){
+	if ($switch == "Lock"){
 		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 2 write");
 		sleep(2);
 		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 2 write");
