@@ -350,7 +350,7 @@ if (isset($adminaction) && $adminaction !='')
 			if ($nfc == 'exclusive'){
 				//set nfc = allowed because it has to be for exclusive access... if the priviledge is revoked then nfc is disabled entirely.
 				$nfc = (($adminaction == "Revok") ? '0' : '1');
-				$forcenfc = (($adminaction == "Revok") ? '1' : '0');
+				$forcenfc = (($adminaction == "Revok") ? '0' : '1');
 			}
 		}
 
