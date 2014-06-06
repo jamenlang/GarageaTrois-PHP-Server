@@ -562,7 +562,7 @@ while ($row = mysql_fetch_array($result)) {
 if (isset($switch) && $switch != ''){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
-	if($geofence_enabled == '1')
+	if($geofence_enabled == 'true')
         {
         	if($device_latitude == '' || $device_longitude == '' || $device_latitude = '0.0' || $device_longitude = '0.0'){
                         echo 'Geofence Enabled: GPS Empty.';
