@@ -28,6 +28,7 @@ $nfc_enabled = '1'; //set to 1 to enable or 0 to disable NFC.
 // this can be downloaded from http://sourceforge.net/projects/phpqrcode/
 
 $qr_enabled = '1'; // set to 1 to enable or 0 to disable.
+$qr_size = '250'; // default is 250 pixels
 $apk_link = "files.myawesomedomain.net/garageatrois.apk";
 
 //########### Configuration for geofence ###################//
@@ -73,8 +74,8 @@ if (!isset($_POST) || empty($_POST)){
                 //might as well generate a qr code for the server address since no post data was received
                 //$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
                 //OR echo "http://chart.apis.google.com/chart?chf=a,s,000000&chs=200x200&chld=%7C2&cht=qr&chl=" . $link;
-                define('IMAGE_WIDTH',250);
-                define('IMAGE_HEIGHT',250);
+                define('IMAGE_WIDTH',$qr_size);
+                define('IMAGE_HEIGHT',$qr_size);
                 QRcode::png($apk_link);
                 exit;
         }
