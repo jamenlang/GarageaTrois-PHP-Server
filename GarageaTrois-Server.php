@@ -78,9 +78,9 @@ if (!isset($_POST) || empty($_POST)){
                 QRcode::png($apk_link);
                 exit;
         }
-}
-else{
-        exit;
+	else{
+		exit;
+	}
 }
 
 if($log_to_file == '1')
