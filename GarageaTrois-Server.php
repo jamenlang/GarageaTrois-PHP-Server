@@ -565,7 +565,7 @@ if (isset($switch) && $switch != ''){
 	if($geofence_enabled == '1')
         {
         	if($device_latitude == '' || $device_longitude == ''){
-        		echo 'Geofence Enabled: GPS Not Available.'
+        		echo 'Geofence Enabled: GPS Not Available.';
         		exit;
         	}
 		if(distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement) >= $geofence_maximum_allowed_distance)
