@@ -158,7 +158,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 			echo 'Your device has not been allowed yet. ' . (isset($number) && $number !='' ? ' You will receive a text to ' . $number . ' when your device has been allowed. ' : '');
 
 			$stringData = 'New NFC request from ' . $did . "\n";
-			mailer2($admin_mobile, "NFC User " . "Denied",$stringData);
+			mailer("NFC User " . "Denied", $stringData);
 
 			exit;
 		}
@@ -190,7 +190,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 			}
 
 			$stringData = 'NFC request from ' . $_POST['DID'] . "\n";
-			mailer2($admin_mobile, "NFC User " . "Granted",$stringData);
+			mailer("NFC User " . "Granted", $stringData);
 			exit;
 		}
 		else {
@@ -439,7 +439,7 @@ if (isset($adminaction) && $adminaction !='')
 					echo "Privileges for " . $did . "  " . $adminaction . "ed";
 
 					$stringData = $did . ' ' . $adminaction . "ed" . "\n";
-				        mailer2("$number", "Device " . $granted,$stringData);
+				        mailer("Device " . $granted, $stringData, $number);
 					exit;
 				}
 				if (isset($name) && $name != '')
@@ -643,7 +643,7 @@ if (isset($switch) && $switch != ''){
 	$txt = $users[$uid] . " toggled " . $switch . ' @ ' . $stringData;
 	// fix post uid so we can identify the user here, this is working in the latest build.
 	// Send email
-	mailer($admin_email,$stringData,$txt);
+	mailer($stringData, $txt);
 	//fwrite($fh, $stringData);
 	//fclose($fh);
 	exit;
@@ -714,28 +714,41 @@ else{
 	}
 
 	$stringData = $users[$uid] . ' from ' . $did . "\n";
-	mailer2($admin_mobile, "User " . $granted,$stringData);
+	mailer("User " . $granted, $stringData);
 	//fwrite($fh, $stringData);
 	//fclose($fh);
 
 }
 
-function mailer($to, $subject, $message){
-
+function mailer($subject, $message, $newuser){
 	$from = $notification_email;
 	$headers = "From: $from\r\n" . "X-Mailer: php";
-	mail($to, $subject, $message, $headers, '-r ' . $from);
-}
 
-function mailer2($to, $subject, $message){
+	$to_list = array();
 
-	foreach($carriers as $carrier){
-		$to = $to . "@" . $carrier;
-		$from = $notification_email;
-		$headers = "From: $from\r\n" . "X-Mailer: php";
-		mail($to, $subject, $message, $headers, '-r ' . $from);
+	if(isset($newuser) && $newuser != ''){
+		$to_list[] = $newuser;
+	}
+	else if($admin_send_to == "both"){
+		$to_list[] = $admin_mobile;
+		$to_list[] = $admin_email;
+	}
+	else{
+		$to_list[] = (($admin_send_to == "email") ? $admin_email : $admin_mobile);
+	}
+	foreach ($to_list as $to){
+		if(!strstr($to,"@")){
+			foreach($carriers as $carrier){
+				$send_to = $to . "@" . $carrier;
+				mail($send_to, $subject, $message, $headers, '-r ' . $from);
+			}
+		}
+		else{
+			mail($to, $subject, $message, $headers, '-r ' . $from);
+		}
 	}
 }
+
 // Sanitize input
 function sanitize($in) {
 	return addslashes(htmlspecialchars(strip_tags(trim($in))));
