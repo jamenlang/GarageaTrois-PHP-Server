@@ -467,13 +467,19 @@ if (isset($adminaction) && $adminaction !='')
 	}
 }
 
-if (isset($_POST['Log']) && $_POST['Log'] != '')
+if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 {
-	if (isset($_POST['Log']) && $_POST['Log'] == 'viewlog')
+	if ($_POST['Admin'] == 'viewlog')
+		$table = 'log';
+	if ($_POST['Admin'] == 'viewdevices')
+		$table = 'devices';
+	if ($_POST['Admin'] == 'viewusers')
+		$table = 'users';
+	if (isset($table) && $table != '')
 	{
 		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
 		mysql_select_db($db_name)or die("cannot select DB");
-		$sql = "select * from log order by date desc";
+		$sql = "select * from " . $table . " order by date desc";
 		$result = mysql_query($sql);
 		$json = array();
 
@@ -481,52 +487,6 @@ if (isset($_POST['Log']) && $_POST['Log'] != '')
 		//      echo mysql_num_rows($result);
 	        	while($row=mysql_fetch_assoc($result)){
 	                	$json['log_info'][]=$row;
-	       		}
-		}
-		mysql_close($con);
-		echo json_encode($json);
-		if($log_to_file == '1')
-			file_put_contents($log,print_r($json));
-		exit;
-	}
-}
-
-if (isset($_POST['Admin']) && $_POST['Admin'] != '')
-{
-	if (isset($_POST['Admin']) && $_POST['Admin'] == 'viewusers')
-	{
-		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
-		mysql_select_db($db_name)or die("cannot select " . $db_name);
-		$sql = "select * from auth";
-
-		$result = mysql_query($sql);
-		$json = array();
-
-		if(mysql_num_rows($result)){
-		//      echo mysql_num_rows($result);
-	        	while($row=mysql_fetch_assoc($result)){
-	                	$json['user_info'][]=$row;
-	       		}
-		}
-		mysql_close($con);
-		echo json_encode($json);
-		if($log_to_file == '1')
-			file_put_contents($log,print_r($json));
-		exit;
-	}
-
-	if (isset($_POST['Admin']) && $_POST['Admin'] == 'viewdevices')
-	{
-		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
-		mysql_select_db($db_name)or die("cannot select " . $db_name);
-		$sql = "select * from device";
-		$result = mysql_query($sql);
-		$json = array();
-
-		if(mysql_num_rows($result)){
-		//      echo mysql_num_rows($result);
-	        	while($row=mysql_fetch_assoc($result)){
-	                	$json['device_info'][]=$row;
 	       		}
 		}
 		mysql_close($con);
