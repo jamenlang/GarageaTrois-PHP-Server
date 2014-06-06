@@ -10,6 +10,11 @@ $db_name="garage"; //replace with database name
 $SUPER_SECRET_ADMIN_RESULT="SUPER_SECRET_ADMIN_RESULT"; //replace with whatever is in the res/strings.xml file in the android app.
 $SUPER_SECRET_USER_RESULT="SUPER_SECRET_USER_RESULT"; //replace with whatever is in the res/strings.xml file in the android app.
 
+//########### Configuration for Logging ###################//
+
+$log_to_file = true; //after everything is installed and working you'll want to disable logging.
+$log = 'logfile.txt'; //change to whatever you'd like
+
 //########### Configuration for NFC ###################//
 //If you want to be able to open the door with an NFC tag, just write a tag to start the NFC activity of this app.
 //If you don't want to allow NFC or don't have a use for it, you can disable it here.
@@ -18,6 +23,7 @@ $nfc_enabled = '1'; //set to 1 to enable or 0 to disable NFC.
 
 //########### Configuration for QR ###################//
 //An easy way to get the app onto other devices would be to use a QR code, set it and forget it.
+
 include('phpqrcode/qrlib.php');
 // this can be downloaded from http://sourceforge.net/projects/phpqrcode/
 
@@ -43,18 +49,15 @@ $notification_email="notifications@fromtheserver.com"; //replace with a notifica
 
 
 /************ Location Specific ***********/
-//This is a list of carriers in the US. Change to your country if necessary. 
+//This is a list of carriers in the US. Change to your country or add your carrier information to the array.
 $carriers = array (
 	0 => 'tomomail.net',
 	1 => 'messaging.sprintpcs.com',
 	2 => 'vtext.com',
 	3 => 'txt.att.net',
 	4 => 'vmobl.com',
+	//5 => 'mycarrer.com',
 );
-
-include('phpqrcode/qrlib.php');
-// this can be downloaded from http://sourceforge.net/projects/phpqrcode/
-
 
 //########### I don't believe anything else needs to be modified. ##############//
 
@@ -62,8 +65,8 @@ include('phpqrcode/qrlib.php');
 // outputs image directly into browser, as PNG stream
 // the code can be downloaded or this can be disabled, you can also use the google API line below.
 // I cannot get QR to launch an intent, I would like to get this working so a QR code can be scanned and give the app the server information to be stored locally on the device and get rid of hardcoded server strings altogether.
-
-file_put_contents("post.log",print_r($_POST,true));
+if($log_to_file == true)
+	file_put_contents($log,print_r($_POST,true));
 if (!isset($_POST) || empty($_POST)){
 	//might as well generate a qr code for the server address since no post data was received
 	//$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
@@ -236,15 +239,17 @@ if (isset($adminaction) && $adminaction !='')
 					//exit;
 				}
 			}
-
-			file_put_contents("post.log", 'uid ' . $old_uid);
+			if($log_to_file == true)
+				file_put_contents($log, 'uid ' . $old_uid);
 			if ($uid_exists == '1')
 			{
-				file_put_contents("post.log", 'uid ' . $uid_exists);
+				if($log_to_file == true)
+					file_put_contents($log, 'uid ' . $uid_exists);
 
 				$sql = 'Update auth set uid="' . $uid . '", allowed="' . $allowed . '" where name="' . $name . '"';
-				file_put_contents("post.log", $sql);
-
+				if($log_to_file == true)
+					file_put_contents($log, $sql);
+	
 				$retval = mysql_query( $sql);
 				if(! $retval )
 				{
@@ -256,11 +261,12 @@ if (isset($adminaction) && $adminaction !='')
 			}
 			else {
 				//this is experimental 5/29/14
-				file_put_contents("post.log", 'uid ' . $uid_exists);
+				if($log_to_file == true)
+					file_put_contents($log, 'uid ' . $uid_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-
-				file_put_contents("post.log", $sql);
+				if($log_to_file == true)
+					file_put_contents($log, $sql);
 
 				$retval = mysql_query( $sql);
                                 if(! $retval )
@@ -278,7 +284,8 @@ if (isset($adminaction) && $adminaction !='')
 		//update the name where name = $uid
 
 			$sql = 'Select * from auth where uid="' . $uid . '"';
-			file_put_contents("post.log", $sql);
+			if($log_to_file == true)
+				file_put_contents($log, $sql);
 
 			$dbres = mysql_query($sql);
 
@@ -294,10 +301,12 @@ if (isset($adminaction) && $adminaction !='')
 				}
 
 			}
-			file_put_contents("post.log", $old_name);
+			if($log_to_file == true)
+				file_put_contents($log, $old_name);
 			if ($name_exists == '1')
 			{
-				file_put_contents("post.log", 'name ' . $name_exists);
+				if($log_to_file == true)
+					file_put_contents($log, 'name ' . $name_exists);
 
 				$sql = 'Update auth set name="' . $name . '", allowed="' . $allowed . '" where uid="' . $uid . '"';
 				$retval = mysql_query( $sql);
@@ -310,11 +319,12 @@ if (isset($adminaction) && $adminaction !='')
 			}
 			else {
 				//this is experimental 5/29/14
-				file_put_contents("post.log", 'name ' . $name_exists);
+				if($log_to_file == true)
+					file_put_contents($log, 'name ' . $name_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-
-				file_put_contents("post.log", $sql);
+				if($log_to_file == true)
+					file_put_contents($log, $sql);
 
 				$retval = mysql_query( $sql);
                                 if(! $retval )
@@ -472,7 +482,8 @@ if (isset($_POST['Log']) && $_POST['Log'] != '')
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		file_put_contents("post.log",print_r($json));
+		if($log_to_file == true)
+			file_put_contents($log,print_r($json));
 		exit;
 	}
 }
@@ -496,7 +507,8 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		file_put_contents("post.log",print_r($json));
+		if($log_to_file == true)
+			file_put_contents($log,print_r($json));
 		exit;
 	}
 
@@ -516,7 +528,8 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		file_put_contents("post.log",print_r($json));
+		if($log_to_file == true)
+			file_put_contents("$log",print_r($json));
 		exit;
 	}
 }
