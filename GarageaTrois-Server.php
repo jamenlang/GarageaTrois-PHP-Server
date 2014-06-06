@@ -55,7 +55,7 @@ $carriers = array (
 	2 => 'vtext.com',
 	3 => 'txt.att.net',
 	4 => 'vmobl.com',
-	//5 => 'mycarrer.com',
+	//5 => 'mycarrier.com',
 );
 
 //########### I don't believe anything else needs to be modified. ##############//
