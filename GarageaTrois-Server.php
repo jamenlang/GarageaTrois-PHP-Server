@@ -12,7 +12,7 @@ $SUPER_SECRET_USER_RESULT="SUPER_SECRET_USER_RESULT"; //replace with whatever is
 
 //########### Configuration for Logging ###################//
 
-$log_to_file = true; //after everything is installed and working you'll want to disable logging.
+$log_to_file = '1'; //after everything is installed and working you'll want to disable logging.
 $log = 'logfile.txt'; //change to whatever you'd like
 
 //########### Configuration for NFC ###################//
@@ -22,13 +22,12 @@ $log = 'logfile.txt'; //change to whatever you'd like
 $nfc_enabled = '1'; //set to 1 to enable or 0 to disable NFC.
 
 //########### Configuration for QR ###################//
+//when this page is visited in a browser, a QR code will be generated for you to download the APK based on the link.
 //An easy way to get the app onto other devices would be to use a QR code, set it and forget it.
-
-include('phpqrcode/qrlib.php');
+//this requires qrlib.php
 // this can be downloaded from http://sourceforge.net/projects/phpqrcode/
 
-//when this page is visited in a browser, a QR code will be generated for you to download the APK based on this link.
-
+$qr_enabled = '1'; // set to 1 to enable or 0 to disable.
 $apk_link = "files.myawesomedomain.net/garageatrois.apk";
 
 //########### Configuration for geofence ###################//
@@ -65,22 +64,21 @@ $carriers = array (
 // outputs image directly into browser, as PNG stream
 // the code can be downloaded or this can be disabled, you can also use the google API line below.
 // I cannot get QR to launch an intent, I would like to get this working so a QR code can be scanned and give the app the server information to be stored locally on the device and get rid of hardcoded server strings altogether.
-if($log_to_file == true)
+if($log_to_file == '1')
 	file_put_contents($log,print_r($_POST,true));
-if (!isset($_POST) || empty($_POST)){
-	//might as well generate a qr code for the server address since no post data was received
-	//$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-	//OR echo "http://chart.apis.google.com/chart?chf=a,s,000000&chs=200x200&chld=%7C2&cht=qr&chl=" . $link;
-	define('IMAGE_WIDTH',250);
-	define('IMAGE_HEIGHT',250);
-	QRcode::png($apk_link);
-	exit;
-}
 
-if(isset($_POST['initialtest']) && $_POST['initialtest'] == 'true')
-{
-	echo 'hi';
-	exit;
+if($qr_enabled == '1'){
+	include('phpqrcode/qrlib.php');
+	if (!isset($_POST) || empty($_POST)){
+
+		//might as well generate a qr code for the server address since no post data was received
+		//$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+		//OR echo "http://chart.apis.google.com/chart?chf=a,s,000000&chs=200x200&chld=%7C2&cht=qr&chl=" . $link;
+		define('IMAGE_WIDTH',250);
+		define('IMAGE_HEIGHT',250);
+		QRcode::png($apk_link);
+		exit;
+	}
 }
 
 //Get POST data and assign new variables.
@@ -101,7 +99,7 @@ $dbhandle = mysql_connect($hostname, $username, $password)
 	or die("Unable to connect to MySQL");
 
 $selected = mysql_select_db($db_name,$dbhandle)
-	or die("Could not select $db_name");
+	or die("Could not select " . $db_name);
 
 if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 	//user is trying to open the door with nfc.
@@ -239,15 +237,15 @@ if (isset($adminaction) && $adminaction !='')
 					//exit;
 				}
 			}
-			if($log_to_file == true)
+			if($log_to_file == '1')
 				file_put_contents($log, 'uid ' . $old_uid);
 			if ($uid_exists == '1')
 			{
-				if($log_to_file == true)
+				if($log_to_file == '1')
 					file_put_contents($log, 'uid ' . $uid_exists);
 
 				$sql = 'Update auth set uid="' . $uid . '", allowed="' . $allowed . '" where name="' . $name . '"';
-				if($log_to_file == true)
+				if($log_to_file == '1')
 					file_put_contents($log, $sql);
 
 				$retval = mysql_query( $sql);
@@ -261,11 +259,11 @@ if (isset($adminaction) && $adminaction !='')
 			}
 			else {
 				//this is experimental 5/29/14
-				if($log_to_file == true)
+				if($log_to_file == '1')
 					file_put_contents($log, 'uid ' . $uid_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-				if($log_to_file == true)
+				if($log_to_file == '1')
 					file_put_contents($log, $sql);
 
 				$retval = mysql_query( $sql);
@@ -284,7 +282,7 @@ if (isset($adminaction) && $adminaction !='')
 		//update the name where name = $uid
 
 			$sql = 'Select * from auth where uid="' . $uid . '"';
-			if($log_to_file == true)
+			if($log_to_file == '1')
 				file_put_contents($log, $sql);
 
 			$dbres = mysql_query($sql);
@@ -301,11 +299,11 @@ if (isset($adminaction) && $adminaction !='')
 				}
 
 			}
-			if($log_to_file == true)
+			if($log_to_file == '1')
 				file_put_contents($log, $old_name);
 			if ($name_exists == '1')
 			{
-				if($log_to_file == true)
+				if($log_to_file == '1')
 					file_put_contents($log, 'name ' . $name_exists);
 
 				$sql = 'Update auth set name="' . $name . '", allowed="' . $allowed . '" where uid="' . $uid . '"';
@@ -319,11 +317,11 @@ if (isset($adminaction) && $adminaction !='')
 			}
 			else {
 				//this is experimental 5/29/14
-				if($log_to_file == true)
+				if($log_to_file == '1')
 					file_put_contents($log, 'name ' . $name_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-				if($log_to_file == true)
+				if($log_to_file == '1')
 					file_put_contents($log, $sql);
 
 				$retval = mysql_query( $sql);
@@ -469,7 +467,7 @@ if (isset($_POST['Log']) && $_POST['Log'] != '')
 	if (isset($_POST['Log']) && $_POST['Log'] == 'viewlog')
 	{
 		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
-		mysql_select_db("$db_name")or die("cannot select DB");
+		mysql_select_db($db_name)or die("cannot select DB");
 		$sql = "select * from log order by date desc";
 		$result = mysql_query($sql);
 		$json = array();
@@ -482,7 +480,7 @@ if (isset($_POST['Log']) && $_POST['Log'] != '')
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		if($log_to_file == true)
+		if($log_to_file == '1')
 			file_put_contents($log,print_r($json));
 		exit;
 	}
@@ -493,7 +491,7 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 	if (isset($_POST['Admin']) && $_POST['Admin'] == 'viewusers')
 	{
 		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
-		mysql_select_db($db_name)or die("cannot select $db_name");
+		mysql_select_db($db_name)or die("cannot select " . $db_name);
 		$sql = "select * from auth";
 
 		$result = mysql_query($sql);
@@ -507,7 +505,7 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		if($log_to_file == true)
+		if($log_to_file == '1')
 			file_put_contents($log,print_r($json));
 		exit;
 	}
@@ -515,7 +513,7 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 	if (isset($_POST['Admin']) && $_POST['Admin'] == 'viewdevices')
 	{
 		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
-		mysql_select_db($db_name)or die("cannot select $db_name");
+		mysql_select_db($db_name)or die("cannot select " . $db_name);
 		$sql = "select * from device";
 		$result = mysql_query($sql);
 		$json = array();
@@ -528,16 +526,10 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		if($log_to_file == true)
-			file_put_contents("$log",print_r($json));
+		if($log_to_file == '1')
+			file_put_contents($log,print_r($json));
 		exit;
 	}
-}
-
-if ($testing_mode == true)
-{
-	//testing should be done by now.
-	exit;
 }
 
 if (!isset($uid))
@@ -551,7 +543,7 @@ $dbhandle = mysql_connect($hostname, $username, $password)
   or die("Unable to connect to MySQL");
 
 $selected = mysql_select_db($db_name,$dbhandle)
-  or die("Could not select $db_name");
+  or die("Could not select " . $db_name);
 /*
 if (isset($_POST['Log']) && $_POST['Log'] == "true")
 {
