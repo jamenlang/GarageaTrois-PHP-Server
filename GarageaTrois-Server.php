@@ -472,21 +472,27 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 	if ($_POST['Admin'] == 'viewlog')
 		$table = 'log';
 	if ($_POST['Admin'] == 'viewdevices')
-		$table = 'devices';
+		$table = 'device';
 	if ($_POST['Admin'] == 'viewusers')
-		$table = 'users';
+		$table = 'auth';
 	if (isset($table) && $table != '')
 	{
+		 if($log_to_file == '1')
+                        file_put_contents($log,$table);
 		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
 		mysql_select_db($db_name)or die("cannot select DB");
 		$sql = "select * from " . $table . " order by date desc";
+		 if($log_to_file == '1')
+                        file_put_contents($log,$sql);
 		$result = mysql_query($sql);
 		$json = array();
 
 		if(mysql_num_rows($result)){
 		//      echo mysql_num_rows($result);
 	        	while($row=mysql_fetch_assoc($result)){
-	                	$json['log_info'][]=$row;
+	        		if($log_to_file == '1')
+					file_put_contents($log,$row);
+	                	$json[ $table . '_info'][]=$row;
 	       		}
 		}
 		mysql_close($con);
