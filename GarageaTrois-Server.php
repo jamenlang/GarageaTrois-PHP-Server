@@ -64,22 +64,27 @@ $carriers = array (
 // outputs image directly into browser, as PNG stream
 // the code can be downloaded or this can be disabled, you can also use the google API line below.
 // I cannot get QR to launch an intent, I would like to get this working so a QR code can be scanned and give the app the server information to be stored locally on the device and get rid of hardcoded server strings altogether.
+
+if (!isset($_POST) || empty($_POST)){
+
+        if($qr_enabled == '1'){
+                include('phpqrcode/qrlib.php');
+
+                //might as well generate a qr code for the server address since no post data was received
+                //$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+                //OR echo "http://chart.apis.google.com/chart?chf=a,s,000000&chs=200x200&chld=%7C2&cht=qr&chl=" . $link;
+                define('IMAGE_WIDTH',250);
+                define('IMAGE_HEIGHT',250);
+                QRcode::png($apk_link);
+                exit;
+        }
+}
+else{
+        exit;
+}
+
 if($log_to_file == '1')
 	file_put_contents($log,print_r($_POST,true));
-
-if($qr_enabled == '1'){
-	include('phpqrcode/qrlib.php');
-	if (!isset($_POST) || empty($_POST)){
-
-		//might as well generate a qr code for the server address since no post data was received
-		//$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-		//OR echo "http://chart.apis.google.com/chart?chf=a,s,000000&chs=200x200&chld=%7C2&cht=qr&chl=" . $link;
-		define('IMAGE_WIDTH',250);
-		define('IMAGE_HEIGHT',250);
-		QRcode::png($apk_link);
-		exit;
-	}
-}
 
 //Get POST data and assign new variables.
 $name = sanitize($_POST['Name']);
