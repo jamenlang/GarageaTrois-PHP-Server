@@ -564,7 +564,7 @@ if (isset($switch) && $switch != ''){
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
 	if($geofence_enabled == '1')
         {
-        	if($device_latitude == '' || $device_longitude == ''){
+        	if($device_latitude == '' || $device_longitude == '' || $device_latitude = '0.0' || $device_longitude = '0.0'){
         		echo 'Geofence Enabled: GPS Not Available.';
         		exit;
         	}
