@@ -107,7 +107,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 	//user is trying to open the door with nfc.
 
 	if(isset($nfc_enabled) && $nfc_enabled == '1'){
-		
+
 		//all we need from them is a uid of 'nfc0' and the did to make sure it's an allowed device and nfc is allowed.
 		//first we'll see if the DID is in the allowed array since we have no user to tie it to.
 		//if it is then we'll want to check to see if it's also in the NFC allowed array.
@@ -136,7 +136,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 				}
 			}
 		}
-		//if it's not then we'll notify the user that when an administrator allows their device 
+		//if it's not then we'll notify the user that when an administrator allows their device
 
 		//they will be notified at the following number
 		//this will also need to be logged for the administrator to allow the device.
@@ -249,7 +249,7 @@ if (isset($adminaction) && $adminaction !='')
 				$sql = 'Update auth set uid="' . $uid . '", allowed="' . $allowed . '" where name="' . $name . '"';
 				if($log_to_file == true)
 					file_put_contents($log, $sql);
-	
+
 				$retval = mysql_query( $sql);
 				if(! $retval )
 				{
@@ -597,7 +597,8 @@ while ($row = mysql_fetch_array($result)) {
 }
 
 if (isset($switch) && $switch != ''){
-	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.	
+	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
+	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
 	if($geofence_enabled == '1')
         {
 		if(distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement) >= $geofence_maximum_allowed_distance)
