@@ -31,6 +31,7 @@ Relay controller board (USB or Parallel) - $40
 Android device
 LAMP Server - I'm using MYSQL as the back end for user authentication, device authentication and logging, the structure is contained in the MySQL Structure for documentation. I mail out notifications from my personal FQDN on the server.
 I'm also using Ubuntu for the OS, although I'm not certain there's any linux specific stuff going on here. Might work on Windows as well.
+The GarageaTrois-Config.php file is where settings are located.
 
 ############# Design #############
 
