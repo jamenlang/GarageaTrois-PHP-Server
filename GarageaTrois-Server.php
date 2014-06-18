@@ -511,7 +511,7 @@ if (isset($switch) && $switch != ''){
                         exit;
                 }
                 
-		if(distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement) >= $geofence_maximum_allowed_distance)
+		if($distance = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement) >= $geofence_maximum_allowed_distance)
                 {
                         $switch = $switch . ' Denied (Geofence)';
                         $sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
@@ -523,7 +523,7 @@ if (isset($switch) && $switch != ''){
                                 die('Could not enter data: ' . mysql_error());
                         }
 
-                        echo 'Geofence Enabled: Out of bounds.';
+                        echo 'Geofence Enabled: Out of bounds.' . (($geofence_return_result == 'true') ? '(' . $distance . ')' : '');
                         exit;
                         //this will effectively disable the button in the app. The only thing available is administration of users and devices.
                 }
