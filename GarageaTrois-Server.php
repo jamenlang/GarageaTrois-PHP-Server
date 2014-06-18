@@ -1,6 +1,6 @@
 <?php
-
-/************ I don't believe anything else needs to be modified. ************/
+/************ I don't believe anything here needs to be modified. ************/
+//require config file
 require 'GarageaTrois-Config.php';
 
 // outputs image directly into browser, as PNG stream
