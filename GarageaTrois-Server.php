@@ -507,7 +507,7 @@ if (isset($switch) && $switch != ''){
 	if($geofence_enabled == 'true')
         {
         	if($device_latitude == '' || $device_longitude == '' || $device_latitude = '0.0' || $device_longitude = '0.0'){
-                        echo 'Geofence Enabled: GPS Empty.';
+                        echo 'Geofence Enabled: GPS Empty.' . (($geofence_return_result == 'true') ? '(' . $distance . ')' : '');
                         exit;
                 }
                 
