@@ -507,7 +507,7 @@ if (isset($switch) && $switch != ''){
 	if($geofence_enabled == 'true')
         {
         	$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
-        	if($device_latitude == '' || $device_longitude == '' || $device_latitude = '0.0' || $device_longitude = '0.0'){
+        	if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
                         echo 'Geofence Enabled: GPS Empty.' . (($geofence_return_result == 'true') ? '(' . $distance_away . ' ' . $geofence_unit_of_measurement . ')' : '');
                         exit;
                 }
