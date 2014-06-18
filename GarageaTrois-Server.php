@@ -506,12 +506,13 @@ if (isset($switch) && $switch != ''){
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
 	if($geofence_enabled == 'true')
         {
+        	$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
         	if($device_latitude == '' || $device_longitude == '' || $device_latitude = '0.0' || $device_longitude = '0.0'){
-                        echo 'Geofence Enabled: GPS Empty.' . (($geofence_return_result == 'true') ? '(' . $distance . ')' : '');
+                        echo 'Geofence Enabled: GPS Empty.' . (($geofence_return_result == 'true') ? '(' . $distance_away . ' ' . $geofence_unit_of_measurement . ')' : '');
                         exit;
                 }
                 
-		if($distance = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement) >= $geofence_maximum_allowed_distance)
+		if($distance_away >= $geofence_maximum_allowed_distance)
                 {
                         $switch = $switch . ' Denied (Geofence)';
                         $sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
@@ -523,7 +524,7 @@ if (isset($switch) && $switch != ''){
                                 die('Could not enter data: ' . mysql_error());
                         }
 
-                        echo 'Geofence Enabled: Out of bounds.' . (($geofence_return_result == 'true') ? '(' . $distance . ')' : '');
+                        echo 'Geofence Enabled: Out of bounds.' . (($geofence_return_result == 'true') ? ' (' . $distance_away . ' ' . $geofence_unit_of_measurement . ')' : '');
                         exit;
                         //this will effectively disable the button in the app. The only thing available is administration of users and devices.
                 }
