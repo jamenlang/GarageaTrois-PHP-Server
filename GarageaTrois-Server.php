@@ -589,11 +589,11 @@ else{
 	}
 	else if (array_key_exists($uid, $admin_users)){
 		$granted = 'Admin Granted';
-        	echo $SUPER_SECRET_ADMIN_RESULT;
+        	echo $SUPER_SECRET_ADMIN_RESULT . ',' . $geofence_enabled;
 	}
 	else if (array_key_exists($uid, $allowed_users)){
         	$granted = 'Granted';
-		echo $SUPER_SECRET_USER_RESULT;
+		echo $SUPER_SECRET_USER_RESULT . ',' . $geofence_enabled;
 		//
 	}
 	else{
