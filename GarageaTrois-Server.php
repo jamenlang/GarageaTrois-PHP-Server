@@ -151,8 +151,8 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 		echo 'NFC access has been disabled by an administrator.';
 	}
 }
-//######################## ADMINISTRATIVE ACTION SENT BY APP ###########################//
 
+/************ ADMINISTRATIVE ACTION SENT BY APP ************/
 
 if (isset($adminaction) && $adminaction !='')
 {
@@ -409,6 +409,8 @@ if (isset($adminaction) && $adminaction !='')
 	}
 }
 
+/************ ADMINISTRATIVE LOG REQUESTED BY APP ************/
+
 if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 {
 	if ($_POST['Admin'] == 'viewlog')
@@ -500,6 +502,8 @@ while ($row = mysql_fetch_array($result)) {
 	}
 	$devices[$row{'did'}] = $row{'did'};
 }
+
+/************ ACTION REQUESTED BY APP ************/
 
 if (isset($switch) && $switch != ''){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
