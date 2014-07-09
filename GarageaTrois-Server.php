@@ -517,6 +517,15 @@ if (isset($switch) && $switch != ''){
         {
         	$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
         	if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
+                        $switch = $switch . ' Denied (Geofence Empty)';
+                        $sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+
+                        $retval = mysql_query( $sql);
+
+                        if(! $retval )
+                        {
+                                die('Could not enter data: ' . mysql_error());
+                        }
                         echo 'Geofence Enabled: GPS Empty.';
                         exit;
                 }
