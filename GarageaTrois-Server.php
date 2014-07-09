@@ -39,7 +39,7 @@ $device_longitude = sanitize($_POST['Longitude']);
 $adminaction = sanitize($_POST['AdminAction']);
 $number = sanitize($_POST['TelNum']);
 $devicealias = sanitize($_POST['DeviceName']);
-$hasnfc = sanitize($_POST['hasNFC']);
+$hasnfc = (sanitize($_POST['hasNFC']) == true ? '1' : '0');
 $change = sanitize($_POST['Change']);
 
 $dbhandle = mysql_connect($hostname, $username, $password)
