@@ -664,6 +664,7 @@ else{
 }
 
 function mailer($subject, $message, $newuser){
+	global $admin_mobile, $admin_email, $carriers, $notification_email, $admin_send_to;
 	$from = $notification_email;
 	$headers = "From: $from\r\n" . "X-Mailer: php";
 
