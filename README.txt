@@ -39,3 +39,40 @@ The server controls the relay via parallel port (in my case)
 I managed to get everything physical up and running using http://www.faqs.org/docs/Linux-mini/IO-Port-Programming.html as a guide, thank you Tomi Engdahl!
 
 Android app controls relay by sending POST to Garageatrois-Server.php script running on the server.
+
+############# Echo Support #############
+
+To get Amazon Echo working, I used the Hue Emulator from armzilla's github projects and installed it on a raspberry pi.
+
+The steps I took are below. 
+
+I flashed the latest available version of raspbian.
+Connected to Wifi.
+Found the IP address of the WLAN interface.
+
+Installed Java8.
+
+sudo sh -c 'echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" >> /etc/apt/sources.list'
+sudo sh -c 'echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" >> /etc/apt/sources.list'
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
+sudo apt-get update
+echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+sudo apt-get install oracle-java8-installer
+sudo update-java-alternatives -s java-8-oracle
+sudo apt-get install oracle-java8-set-default
+
+Downloaded the 1.2.jar release file from https://github.com/armzilla/amazon-echo-ha-bridge/releases
+
+Ran it with the IP address of the raspberry pi.
+
+java -jar amazon-echo-bridge-0.1.2.jar --upnp.config.address=192.168.1.xxx
+
+Pointed my browser to http://myawesomedomain.net/GarageaTrois-Echo.php
+
+Configured all 3 of my switches
+
+Asked Alexa to scan for available devices.
+
+I watched the terminal window while the echo was scanning and saw that it the pi was being queried. 
+
+And viola, the switches are available for the echo to control
