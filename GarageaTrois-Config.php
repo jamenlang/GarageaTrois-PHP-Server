@@ -58,4 +58,13 @@ $carriers = array (
 	4 => 'vmobl.com',
 	//5 => 'mycarrier.com',
 );
+
+/************ Amazon Echo Support
+This is for Echo Support, currently working through http://github.com/armzilla's Hue Emulator.************/
+
+$hue_url = 'http://myawesomedomain-or-an-ip-address:8080/api/devices'; //url for the hue emulator
+$echo_name = 'Amazon Echo'; //Name for the device
+$echo_did = ''; //15 characters, maybe the serial number -or- watch the terminal window for the hue emulator and use the id that shows up during a device scan.
+$echo_uid = 'NULL'; //an unused pin or NULL
+
 ?>
