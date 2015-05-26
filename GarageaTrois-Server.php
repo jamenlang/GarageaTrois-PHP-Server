@@ -549,23 +549,23 @@ if (isset($switch) && $switch != ''){
         }
 
 	if ($switch == "Light"){
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 0 write");
+		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $light_relay write");
 		sleep(2);
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 0 write");
+		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $light_relay write");
 		echo 'Light toggled';
 	}
 
 	if ($switch == "Door"){
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 1 write");
+		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $door_relay write");
 		sleep(2);
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 1 write");
+		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $door_relay write");
 		echo 'Door toggled';
 	}
 
 	if ($switch == "Lock"){
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit 2 write");
+		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $lock_relay write");
 		sleep(2);
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit 2 write");
+		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $lock_relay write");
 		echo 'Lock toggled';
 	}
 
