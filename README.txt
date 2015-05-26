@@ -76,3 +76,5 @@ Asked Alexa to scan for available devices.
 I watched the terminal window while the echo was scanning and saw that it the pi was being queried. 
 
 And viola, the switches are available for the echo to control
+
+As far as I know, there is no way to remove switches that have been added. If you need to start over delete the .data file that is generated from running the commands above.
