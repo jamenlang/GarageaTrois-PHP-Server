@@ -1,4 +1,10 @@
 <?php
+/************ Relay Configuration 
+Set values of the relay to control per variable ************/
+$light_relay = '0';
+$door_relay = '1';
+$lock_relay = '2';
+
 /************ For MYSQL Database (Logging, User authentication and Device authentication)
 Read the README and follow instructions before proceeding ************/
 
