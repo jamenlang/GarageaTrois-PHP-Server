@@ -2,9 +2,9 @@
 /************ Relay Configuration 
 Set values of the relay to control per variable ************/
 $use_gpio = false; //set to true to use gpio on a raspberry pi
-$light_relay = '0'; //set to relay or gpio pin
-$door_relay = '1'; //set to relay or gpio pin
-$lock_relay = '2'; //set to relay or gpio pin
+$light_relay = '0'; //set to relay or BCM gpio pin
+$door_relay = '1'; //set to relay or BCM gpio pin
+$lock_relay = '2'; //set to relay or BCM gpio pin
 
 /************ For MYSQL Database (Logging, User authentication and Device authentication)
 Read the README and follow instructions before proceeding ************/
