@@ -1,7 +1,7 @@
 <?php
 /************ Relay Configuration 
 Set values of the relay to control per variable ************/
-$use_gpio = 'false'; //set to true to use gpio on a raspberry pi
+$use_gpio = false; //set to true to use gpio on a raspberry pi
 $light_relay = '0'; //set to relay or gpio pin
 $door_relay = '1'; //set to relay or gpio pin
 $lock_relay = '2'; //set to relay or gpio pin
@@ -40,8 +40,8 @@ $apk_link = 'files.myawesomedomain.net/garageatrois.apk';
 Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points. 
 If you have a use for it, by all means try it out.************/
 
-$geofence_enabled = 'true'; //set to true to enable or false to disable the geofence.
-$geofence_return_result = 'true'; //set to true for testing or to attract stalkers, set to false to disable.
+$geofence_enabled = true; //set to true to enable or false to disable the geofence.
+$geofence_return_result = true; //set to true for testing or to attract stalkers, set to false to disable.
 $garage_latitude = '32.9697'; //set to garage latitude
 $garage_longitude = '-96.80322'; //set to garage longitude
 $geofence_unit_of_measurement = 'meters'; // use meters, kilometers or miles;
@@ -72,6 +72,6 @@ This is for Echo Support, currently working through http://github.com/armzilla's
 $hue_url = 'http://myawesomedomain-or-an-ip-address:8080/api/devices'; //url for the hue emulator
 $echo_name = 'Amazon Echo'; //Name for the device
 $echo_did = ''; //15 characters, maybe the serial number -or- watch the terminal window for the hue emulator and use the id that shows up during a device scan.
-$echo_uid = 'NULL'; //an unused pin or NULL
+$echo_uid = ''; // set the UID for echo to an unused 4 digit pin
 
 ?>
