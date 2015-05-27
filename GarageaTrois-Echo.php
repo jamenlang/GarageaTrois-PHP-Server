@@ -43,7 +43,7 @@ if(isset($_GET['id']) && $_GET['id'] = 'action'){
     'DID' => urlencode($echo_did),
     'DeviceName' => urlencode($echo_name),
     'hasNFC' => urlencode('false'),
-    'Switch' => urlencode($_GET['switch'])
+    'switch' => urlencode(ucfirst($_GET['switch']))
   );
 
   //url-ify the data for the POST
