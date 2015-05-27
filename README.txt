@@ -15,7 +15,7 @@ A Parallel/Serial port controlled relay with 3-4 modules (my garage door button 
 
 - OR -
 
-A Raspberry Pi using GPIO, hell the RPi should be able to run the server stuff too... hmmm.
+A Raspberry Pi using GPIO, hell the RPi should be able to run the server stuff too... I added in a python file that accepts an argument and toggles the pin on and off, this is untested although it should work.
 
 - OR - 
 
