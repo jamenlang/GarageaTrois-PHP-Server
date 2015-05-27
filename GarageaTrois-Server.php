@@ -119,9 +119,14 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 		else if ($did_exists == '1' && $did_allowed == '1' && $nfc_allowed == '1'){
 			if ($switch == "Door"){
 				//garage openers put a short on each pair for a breif period, that's what we'll do with the relay
-				shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $door_relay write");
-				sleep(2);
-				shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $door_relay write");
+				if($use_gpio){
+					shell_exec("GarageaTrois-Python.py $door_relay");
+				}
+				else{
+					shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $door_relay write");
+					sleep(2);
+					shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $door_relay write");
+				}
 				echo 'Door toggled';
 			}
 
@@ -312,7 +317,7 @@ if (isset($adminaction) && $adminaction !='')
 
 	if (isset($did) && $did !='')
 	{
-		//we need to run a select to find out if the user id already exists.
+		//we need to run a select to find out if the device id already exists.
 		$sql = 'Select * from device where did="' . $did . '"';
 		//$reset = mysql_query("RESET QUERY CACHE");
 		$dbres = mysql_query($sql);
@@ -549,23 +554,38 @@ if (isset($switch) && $switch != ''){
         }
 
 	if ($switch == "Light"){
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $light_relay write");
-		sleep(2);
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $light_relay write");
+		if($use_gpio){
+			shell_exec("GarageaTrois-Python.py $light_relay");
+		}
+		else{
+			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $light_relay write");
+			sleep(2);
+			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $light_relay write");
+		}
 		echo 'Light toggled';
 	}
 
 	if ($switch == "Door"){
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $door_relay write");
-		sleep(2);
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $door_relay write");
+		if($use_gpio){
+			shell_exec("GarageaTrois-Python.py $door_relay");
+		}
+		else{
+			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $door_relay write");
+			sleep(2);
+			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $door_relay write");
+		}
 		echo 'Door toggled';
 	}
 
 	if ($switch == "Lock"){
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $lock_relay write");
-		sleep(2);
-		shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $lock_relay write");
+		if($use_gpio){
+			shell_exec("GarageaTrois-Python.py $lock_relay");
+		}
+		else{
+			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $lock_relay write");
+			sleep(2);
+			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $lock_relay write");
+		}
 		echo 'Lock toggled';
 	}
 
