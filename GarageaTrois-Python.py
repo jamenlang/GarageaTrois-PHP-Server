@@ -10,5 +10,7 @@ pin = sys.argv[1]
 GPIO.setup(pin, GPIO.OUT)
 
 GPIO.output(pin, 1)
-time.sleep(0.05)
+time.sleep(2)
 GPIO.output(pin, 0)
+
+GPIO.cleanup()
