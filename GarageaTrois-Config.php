@@ -45,8 +45,8 @@ $apk_link = 'files.myawesomedomain.net/garageatrois.apk';
 Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points. 
 If you have a use for it, by all means try it out.************/
 
-$geofence_enabled = true; //set to true to enable or false to disable the geofence.
-$geofence_return_result = true; //set to true for testing or to attract stalkers, set to false to disable.
+$geofence_enabled = 'true'; //set to true to enable or false to disable the geofence.
+$geofence_return_result = 'true'; //set to true for testing or to attract stalkers, set to false to disable.
 $garage_latitude = '32.9697'; //set to garage latitude
 $garage_longitude = '-96.80322'; //set to garage longitude
 $geofence_unit_of_measurement = 'meters'; // use meters, kilometers or miles;
