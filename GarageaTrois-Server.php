@@ -88,7 +88,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 		//this will also need to be logged for the administrator to allow the device.
 
 		if (($did_exists == '0' && $did_allowed == '0') || ($did_exists == '1' && $nfc_allowed != '1')){
-			$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . "NFC (" . $uid . ')","' . 'Denied' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+			$sql = 'INSERT INTO log (uid, ip, action, did, number, latitude, longitude, date) VALUES ( "' . "NFC (" . $uid . ')","' . $_SERVER['REMOTE_ADDR'] . '","' . 'Denied' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
 			$retval = mysql_query( $sql );
 			if(! $retval )
@@ -131,7 +131,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 				echo 'Door toggled';
 			}
 
-			$sql = 'INSERT INTO log (uid, action, did, number, latitude, longitude, date) VALUES ( "' . $uid . '","' . 'Granted' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+			$sql = 'INSERT INTO log (uid, ip, action, did, number, latitude, longitude, date) VALUES ( "' . $uid . '","' . $_SERVER['REMOTE_ADDR'] . '","' . 'Granted' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
 			$retval = mysql_query( $sql );
 			if(! $retval )
@@ -526,7 +526,7 @@ if (isset($switch) && $switch != ''){
         	$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
         	if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
                         $switch = $switch . ' Denied (Geofence Empty)';
-                        $sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+                        $sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
                         $retval = mysql_query( $sql);
 
@@ -541,7 +541,7 @@ if (isset($switch) && $switch != ''){
 		if($distance_away >= $geofence_maximum_allowed_distance)
                 {
                         $switch = $switch . ' Denied (Geofence ' . $distance_away . ' ' . $geofence_unit_of_measurement . ')';
-                        $sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+                        $sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
                         $retval = mysql_query( $sql);
 
@@ -592,7 +592,7 @@ if (isset($switch) && $switch != ''){
 		echo 'Lock toggled';
 	}
 
-	$sql = 'INSERT INTO log (name, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","'. date('Y-m-d H:i:s') . '" )';
+	$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","'. date('Y-m-d H:i:s') . '" )';
 
 	$retval = mysql_query( $sql);
 
@@ -621,6 +621,33 @@ else{
                 $attempts = mysql_result($result, 0);
                 if($attempts >= $max_attempts){
                         echo 'Maximum login attempts reached';
+                        if($block_after_max_attempts == 'true')
+                        {
+                        	if (array_key_exists($did, $devices))
+				{
+					//maybe update device here.
+					$sql = 'update device set allowed="0", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+
+					$retval = mysql_query( $sql );
+
+					if(! $retval )
+					{
+						die('Could not enter data: ' . mysql_error());
+					}
+				}
+				else {
+					//insert some helpful stuff about the device here.
+					$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . $did . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
+
+					$retval = mysql_query( $sql );
+
+					if(! $retval )
+					{
+						die('Could not enter data: ' . mysql_error());
+					}
+				}
+			mailer("Blocked Device " . $devicealias . '(' . $did . ')', 'Maximum login attempts (' . $max_attempts . ') has been reached by ' . $devicealias . '(' . $did . ')');
+                        }
                         exit;
                 }
         }
@@ -654,7 +681,7 @@ else{
 	//$fh = fopen($myFile, 'a');
 	//$stringData = date("Y-m-d H:i:s") . " ";
 	//fwrite($fh, $stringData);
-	$sql = 'INSERT INTO log (name, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' .  $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+	$sql = 'INSERT INTO log (name, ip, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' .  $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
 	$retval = mysql_query( $sql );
 
@@ -665,7 +692,7 @@ else{
 
 	if (array_key_exists($did, $devices))
 	{
-		//maybe update device shit here.
+		//maybe update device here.
 		$sql = 'update device set allowed="1", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
 
 		$retval = mysql_query( $sql );
@@ -676,7 +703,7 @@ else{
 		}
 	}
 	else {
-		//insert some helpful shit about the device here.
+		//insert some helpful stuff about the device here.
 		$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '1' . '", "' . $hasnfc . '", "' . $did . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 
 		$retval = mysql_query( $sql );
