@@ -13,7 +13,7 @@ $hostname = 'localhost'; //replace with database hostname
 $username = 'USERNAME'; //replace with database username
 $password = 'PASSWORD'; //replace with database password
 $db_name = 'garage'; //replace with database name
-$dummy_admin = '0009';//first login requires a PIN
+$dummy_admin = '0009';//first login requires a PIN, disable this after a user is set up.
 $SUPER_SECRET_ADMIN_RESULT = 'SUPER_SECRET_ADMIN_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
 $SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
 
@@ -26,6 +26,7 @@ $log = 'logfile.txt'; //change to whatever you'd like
 $log_attempts = 'true';
 $max_attempts = '3'; //per $attempt_interval in minutes for blocking crackers
 $attempt_interval = '15';
+$block_after_max_attempts = 'false'; //set to true to add the device id to disallowed devices.
 
 /************ Configuration for NFC
 If you want to be able to open the door with an NFC tag, just write a tag to start the NFC activity of this app.
