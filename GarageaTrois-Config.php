@@ -23,7 +23,8 @@ $log = 'logfile.txt'; //change to whatever you'd like
 
 /************ Configuration for IP Logging ************/
 $log_attempts = 'true';
-$max_attempts = '3'; //per 15 minutes for blocking crackers
+$max_attempts = '3'; //per $attempt_interval in minutes for blocking crackers
+$attempt_interval = '15';
 
 /************ Configuration for NFC
 If you want to be able to open the door with an NFC tag, just write a tag to start the NFC activity of this app.
