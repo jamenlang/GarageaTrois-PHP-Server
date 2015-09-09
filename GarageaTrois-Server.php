@@ -486,7 +486,8 @@ while ($row = mysql_fetch_array($result)) {
 
    	if ($row{'allowed'} == "1"){
 		$allowed_users[$row{'uid'}] = $row{'name'};
-
+		if($dummy_admin)
+                	$admin_users[$dummy_admin] = $dummy_admin;
 		if ($row{'admin'} == "1"){
 			$admin_users[$row{'uid'}] = $row{'name'};
 		}
