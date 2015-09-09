@@ -2,7 +2,7 @@
 /************ I don't believe anything here needs to be modified. ************/
 //require config file
 require 'GarageaTrois-Config.php';
-
+include 'GarageaTrois-Functions.php';
 // outputs image directly into browser, as PNG stream
 // the code can be downloaded or this can be disabled, you can also use the google API line below.
 // I cannot get QR to launch an intent, I would like to get this working so a QR code can be scanned and give the app the server information to be stored locally on the device and get rid of hardcoded server strings altogether.
@@ -120,7 +120,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 			if ($switch == "Door"){
 				//garage openers put a short on each pair for a breif period, that's what we'll do with the relay
 				if($use_gpio){
-					shell_exec("GarageaTrois-Python.py $door_relay");
+					toggle_relay($door_relay);
 				}
 				else{
 					shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $door_relay write");
@@ -557,7 +557,7 @@ if (isset($switch) && $switch != ''){
 
 	if ($switch == "Light"){
 		if($use_gpio){
-			shell_exec("GarageaTrois-Python.py $light_relay");
+			toggle_relay($light_relay);
 		}
 		else{
 			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $light_relay write");
@@ -569,7 +569,7 @@ if (isset($switch) && $switch != ''){
 
 	if ($switch == "Door"){
 		if($use_gpio){
-			shell_exec("GarageaTrois-Python.py $door_relay");
+			toggle_relay($door_relay);
 		}
 		else{
 			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $door_relay write");
@@ -581,7 +581,7 @@ if (isset($switch) && $switch != ''){
 
 	if ($switch == "Lock"){
 		if($use_gpio){
-			shell_exec("GarageaTrois-Python.py $lock_relay");
+			toggle_relay($lock_relay);
 		}
 		else{
 			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $lock_relay write");
