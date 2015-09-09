@@ -1,8 +1,9 @@
 <?php
 /************ I don't believe anything here needs to be modified. ************/
-//require config file
+//require config and function files
 require 'GarageaTrois-Config.php';
-include 'GarageaTrois-Functions.php';
+require 'GarageaTrois-Functions.php';
+
 // outputs image directly into browser, as PNG stream
 // the code can be downloaded or this can be disabled, you can also use the google API line below.
 // I cannot get QR to launch an intent, I would like to get this working so a QR code can be scanned and give the app the server information to be stored locally on the device and get rid of hardcoded server strings altogether.
