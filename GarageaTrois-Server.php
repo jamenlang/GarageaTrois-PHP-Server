@@ -612,7 +612,15 @@ if (isset($switch) && $switch != ''){
 	exit;
 }
 else{
-
+	if($log_attempts == 'true' && $max_attempts > 0){
+		$sql = "SELECT COUNT(*) AS `attempts` FROM `log` WHERE `ip` = '{$_SERVER[REMOTE_ADDR]}' AND `action` = 'Denied' AND `date` > DATE_SUB(NOW(),INTERVAL '{$attempt_interval}' MINUTE)";
+                $result = mysql_query($sql);
+                $attempts = mysql_result($result, 0);
+                if($attempts >= $max_attempts){
+                        echo 'Maximum login attempts reached';
+                        exit;
+                }
+        }
 	if (!isset($uid))
 	{
 	       	echo 'Log in';
