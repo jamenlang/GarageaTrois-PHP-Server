@@ -486,8 +486,7 @@ while ($row = mysql_fetch_array($result)) {
 
    	if ($row{'allowed'} == "1"){
 		$allowed_users[$row{'uid'}] = $row{'name'};
-		if($dummy_admin)
-                	$admin_users[$dummy_admin] = $dummy_admin;
+		
 		if ($row{'admin'} == "1"){
 			$admin_users[$row{'uid'}] = $row{'name'};
 		}
@@ -497,6 +496,8 @@ while ($row = mysql_fetch_array($result)) {
 	}
 	$users[$row{'uid'}] = $row{'name'};
 }
+if($dummy_admin)
+        $admin_users[$dummy_admin] = 'dummy admin';
 $result = mysql_query("SELECT * FROM device");
 //fetch tha data from the database
 while ($row = mysql_fetch_array($result)) {
