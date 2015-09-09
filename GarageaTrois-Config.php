@@ -21,6 +21,10 @@ $SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; //replace with whatever 
 $log_to_file = '1'; //after everything is installed and working you'll want to disable logging.
 $log = 'logfile.txt'; //change to whatever you'd like
 
+/************ Configuration for IP Logging ************/
+$log_attempts = 'true';
+$max_attempts = '3'; //per 15 minutes for blocking crackers
+
 /************ Configuration for NFC
 If you want to be able to open the door with an NFC tag, just write a tag to start the NFC activity of this app.
 If you don't want to allow NFC or don't have a use for it, you can disable it here.************/
