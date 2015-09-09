@@ -10,11 +10,15 @@
 <?php 
 $test = '0';
 if(!_isCurl()){
-	echo '<li>Curl needs to be enabled for some functionality, mostly for echo support and index.php</li>';
+	echo '<li>Curl needs to be enabled for some functionality, mostly for echo support and index.php.</li>';
+	$test++;
+}
+if(!exec(gpio -v){
+	echo '<li>WiringPI needs to be installed for raspberry pi relay control.</li>';
 	$test++;
 }
 if(!$dbhandle = mysql_connect($hostname, $username, $password)){
-	echo '<li>MYSQL database needs to be configured for users/devices/nfc/logging</li>';
+	echo '<li>MYSQL database needs to be configured for users/devices/nfc/logging.</li>';
 	$test++;
 }
 if(!$selected = mysql_select_db($db_name,$dbhandle)){
