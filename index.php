@@ -13,7 +13,7 @@ if(!_isCurl()){
 	echo '<li>Curl needs to be enabled for some functionality, mostly for echo support and index.php.</li>';
 	$test++;
 }
-if(!exec(gpio -v){
+if(!exec('gpio -v')){
 	echo '<li>WiringPI needs to be installed for raspberry pi relay control.</li>';
 	$test++;
 }
