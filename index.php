@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<?php require('GarageaTrois-Config.php');?>
+<?php 
+
+require('GarageaTrois-Config.php');
+
+?>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -7,24 +11,30 @@
 </head>
 <body>
 <h2>Configuration Checklist</h2>
-<?php 
+<?php
+
 $test = '0';
+
 if(!_isCurl()){
-	echo '<li>Curl needs to be enabled for some functionality, mostly for echo support and index.php.</li>';
+	echo '<li>Curl needs to be enabled for some functionality, mostly for echo support and index.php. Run \'sudo apt-get install php5-curl\' to fix this message.</li>';
 	$test++;
 }
+
 if(!exec('gpio -v')){
 	echo '<li>WiringPI needs to be installed for raspberry pi relay control.</li>';
 	$test++;
 }
+
 if(!$dbhandle = mysql_connect($hostname, $username, $password)){
 	echo '<li>MYSQL database needs to be configured for users/devices/nfc/logging.</li>';
 	$test++;
 }
+
 if(!$selected = mysql_select_db($db_name,$dbhandle)){
 	echo '<li>MYSQL database `' . $db_name . '` is not accessible.</li>';
 	$test++;
 }
+
 if(sha1_file('GarageaTrois-Config.php') == getSslPage('https://raw.githubusercontent.com/jamenlang/GarageaTrois-PHP-Server/master/GarageaTrois-Config.php')){
 	echo '<li>Configuration options need to be set in GarageaTrois-Config.php</li>';
 	$test++;
@@ -37,7 +47,7 @@ if($qr_enabled == '1' && file_exists('phpqrcode/qrlib.php')){
 	QRcode::png($apk_link);
 }
 else
-	echo '<li>QR Code is disabled or qrlib is not installed.</li>';
+	echo '<li>QR Code is disabled or qrlib is not installed. A link to the APK file could not be generated. Download phpqrcode from \'http://sourceforge.net/p/phpqrcode/git/ci/863ffffac4c9d22e522464e325cbcbadfbb26470/tree/lib/full/\' or visit ' . $apk_link . ' on your android device.</li>';
 
 echo (($test != 0) ? $test . ' items need your attention.<br /><br />' : 'Nothing else to do here, index.php needs to be removed or renamed.');
 
@@ -46,10 +56,11 @@ echo (($test != 0) ? $test . ' items need your attention.<br /><br />' : 'Nothin
 
 </html>
 <?php
+
 function _isCurl(){
 	return function_exists('curl_version');
 }
-	
+
 function getSslPage($url) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
