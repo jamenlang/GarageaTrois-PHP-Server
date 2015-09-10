@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<?php 
-
-require('GarageaTrois-Config.php');
-
-?>
+<?php require('GarageaTrois-Config.php');?>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -19,6 +15,14 @@ if(!_isCurl()){
 	echo '<li>Curl needs to be enabled for some functionality, mostly for echo support and index.php. Run \'sudo apt-get install php5-curl\' to fix this message.</li>';
 	$test++;
 }
+if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
+	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/jamenlang/GarageaTrois/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
+	foreach ($output as $line){
+		preg_match('/\bhttp.*apk\b/',$line, $matches);
+		$apk_link = $matches[0];
+	}
+}
+
 
 if(!exec('gpio -v')){
 	echo '<li>WiringPI needs to be installed for raspberry pi relay control.</li>';
@@ -56,7 +60,6 @@ echo (($test != 0) ? $test . ' items need your attention.<br /><br />' : 'Nothin
 
 </html>
 <?php
-
 function _isCurl(){
 	return function_exists('curl_version');
 }
