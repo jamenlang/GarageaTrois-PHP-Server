@@ -18,8 +18,11 @@ if(!_isCurl()){
 if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
 	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/jamenlang/GarageaTrois/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 	foreach ($output as $line){
+		if($apk_link != 'http://files.myawesomedomain.net/garageatrois.apk')
+			continue;
 		preg_match('/\bhttp.*apk\b/',$line, $matches);
-		$apk_link = $matches[0];
+		if($matches[0])
+			$apk_link = $matches[0];
 	}
 }
 
