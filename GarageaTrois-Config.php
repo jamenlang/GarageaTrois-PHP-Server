@@ -42,7 +42,7 @@ this requires qrlib.php which can be downloaded from http://sourceforge.net/proj
 
 $qr_enabled = '1'; // set to 1 to enable or 0 to disable.
 $qr_size = '250'; // default is 250 pixels
-$apk_link = 'files.myawesomedomain.net/garageatrois.apk';
+$apk_link = 'http://files.myawesomedomain.net/garageatrois.apk';
 
 /************ Configuration for geofence
 Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points. 
