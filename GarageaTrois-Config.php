@@ -2,9 +2,10 @@
 /************ Relay Configuration 
 Set values of the relay to control per variable ************/
 $use_gpio = false; //set to true to use gpio on a raspberry pi
-$light_relay = '0'; //set to relay or BCM gpio pin
-$door_relay = '1'; //set to relay or BCM gpio pin
-$lock_relay = '2'; //set to relay or BCM gpio pin
+$other_relay = '0'; //set to relay or WiringPI gpio pin
+$door_relay = '7'; //set to relay or WiringPI gpio pin
+$lock_relay = '8'; //set to relay or WiringPI gpio pin
+$lock_relay = '9'; //set to relay or WiringPI gpio pin
 
 /************ For MYSQL Database (Logging, User authentication and Device authentication)
 Read the README and follow instructions before proceeding ************/
@@ -79,6 +80,6 @@ This is for Echo Support, currently working through http://github.com/armzilla's
 $hue_url = 'http://myawesomedomain-or-an-ip-address:8080/api/devices'; //url for the hue emulator
 $echo_name = 'Amazon Echo'; //Name for the device
 $echo_did = ''; //15 characters, maybe the serial number -or- watch the terminal window for the hue emulator and use the id that shows up during a device scan.
-$echo_uid = ''; // set the UID for echo to an unused 4 digit pin
+$echo_uid = 'echo'; // set the UID for echo to an unused 4 digit pin, or leave it default
 
 ?>
