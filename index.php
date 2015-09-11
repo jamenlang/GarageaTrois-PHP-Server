@@ -47,6 +47,21 @@ if(sha1_file('GarageaTrois-Config.php') == getSslPage('https://raw.githubusercon
 	$test++;
 }
 
+if($dummy_admin == '0009'){
+        echo '<li>Dummy administrator needs to be updated or removed in GarageaTrois-Config.php</li>';
+        $test++;
+}
+
+if($SUPER_SECRET_ADMIN_RESULT == 'SUPER_SECRET_ADMIN_RESULT'){
+        echo '<li>Super Secret Admin Result needs to be set to a secure string.</li>';
+        $test++;
+}
+
+if($SUPER_SECRET_ADMIN_RESULT == 'SUPER_SECRET_USER_RESULT'){
+        echo '<li>Super Secret User Result needs to be set to a secure string.</li>';
+        $test++;
+}
+
 if($qr_enabled == '1' && file_exists('phpqrcode/qrlib.php')){
 	include('phpqrcode/qrlib.php');
 	define('IMAGE_WIDTH',$qr_size);
