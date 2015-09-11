@@ -1,5 +1,34 @@
+<?php
+require('GarageaTrois-Config.php');
+
+if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
+	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/jamenlang/GarageaTrois/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
+	foreach ($output as $line){
+		if($apk_link != 'http://files.myawesomedomain.net/garageatrois.apk')
+			continue;
+		preg_match('/\bhttp.*apk\b/',$line, $matches);
+		if($matches[0])
+			$apk_link = $matches[0];
+	}
+}
+
+if($qr_enabled == '1' && file_exists('../phpqrcode-git/lib/full/qrlib.php')){
+	if(isset($_GET['showlink'])){
+		include('../phpqrcode-git/lib/full/qrlib.php');
+		define('IMAGE_WIDTH',$qr_size);
+		define('IMAGE_HEIGHT',$qr_size);
+		QRcode::png($apk_link);
+		exit;
+	}
+	else{
+		$link_result = '<li><a href="?showlink=1">Show QR Code</a></li>';
+	}
+}
+else
+	$link_result = '<li>QR Code is disabled or qrlib is not installed. A link to the APK file could not be generated. Download phpqrcode from \'http://sourceforge.net/p/phpqrcode/git/ci/863ffffac4c9d22e522464e325cbcbadfbb26470/tree/lib/full/\' or visit ' . $apk_link . ' on your android device.</li>';
+?>
+
 <!DOCTYPE html>
-<?php require('GarageaTrois-Config.php');?>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -15,17 +44,6 @@ if(!_isCurl()){
 	echo '<li>Curl needs to be enabled for some functionality, mostly for echo support and index.php. Run \'sudo apt-get install php5-curl\' to fix this message.</li>';
 	$test++;
 }
-if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
-	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/jamenlang/GarageaTrois/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
-	foreach ($output as $line){
-		if($apk_link != 'http://files.myawesomedomain.net/garageatrois.apk')
-			continue;
-		preg_match('/\bhttp.*apk\b/',$line, $matches);
-		if($matches[0])
-			$apk_link = $matches[0];
-	}
-}
-
 
 if(!exec('gpio -v')){
 	echo '<li>WiringPI needs to be installed for raspberry pi relay control.</li>';
@@ -62,14 +80,7 @@ if($SUPER_SECRET_USER_RESULT == 'SUPER_SECRET_USER_RESULT'){
         $test++;
 }
 
-if($qr_enabled == '1' && file_exists('phpqrcode/qrlib.php')){
-	include('phpqrcode/qrlib.php');
-	define('IMAGE_WIDTH',$qr_size);
-	define('IMAGE_HEIGHT',$qr_size);
-	QRcode::png($apk_link);
-}
-else
-	echo '<li>QR Code is disabled or qrlib is not installed. A link to the APK file could not be generated. Download phpqrcode from \'http://sourceforge.net/p/phpqrcode/git/ci/863ffffac4c9d22e522464e325cbcbadfbb26470/tree/lib/full/\' or visit ' . $apk_link . ' on your android device.</li>';
+echo $link_result;
 
 echo (($test != 0) ? $test . ' items need your attention.<br /><br />' : 'Nothing else to do here, index.php needs to be removed or renamed.');
 
