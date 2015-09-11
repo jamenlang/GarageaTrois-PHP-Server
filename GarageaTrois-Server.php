@@ -11,7 +11,7 @@ require 'GarageaTrois-Functions.php';
 if (!isset($_POST) || empty($_POST)){
 
         if($qr_enabled == '1'){
-                include('phpqrcode/qrlib.php');
+                include('../phpqrcode-git/lib/full/qrlib.php');
 
                 //might as well generate a qr code for the server address since no post data was received
                 //$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
