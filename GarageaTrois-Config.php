@@ -5,7 +5,7 @@ $use_gpio = false; //set to true to use gpio on a raspberry pi
 $other_relay = '0'; //set to relay or WiringPI gpio pin
 $door_relay = '7'; //set to relay or WiringPI gpio pin
 $lock_relay = '8'; //set to relay or WiringPI gpio pin
-$lock_relay = '9'; //set to relay or WiringPI gpio pin
+$light_relay = '9'; //set to relay or WiringPI gpio pin
 
 /************ For MYSQL Database (Logging, User authentication and Device authentication)
 Read the README and follow instructions before proceeding ************/
