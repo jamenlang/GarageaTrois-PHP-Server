@@ -9,21 +9,8 @@ require 'GarageaTrois-Functions.php';
 // I cannot get QR to launch an intent, I would like to get this working so a QR code can be scanned and give the app the server information to be stored locally on the device and get rid of hardcoded server strings altogether.
 
 if (!isset($_POST) || empty($_POST)){
-
-        if($qr_enabled == '1'){
-                include('../phpqrcode-git/lib/full/qrlib.php');
-
-                //might as well generate a qr code for the server address since no post data was received
-                //$link = "my.special.scheme://server=".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-                //OR echo "http://chart.apis.google.com/chart?chf=a,s,000000&chs=200x200&chld=%7C2&cht=qr&chl=" . $link;
-                define('IMAGE_WIDTH',$qr_size);
-                define('IMAGE_HEIGHT',$qr_size);
-                QRcode::png($apk_link);
-                exit;
-        }
-	else{
-		exit;
-	}
+	header('Location: index.php?showlink=1');
+	exit;
 }
 
 if($log_to_file == '1')
