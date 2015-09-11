@@ -57,7 +57,7 @@ if($SUPER_SECRET_ADMIN_RESULT == 'SUPER_SECRET_ADMIN_RESULT'){
         $test++;
 }
 
-if($SUPER_SECRET_ADMIN_RESULT == 'SUPER_SECRET_USER_RESULT'){
+if($SUPER_SECRET_USER_RESULT == 'SUPER_SECRET_USER_RESULT'){
         echo '<li>Super Secret User Result needs to be set to a secure string.</li>';
         $test++;
 }
