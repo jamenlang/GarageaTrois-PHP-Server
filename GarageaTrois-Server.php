@@ -96,7 +96,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 				die('Could not enter data: ' . mysql_error());
 			}
 
-			//insert some helpful shit about the device here.
+			//insert some helpful stuff about the device here.
 			if ($did_exists == '0'){
 				$sql = 'INSERT INTO device (alias, nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . '0' . '", "' . $did . '", "' . '1' . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 			}
@@ -138,7 +138,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
-			//maybe update the device shit too.
+			//maybe update the device too.
 
 			$sql = 'update device set alias="' . $devicealias . '", nfc="' . $nfc_allowed . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
 
