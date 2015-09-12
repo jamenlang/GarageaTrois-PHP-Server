@@ -69,7 +69,12 @@ if(isset($_GET['id']) && $_GET['id'] = 'action'){
 	echo $result;
 }
 
+if($hue_url == 'myawesomedomain-or-an-ip-address'){
+	echo 'warning: $hue_url needs to be configured in GarageaTrois-Config.php';
+}
+
 ?>
+
 <a href="<?php echo $_SERVER['PHP_SELF']; ?>:8080/configurator.html">link to hue emulator url</a>
 <table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
