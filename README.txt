@@ -61,11 +61,11 @@ sudo apt-get install oracle-java8-installer
 sudo update-java-alternatives -s java-8-oracle
 sudo apt-get install oracle-java8-set-default
 
-Downloaded the 1.2.jar release file from https://github.com/armzilla/amazon-echo-ha-bridge/releases
+Downloaded the 2.1.jar release file from https://github.com/armzilla/amazon-echo-ha-bridge/releases
 
 Ran it with the IP address of the raspberry pi.
 
-java -jar amazon-echo-bridge-0.1.2.jar --upnp.config.address=192.168.1.xxx
+java -jar amazon-echo-bridge-0.2.1.jar --upnp.config.address=192.168.1.xxx
 
 Pointed my browser to http://myawesomedomain.net/GarageaTrois-Echo.php
 
