@@ -73,8 +73,10 @@ if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/config
 	echo 'warning: $hue_configurator_url needs to be configured in GarageaTrois-Config.php';
 }
 else{
-	if($hue_configurator_url == 'localhost'){
-		$hue_configurator_url = $_SERVER[HTTP_HOST];
+	if($hue_emulator_ip == 'localhost'){
+		$hue_emulator_ip = $_SERVER[HTTP_HOST];
+		$hue_configurator_url = "http://$hue_emulator_ip:8080/configurator.html";
+		$hue_devices_url = "http://$hue_emulator_ip:8080/api/devices";
 	}
 	echo '<a href="' . $hue_configurator_url . '">link to hue emulator configurator url</a>';
 }
