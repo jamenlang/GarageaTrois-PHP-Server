@@ -69,7 +69,7 @@ if(isset($_GET['id']) && $_GET['id'] = 'action'){
 	echo $result;
 }
 
-if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/api/devices'){
+if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/configurator.html'){
 	echo 'warning: $hue_configurator_url needs to be configured in GarageaTrois-Config.php';
 }
 else{
