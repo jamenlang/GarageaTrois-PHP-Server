@@ -80,7 +80,7 @@ if($SUPER_SECRET_USER_RESULT == 'SUPER_SECRET_USER_RESULT'){
 	$test++;
 }
 
-if($gpio == 'false'){
+if($use_gpio == false){
 	echo '<li>GPIO is disabled in the config file, an alternative method of control will be required.</li>';
 	$test++;
 }
