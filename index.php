@@ -14,7 +14,6 @@ if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
 $output = '';
 exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 foreach ($output as $line){
-	echo $line;
         if($hue_emulator_link != '')
                 continue;
         preg_match('/\bhttp.*jar\b/',$line, $matches);
@@ -77,7 +76,7 @@ if(sha1_file('GarageaTrois-Config.php') == getSslPage('https://raw.githubusercon
 }
 
 if($dummy_admin == '0009'){
-	echo '<li>Dummy administrator needs to be updated or removed in GarageaTrois-Config.php</li>';
+	echo '<li>$dummy_admin needs to be updated or removed in GarageaTrois-Config.php</li>';
 	$test++;
 }
 
@@ -104,7 +103,8 @@ if($hue_url == 'http://myawesomedomain-or-an-ip-address:8080/api/devices'){
 echo $link_result;
 
 echo $hue_emulator_result;
-
+echo '<br />';
+echo '<br />';
 echo (($test != 0) ? $test . ' items need your attention.<br /><br />' : 'Nothing else to do here, index.php needs to be removed or renamed.');
 
 ?>
