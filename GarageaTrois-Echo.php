@@ -12,7 +12,7 @@ $dir = dirname($_SERVER['PHP_SELF']);
 if($_POST){
 	$content = json_encode($_POST);
 
-	$curl = curl_init($hue_url);
+	$curl = curl_init($hue_devices_url);
 	curl_setopt($curl, CURLOPT_HEADER, false);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($curl, CURLOPT_HTTPHEADER,
@@ -69,15 +69,14 @@ if(isset($_GET['id']) && $_GET['id'] = 'action'){
 	echo $result;
 }
 
-if($hue_url == 'http://myawesomedomain-or-an-ip-address:8080/api/devices'){
-	echo 'warning: $hue_url needs to be configured in GarageaTrois-Config.php';
+if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/api/devices'){
+	echo 'warning: $hue_configurator_url needs to be configured in GarageaTrois-Config.php';
 }
 else{
-	echo '<a href="' . $hue_url . '">link to hue emulator url</a>';
+	echo '<a href="' . $hue_configurator_url . '">link to hue emulator configurator url</a>';
 }
 ?>
-
-<a href="<?php echo $_SERVER['PHP_SELF']; ?>:8080/configurator.html">link to hue emulator url</a>
+- or add here -
 <table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 <tr><td><label>Name</label></td><td><input placeholder="garage light" type="text" id="name" name="name"/></tr>
