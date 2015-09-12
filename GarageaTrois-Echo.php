@@ -70,6 +70,7 @@ if(isset($_GET['id']) && $_GET['id'] = 'action'){
 }
 
 ?>
+<a href="<?php echo $_SERVER['PHP_SELF']; ?>:8080/configurator.html">link to hue emulator url</a>
 <table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 <tr><td><label>Name</label></td><td><input placeholder="garage light" type="text" id="name" name="name"/></tr>
