@@ -77,7 +77,7 @@ $carriers = array (
 /************ Amazon Echo Support
 This is for Echo Support, currently working through http://github.com/armzilla's Hue Emulator.************/
 
-$hue_emulator_ip = '10.10.10.123';
+$hue_emulator_ip = 'myawesomedomain-or-an-ip-address';
 $hue_configurator_url = "http://$hue_emulator_ip:8080/configurator.html"; //url for the hue emulator device manager
 $hue_devices_url = "http://$hue_emulator_ip:8080/api/devices";
 $echo_name = 'Amazon Echo'; //Name for the device
