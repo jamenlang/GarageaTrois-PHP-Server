@@ -24,7 +24,7 @@ $hue_emulator_result = '<li><a href="' . $hue_emulator_link . '">Link to Armzill
 
 if($qr_enabled == '1' && file_exists('../phpqrcode/lib/full/qrlib.php')){
 	if(isset($_GET['showlink'])){
-		include('../phpqrcode-git/lib/full/qrlib.php');
+		include('../phpqrcode/lib/full/qrlib.php');
 		define('IMAGE_WIDTH',$qr_size);
 		define('IMAGE_HEIGHT',$qr_size);
 		QRcode::png($apk_link);
