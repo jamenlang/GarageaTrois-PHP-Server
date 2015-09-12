@@ -66,18 +66,18 @@ if(sha1_file('GarageaTrois-Config.php') == getSslPage('https://raw.githubusercon
 }
 
 if($dummy_admin == '0009'){
-        echo '<li>Dummy administrator needs to be updated or removed in GarageaTrois-Config.php</li>';
-        $test++;
+	echo '<li>Dummy administrator needs to be updated or removed in GarageaTrois-Config.php</li>';
+	$test++;
 }
 
 if($SUPER_SECRET_ADMIN_RESULT == 'SUPER_SECRET_ADMIN_RESULT'){
-        echo '<li>Super Secret Admin Result needs to be set to a secure string.</li>';
-        $test++;
+	echo '<li>Super Secret Admin Result needs to be set to a secure string.</li>';
+	$test++;
 }
 
 if($SUPER_SECRET_USER_RESULT == 'SUPER_SECRET_USER_RESULT'){
-        echo '<li>Super Secret User Result needs to be set to a secure string.</li>';
-        $test++;
+	echo '<li>Super Secret User Result needs to be set to a secure string.</li>';
+	$test++;
 }
 
 if($gpio == 'false'){
@@ -104,14 +104,14 @@ function _isCurl(){
 }
 
 function getSslPage($url) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_REFERER, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return sha1($result);
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+	curl_setopt($ch, CURLOPT_HEADER, false);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_REFERER, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	$result = curl_exec($ch);
+	curl_close($ch);
+	return sha1($result);
 }
