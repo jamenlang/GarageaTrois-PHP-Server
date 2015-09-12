@@ -77,8 +77,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 		if (($did_exists == '0' && $did_allowed == '0') || ($did_exists == '1' && $nfc_allowed != '1')){
 			$sql = 'INSERT INTO log (uid, ip, action, did, number, latitude, longitude, date) VALUES ( "' . "NFC (" . $uid . ')","' . $_SERVER['REMOTE_ADDR'] . '","' . 'Denied' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
-			$retval = mysql_query( $sql );
-			if(! $retval )
+			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
@@ -88,10 +87,10 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 				$sql = 'INSERT INTO device (alias, nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . '0' . '", "' . $did . '", "' . '1' . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 			}
 			else{
-				$sql = 'update device set alias = "' . $devicealias . '", has_nfc = "' . $hasnfc . '", force_nfc = "' . $forcenfc . '",  number = "' . $number . '", date = "' . date('Y-m-d H:i:s') . '" where did = "' . $did . '";';
+				$sql = 'update device set alias = "' . $devicealias . '", has_nfc = "' . $hasnfc . '", force_nfc = "' . $forcenfc . '", number = "' . $number . '", date = "' . date('Y-m-d H:i:s') . '" where did = "' . $did . '";';
 			}
-			$retval = mysql_query( $sql );
-			if(! $retval )
+			
+			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
@@ -120,8 +119,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 
 			$sql = 'INSERT INTO log (uid, ip, action, did, number, latitude, longitude, date) VALUES ( "' . $uid . '","' . $_SERVER['REMOTE_ADDR'] . '","' . 'Granted' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
-			$retval = mysql_query( $sql );
-			if(! $retval )
+			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
@@ -129,8 +127,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 
 			$sql = 'update device set alias="' . $devicealias . '", nfc="' . $nfc_allowed . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
 
-			$retval = mysql_query( $sql );
-			if(! $retval )
+			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
@@ -179,7 +176,6 @@ if (isset($adminaction) && $adminaction !='')
 					$uid_exists = '1';
 					//echo 'uid exists';
 					//the did already exists; so we need to fail because duh.
-					//exit;
 				}
 			}
 			if($log_to_file == '1')
@@ -193,8 +189,7 @@ if (isset($adminaction) && $adminaction !='')
 				if($log_to_file == '1')
 					file_put_contents($log, $sql);
 
-				$retval = mysql_query( $sql);
-				if(! $retval )
+				if(! $retval = mysql_query($sql))
 				{
 					die('Could not enter data: ' . mysql_error());
 				}
@@ -211,15 +206,13 @@ if (isset($adminaction) && $adminaction !='')
 				if($log_to_file == '1')
 					file_put_contents($log, $sql);
 
-				$retval = mysql_query( $sql);
-                                if(! $retval )
-                                {
-                                       die('Could not enter data: ' . mysql_error());
-                                }
+				if(! $retval = mysql_query($sql))
+				{
+					die('Could not enter data: ' . mysql_error());
+				}
 
 				//echo 'User: ' . $name . ' UID: ' . $uid . ' ' . $allowed;
 				echo 'New User: ' . $name . ' UID: ' . $uid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
-
 				exit;
 			}
 		}
@@ -240,9 +233,8 @@ if (isset($adminaction) && $adminaction !='')
 					$name_exists = '1';
 					//echo 'uid exists';
 					//the uid already exists; so we need to run an update query instead of insert.
-					//exit;
-				}
 
+				}
 			}
 			if($log_to_file == '1')
 				file_put_contents($log, $old_name);
@@ -252,8 +244,8 @@ if (isset($adminaction) && $adminaction !='')
 					file_put_contents($log, 'name ' . $name_exists);
 
 				$sql = 'Update auth set name="' . $name . '", allowed="' . $allowed . '" where uid="' . $uid . '"';
-				$retval = mysql_query( $sql);
-				if(! $retval )
+				
+				if(! $retval = mysql_query($sql))
 				{
 					die('Could not enter data: ' . mysql_error());
 				}
@@ -269,14 +261,12 @@ if (isset($adminaction) && $adminaction !='')
 				if($log_to_file == '1')
 					file_put_contents($log, $sql);
 
-				$retval = mysql_query( $sql);
-                                if(! $retval )
-                                {
-                                        die('Could not enter data: ' . mysql_error());
-                                }
+				if(! $retval = mysql_query($sql))
+				{
+					die('Could not enter data: ' . mysql_error());
+				}
 
 				echo 'New User: ' . $name . ' UID: ' . $uid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
-
 				exit;
 			}
 		}
@@ -286,19 +276,15 @@ if (isset($adminaction) && $adminaction !='')
 	{
 		//we need to run a select to find out if the user id already exists.
 		$sql = 'Select * from auth where uid="' . $uid . '"';
-		//$reset = mysql_query("RESET QUERY CACHE");
 		$dbres = mysql_query($sql);
-		//$rows = mysql_fetch_row($dbres);
 
 		while ($row = mysql_fetch_assoc($dbres))
 		{
-			//print_r($row);
 			if ($row[uid] == $uid){
 				$old_name = $row[name];
 				$uid_exists = '1';
 				//echo 'uid exists';
 				//the user already exists; so we need to run an update query instead of insert.
-				//exit;
 			}
 		}
 	}
@@ -307,9 +293,8 @@ if (isset($adminaction) && $adminaction !='')
 	{
 		//we need to run a select to find out if the device id already exists.
 		$sql = 'Select * from device where did="' . $did . '"';
-		//$reset = mysql_query("RESET QUERY CACHE");
 		$dbres = mysql_query($sql);
-		//$rows = mysql_fetch_row($dbres);
+
 
 		while ($row = mysql_fetch_assoc($dbres))
 		{
@@ -318,7 +303,6 @@ if (isset($adminaction) && $adminaction !='')
 				$did_exists = '1';
 				//echo 'did exists';
 				//the did already exists; so we need to run an update query instead of insert.
-				//exit;
 			}
 		}
 	}
@@ -344,9 +328,7 @@ if (isset($adminaction) && $adminaction !='')
 			//update .. where uid = $uid
 			$sql = 'update auth set allowed="' . $allowed . '", name="' . $name . '", date="' . date('Y-m-d H:i:s') . '" where uid= "' . $uid . '"';
 
-			$retval = mysql_query( $sql);
-
-			if(! $retval )
+			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
@@ -357,12 +339,10 @@ if (isset($adminaction) && $adminaction !='')
 
 		if ($did_exists == '1' && isset($did) && $did !=''){
 			//update .. where did = $did
-			$sql = 'update device set allowed="' . $allowed . '", nfc="' . $nfc . '", force_nfc="' . $forcenfc  . '", date="' . date('Y-m-d H:i:s') . '" where did= "' . $did . '"';
+			$sql = 'update device set allowed="' . $allowed . '", nfc="' . $nfc . '", force_nfc="' . $forcenfc . '", date="' . date('Y-m-d H:i:s') . '" where did= "' . $did . '"';
 
 			//file_put_contents("post.log", $sql);
-			$retval = mysql_query( $sql);
-
-			if(! $retval )
+			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
@@ -380,25 +360,21 @@ if (isset($adminaction) && $adminaction !='')
 				$sql = 'INSERT INTO device (nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $nfc . '","' . $hasnfc . '", "' . $forcenfc . '", "' . $did . '", "' . $allowed . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 			}
 
-			$retval = mysql_query( $sql);
-
-			if(! $retval )
+			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
 			else{
 				if (isset($did) && $did != '')
 				{
-					echo "Privileges for " . $did . "  " . $adminaction . "ed";
+					echo "Privileges for " . $did . " " . $adminaction . "ed";
 
 					$stringData = $did . ' ' . $adminaction . "ed" . "\n";
-				        mailer("Device " . $granted, $stringData, $number);
+					mailer("Device " . $granted, $stringData, $number);
 					exit;
 				}
 				if (isset($name) && $name != '')
 				{
-					//return "Privileges for " . $_POST['Name'] . " (" . $_POST['UID'] . ") " . $_POST['AdminAction'] . "ed"; 
-
 					echo "Privileges for " . $name . " (" . $uid . ") " . $adminaction . "ed. " . (isset($number) && $number != '' ? "User has been notified @ " . $number : "");
 					exit;
 				}
@@ -419,23 +395,22 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 		$table = 'auth';
 	if (isset($table) && $table != '')
 	{
-		 if($log_to_file == '1')
-                        file_put_contents($log,$table);
+		if($log_to_file == '1')
+			file_put_contents($log,$table);
 		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
 		mysql_select_db($db_name)or die("cannot select DB");
 		$sql = "select * from " . $table . " order by date desc";
-		 if($log_to_file == '1')
-                        file_put_contents($log,$sql);
+		if($log_to_file == '1')
+			file_put_contents($log,$sql);
 		$result = mysql_query($sql);
 		$json = array();
 
 		if(mysql_num_rows($result)){
-		//      echo mysql_num_rows($result);
-	        	while($row=mysql_fetch_assoc($result)){
-	        		if($log_to_file == '1')
+			while($row=mysql_fetch_assoc($result)){
+				if($log_to_file == '1')
 					file_put_contents($log,$row);
-	                	$json[ $table . '_info'][]=$row;
-	       		}
+				$json[ $table . '_info'][]=$row;
+			}
 		}
 		mysql_close($con);
 		echo json_encode($json);
@@ -451,28 +426,16 @@ if (!isset($uid))
 	exit;
 }
 
-
 $dbhandle = mysql_connect($hostname, $username, $password)
-  or die("Unable to connect to MySQL");
+	or die("Unable to connect to MySQL");
 
 $selected = mysql_select_db($db_name,$dbhandle)
-  or die("Could not select " . $db_name);
-/*
-if (isset($_POST['Log']) && $_POST['Log'] == "true")
-{
-	$result = mysql_query("SELECT * FROM log");
-	//fetch tha log from the database
-	while ($row = mysql_fetch_row($result)) {
-        	echo $row[0] . ' ' . $row[1] . ' ' . $row[2] . ' ' . $row[3] . ' ' . $row[4] . '\r\n';
-	}
-	exit;
-}
-*/
+	or die("Could not select " . $db_name);
+
 $result = mysql_query("SELECT * FROM auth");
 //fetch tha data from the database
 while ($row = mysql_fetch_array($result)) {
-
-   	if ($row{'allowed'} == "1"){
+	if ($row{'allowed'} == "1"){
 		$allowed_users[$row{'uid'}] = $row{'name'};
 		
 		if ($row{'admin'} == "1"){
@@ -485,12 +448,12 @@ while ($row = mysql_fetch_array($result)) {
 	$users[$row{'uid'}] = $row{'name'};
 }
 if($dummy_admin)
-        $admin_users[$dummy_admin] = 'dummy admin';
+	$admin_users[$dummy_admin] = 'dummy admin';
 $result = mysql_query("SELECT * FROM device");
 //fetch tha data from the database
 while ($row = mysql_fetch_array($result)) {
 
-   	if ($row{'allowed'} == "1"){
+	if ($row{'allowed'} == "1"){
 		$allowed_devices[$row{'did'}] = $row{'did'};
 
 		if ($row{'force_nfc'} == "1"){
@@ -509,39 +472,35 @@ if (isset($switch) && $switch != ''){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
 	if($geofence_enabled == 'true')
-        {
-        	$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
-        	if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
-                        $switch = $switch . ' Denied (Geofence Empty)';
-                        $sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+	{
+		$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
+		if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
+			$switch = $switch . ' Denied (Geofence Empty)';
+			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+			
+			if(!$retval = mysql_query($sql))
+			{
+				die('Could not enter data: ' . mysql_error());
+			}
+			echo 'Geofence Enabled: GPS Empty.';
+			exit;
+		}
 
-                        $retval = mysql_query( $sql);
-
-                        if(! $retval )
-                        {
-                                die('Could not enter data: ' . mysql_error());
-                        }
-                        echo 'Geofence Enabled: GPS Empty.';
-                        exit;
-                }
-                
 		if($distance_away >= $geofence_maximum_allowed_distance)
-                {
-                        $switch = $switch . ' Denied (Geofence ' . $distance_away . ' ' . $geofence_unit_of_measurement . ')';
-                        $sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+		{
+			$switch = $switch . ' Denied (Geofence ' . $distance_away . ' ' . $geofence_unit_of_measurement . ')';
+			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
-                        $retval = mysql_query( $sql);
+			if(!$retval = mysql_query($sql))
+			{
+				die('Could not enter data: ' . mysql_error());
+			}
 
-                        if(! $retval )
-                        {
-                                die('Could not enter data: ' . mysql_error());
-                        }
-
-                        echo 'Geofence Enabled: Out of bounds.' . (($geofence_return_result == 'true') ? ' (' . $distance_away . ' ' . $geofence_unit_of_measurement . ')' : '');
-                        exit;
-                        //this will effectively disable the button in the app. The only thing available is administration of users and devices.
-                }
-        }
+			echo 'Geofence Enabled: Out of bounds.' . (($geofence_return_result == 'true') ? ' (' . $distance_away . ' ' . $geofence_unit_of_measurement . ')' : '');
+			exit;
+			//this will effectively disable the buttons in the app. The only thing available is administration of users and devices.
+		}
+	}
 
 	if ($switch == "Light"){
 		if($use_gpio){
@@ -581,43 +540,31 @@ if (isset($switch) && $switch != ''){
 
 	$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","'. date('Y-m-d H:i:s') . '" )';
 
-	$retval = mysql_query( $sql);
-
-	if(! $retval )
+	if(! $retval = mysql_query($sql))
 	{
-  		die('Could not enter data: ' . mysql_error());
+		die('Could not enter data: ' . mysql_error());
 	}
 
-	//$myFile = "auth.log";
-	//$fh = fopen($myFile, 'a');
-	//$stringData = date("Y-m-d H:i:s") . " ";
-	//fwrite($fh, $stringData);
 	$stringData = $switch . " toggled\n";
 	$txt = $users[$uid] . " toggled " . $switch . ' @ ' . $stringData;
-	// fix post uid so we can identify the user here, this is working in the latest build.
-	// Send email
 	mailer($stringData, $txt);
-	//fwrite($fh, $stringData);
-	//fclose($fh);
 	exit;
 }
 else{
 	if($log_attempts == 'true' && $max_attempts > 0){
 		$sql = "SELECT COUNT(*) AS `attempts` FROM `log` WHERE `ip` = '{$_SERVER[REMOTE_ADDR]}' AND `action` = 'Denied' AND `date` > DATE_SUB(NOW(),INTERVAL '{$attempt_interval}' MINUTE)";
-                $result = mysql_query($sql);
-                $attempts = mysql_result($result, 0);
-                if($attempts >= $max_attempts){
-                        echo 'Maximum login attempts reached';
-                        if($block_after_max_attempts == 'true')
-                        {
-                        	if (array_key_exists($did, $devices))
+		$result = mysql_query($sql);
+		$attempts = mysql_result($result, 0);
+		if($attempts >= $max_attempts){
+			echo 'Maximum login attempts reached';
+			if($block_after_max_attempts == 'true')
+			{
+				if (array_key_exists($did, $devices))
 				{
 					//maybe update device here.
 					$sql = 'update device set allowed="0", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
 
-					$retval = mysql_query( $sql );
-
-					if(! $retval )
+					if(! $retval = mysql_query($sql))
 					{
 						die('Could not enter data: ' . mysql_error());
 					}
@@ -626,22 +573,20 @@ else{
 					//insert some helpful stuff about the device here.
 					$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . $did . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 
-					$retval = mysql_query( $sql );
-
-					if(! $retval )
+					if(! $retval = mysql_query($sql))
 					{
 						die('Could not enter data: ' . mysql_error());
 					}
 				}
 			mailer("Blocked Device " . $devicealias . '(' . $did . ')', 'Maximum login attempts (' . $max_attempts . ') has been reached by ' . $devicealias . '(' . $did . ')');
-                        }
-                        exit;
-                }
-        }
+			}
+			exit;
+		}
+	}
 	if (!isset($uid))
 	{
-	       	echo 'Log in';
-        	exit;
+		echo 'Log in';
+		exit;
 	}
 	else if (array_key_exists($did, $disallowed_devices)){
 		$granted = 'Denied (Device)';
@@ -653,26 +598,20 @@ else{
 	}
 	else if (array_key_exists($uid, $admin_users)){
 		$granted = 'Admin Granted';
-        	echo $SUPER_SECRET_ADMIN_RESULT . ',' . $geofence_enabled;
+		echo $SUPER_SECRET_ADMIN_RESULT . ',' . $geofence_enabled;
 	}
 	else if (array_key_exists($uid, $allowed_users)){
-        	$granted = 'Granted';
+		$granted = 'Granted';
 		echo $SUPER_SECRET_USER_RESULT . ',' . $geofence_enabled;
-		//
 	}
 	else{
-        	$granted = 'Denied';
-        	echo 'Access denied';
+		$granted = 'Denied';
+		echo 'Access denied';
 	}
-	//$myFile = "auth.log";
-	//$fh = fopen($myFile, 'a');
-	//$stringData = date("Y-m-d H:i:s") . " ";
-	//fwrite($fh, $stringData);
-	$sql = 'INSERT INTO log (name, ip, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' .  $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
-	$retval = mysql_query( $sql );
+	$sql = 'INSERT INTO log (name, ip, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
-	if(! $retval )
+	if(! $retval = mysql_query($sql))
 	{
 		die('Could not enter data: ' . mysql_error());
 	}
@@ -682,9 +621,7 @@ else{
 		//maybe update device here.
 		$sql = 'update device set allowed="1", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
 
-		$retval = mysql_query( $sql );
-
-		if(! $retval )
+		if(! $retval = mysql_query($sql))
 		{
 			die('Could not enter data: ' . mysql_error());
 		}
@@ -693,9 +630,7 @@ else{
 		//insert some helpful stuff about the device here.
 		$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '1' . '", "' . $hasnfc . '", "' . $did . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 
-		$retval = mysql_query( $sql );
-
-		if(! $retval )
+		if(! $retval = mysql_query($sql))
 		{
 			die('Could not enter data: ' . mysql_error());
 		}
@@ -703,9 +638,6 @@ else{
 
 	$stringData = $users[$uid] . ' from ' . $did . "\n";
 	mailer("User " . $granted, $stringData);
-	//fwrite($fh, $stringData);
-	//fclose($fh);
-
 }
 
 ?>
