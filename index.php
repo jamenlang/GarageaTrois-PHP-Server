@@ -12,7 +12,7 @@ if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
 	}
 }
 
-if($qr_enabled == '1' && file_exists('../phpqrcode-git/lib/full/qrlib.php')){
+if($qr_enabled == '1' && file_exists('../phpqrcode/lib/full/qrlib.php')){
 	if(isset($_GET['showlink'])){
 		include('../phpqrcode-git/lib/full/qrlib.php');
 		define('IMAGE_WIDTH',$qr_size);
