@@ -80,6 +80,16 @@ if($SUPER_SECRET_USER_RESULT == 'SUPER_SECRET_USER_RESULT'){
         $test++;
 }
 
+if($gpio == 'false'){
+	echo '<li>GPIO is disabled in the config file, an alternative method of control will be required.</li>';
+	$test++;
+}
+
+if($hue_url == 'http://myawesomedomain-or-an-ip-address:8080/api/devices'){
+	echo '<li>Hue Emulator URL is not set, you won't be able to set up devices for the Amazon Echo without this.</li>';
+	$test++;
+}
+
 echo $link_result;
 
 echo (($test != 0) ? $test . ' items need your attention.<br /><br />' : 'Nothing else to do here, index.php needs to be removed or renamed.');
