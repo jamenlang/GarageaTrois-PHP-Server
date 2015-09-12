@@ -69,7 +69,7 @@ java -jar amazon-echo-bridge-0.2.1.jar --upnp.config.address=192.168.1.xxx
 
 Pointed my browser to http://myawesomedomain.net/GarageaTrois-Echo.php
 
-Configured all 3 of my switches
+Configured all 3 of my switches, remember that all URIs in linux are case sensitive.
 
 Asked Alexa to scan for available devices.
 
