@@ -74,7 +74,7 @@ else
 
 while(true){
 	$command="/sbin/ifconfig $configured_interface | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'";
-	$localIP = exec ($command,$output);
+	$localIP = exec($command, $output);
 	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	echo $localIP;
 	if($localIP != '')
