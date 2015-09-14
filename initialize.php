@@ -36,7 +36,8 @@ foreach($files as $filename){
 }
 
 if(!$gat){
-	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois',$output);
+	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois');
+	die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
 }
 
 require("$dir/GarageaTrois/GarageaTrois-Config.php");
