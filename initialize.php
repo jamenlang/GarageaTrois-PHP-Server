@@ -13,7 +13,7 @@ include("$dir/GarageaTrois/GarageaTrois-Config.php");
 if($log_to_file == '1'){
 	//create temp file if it doesn't exist
 	if (!file_exists($log)) {
-		fopen("$log", "w");
+		fopen($log, "w");
 		fwrite($log, 'creating log.');
 		fclose($log);
 	}
@@ -24,7 +24,6 @@ if($log_to_file == '1'){
 
 $files = scandir($dir);
 foreach($files as $filename){
-	echo $filename;
 	if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
 		$armzilla = $filename;
 	}
@@ -44,8 +43,7 @@ require("$dir/GarageaTrois/GarageaTrois-Config.php");
 require("$dir/GarageaTrois/GarageaTrois-Functions.php");
 
 if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.githubusercontent.com/jamenlang/GarageaTrois-PHP-Server/master/GarageaTrois-Config.php')){
-	echo 'Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.';
-	exit;
+	die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
 }
 
 if($use_gpio == true){
