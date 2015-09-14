@@ -1,7 +1,7 @@
 #! /usr/bin/php
 <?php
-# run sudo crontab -e and add this as
-@reboot cd /var/www/; php initialize.php
+# move to /var/www/
+# run sudo crontab -e and add this as @reboot cd /var/www/; php initialize.php
 
 if(php_sapi_name() != 'cli'){
 	exit;
