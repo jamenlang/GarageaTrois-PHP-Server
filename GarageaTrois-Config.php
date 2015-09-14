@@ -18,10 +18,13 @@ $dummy_admin = '0009';//first login requires a PIN, disable this after a user is
 $SUPER_SECRET_ADMIN_RESULT = 'SUPER_SECRET_ADMIN_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
 $SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
 
+/************ Configuration for Interfaces************/
+$configured_interface = 'wlan0' //e.g. eth0, set to interface that server will be reachable on.
+
 /************ Configuration for Logging ************/
 
 $log_to_file = '1'; //after everything is installed and working you'll want to disable logging.
-$log = 'logfile.txt'; //change to whatever you'd like
+$log = '/var/www/GarageaTrois/logfile.txt'; //change to whatever you'd like
 
 /************ Configuration for IP Logging ************/
 $log_attempts = 'true';
@@ -60,7 +63,6 @@ $geofence_maximum_allowed_distance = '30'; //distance in units from the garage d
 $admin_mobile = '4033029392'; //replace with mobile number for recieving text messages
 $admin_email = 'admin@whereveryouwantthem.com'; //replace with an admin email address
 $notification_email = 'notifications@fromtheserver.com'; //replace with a notification email address
-
 
 /************ Location Specific
 This is a list of carriers in the US. Change to your country or add your carrier information to the array.************/
