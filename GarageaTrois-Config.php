@@ -19,7 +19,7 @@ $SUPER_SECRET_ADMIN_RESULT = 'SUPER_SECRET_ADMIN_RESULT'; //replace with whateve
 $SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
 
 /************ Configuration for Interfaces************/
-$configured_interface = 'wlan0' //e.g. eth0, set to interface that server will be reachable on.
+$configured_interface = 'wlan0'; //e.g. eth0, set to interface that server will be reachable on.
 
 /************ Configuration for Logging ************/
 
