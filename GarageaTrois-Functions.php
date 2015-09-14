@@ -35,6 +35,9 @@ function mailer($subject, $message, $newuser){
 }
 // Sanitize input
 function sanitize($in) {
+	if(!$in){
+		return '';
+	}
 	return addslashes(htmlspecialchars(strip_tags(trim($in))));
 }
 
