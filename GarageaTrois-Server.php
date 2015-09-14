@@ -13,8 +13,7 @@ if (!isset($_POST) || empty($_POST)){
 	exit;
 }
 
-if($log_to_file == '1')
-	file_put_contents($log,print_r($_POST,true));
+(($log_to_file == "1") ? file_put_contents($log, print_r($_POST,true) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 
 //Get POST data and assign new variables.
 $name = sanitize($_POST['Name']);
@@ -178,16 +177,16 @@ if (isset($adminaction) && $adminaction !='')
 					//the did already exists; so we need to fail because duh.
 				}
 			}
-			if($log_to_file == '1')
-				file_put_contents($log, 'uid ' . $old_uid);
+			
+			(($log_to_file == "1") ? file_put_contents($log, 'uid ' . $old_uid . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+
 			if ($uid_exists == '1')
 			{
-				if($log_to_file == '1')
-					file_put_contents($log, 'uid ' . $uid_exists);
+				(($log_to_file == "1") ? file_put_contents($log, 'uid ' . $uid_exists . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 
 				$sql = 'Update auth set uid="' . $uid . '", allowed="' . $allowed . '" where name="' . $name . '"';
-				if($log_to_file == '1')
-					file_put_contents($log, $sql);
+				
+				(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 
 				if(! $retval = mysql_query($sql))
 				{
@@ -199,12 +198,12 @@ if (isset($adminaction) && $adminaction !='')
 			}
 			else {
 				//this is experimental 5/29/14
-				if($log_to_file == '1')
-					file_put_contents($log, 'uid ' . $uid_exists);
+				(($log_to_file == "1") ? file_put_contents($log, 'uid ' . $uid_exists . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-				if($log_to_file == '1')
-					file_put_contents($log, $sql);
+
+				(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 
 				if(! $retval = mysql_query($sql))
 				{
@@ -220,9 +219,9 @@ if (isset($adminaction) && $adminaction !='')
 		//update the name where name = $uid
 
 			$sql = 'Select * from auth where uid="' . $uid . '"';
-			if($log_to_file == '1')
-				file_put_contents($log, $sql);
 
+			(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+			
 			$dbres = mysql_query($sql);
 
 			while ($row = mysql_fetch_assoc($dbres))
@@ -236,13 +235,12 @@ if (isset($adminaction) && $adminaction !='')
 
 				}
 			}
-			if($log_to_file == '1')
-				file_put_contents($log, $old_name);
+
+			(($log_to_file == "1") ? file_put_contents($log, $old_name . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+			
 			if ($name_exists == '1')
 			{
-				if($log_to_file == '1')
-					file_put_contents($log, 'name ' . $name_exists);
-
+				(($log_to_file == "1") ? file_put_contents($log, 'name ' . $name_exists . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 				$sql = 'Update auth set name="' . $name . '", allowed="' . $allowed . '" where uid="' . $uid . '"';
 				
 				if(! $retval = mysql_query($sql))
@@ -254,12 +252,10 @@ if (isset($adminaction) && $adminaction !='')
 			}
 			else {
 				//this is experimental 5/29/14
-				if($log_to_file == '1')
-					file_put_contents($log, 'name ' . $name_exists);
+				(($log_to_file == "1") ? file_put_contents($log, 'name ' . $name_exists . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-				if($log_to_file == '1')
-					file_put_contents($log, $sql);
+				(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 
 				if(! $retval = mysql_query($sql))
 				{
@@ -306,7 +302,6 @@ if (isset($adminaction) && $adminaction !='')
 			}
 		}
 	}
-	//file_put_contents("post.log", 'did exists: ' . $did_exists . ' uid exists ' . $uid_exists);
 
 	if($adminaction == "Grant" || $adminaction == "Revok")
 	{
@@ -324,7 +319,6 @@ if (isset($adminaction) && $adminaction !='')
 		}
 
 		if ($uid_exists == '1' && isset($uid) && $uid !=''){
-			//file_put_contents("post.log", 'uid exists: ' . $uid_exists . ' posted uid exists ' . $uid);
 			//update .. where uid = $uid
 			$sql = 'update auth set allowed="' . $allowed . '", name="' . $name . '", date="' . date('Y-m-d H:i:s') . '" where uid= "' . $uid . '"';
 
@@ -395,27 +389,23 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 		$table = 'auth';
 	if (isset($table) && $table != '')
 	{
-		if($log_to_file == '1')
-			file_put_contents($log,$table);
+		(($log_to_file == "1") ? file_put_contents($log, $table . ' log requsted by app.' . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
 		mysql_select_db($db_name)or die("cannot select DB");
 		$sql = "select * from " . $table . " order by date desc";
-		if($log_to_file == '1')
-			file_put_contents($log,$sql);
+		(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 		$result = mysql_query($sql);
 		$json = array();
 
 		if(mysql_num_rows($result)){
 			while($row=mysql_fetch_assoc($result)){
-				if($log_to_file == '1')
-					file_put_contents($log,$row);
+				(($log_to_file == "1") ? file_put_contents($log, 'row ' . $row . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 				$json[ $table . '_info'][]=$row;
 			}
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		if($log_to_file == '1')
-			file_put_contents($log,print_r($json));
+		(($log_to_file == "1") ? file_put_contents($log, print_r($json) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 		exit;
 	}
 }
