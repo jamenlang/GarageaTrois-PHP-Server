@@ -9,7 +9,6 @@ if(php_sapi_name() != 'cli'){
 $dir = '/var/www';
 
 include("$dir/GarageaTrois/GarageaTrois-Config.php");
-include("$dir/GarageaTrois/GarageaTrois-Functions.php");
 
 if($log_to_file == '1'){
 	//create temp file if it doesn't exist
@@ -23,8 +22,6 @@ if($log_to_file == '1'){
 	}
 }
 
-
-
 $files = scandir($dir);
 foreach($files as $filename){
 	echo $filename;
@@ -37,6 +34,18 @@ foreach($files as $filename){
 	if(preg_match('/phpqrcode/',$filename,$matches )){
 		$phpqrcode = $filename;
 	}
+}
+
+if(!$gat){
+	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois',$output);
+}
+
+require("$dir/GarageaTrois/GarageaTrois-Config.php");
+require("$dir/GarageaTrois/GarageaTrois-Functions.php");
+
+if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.githubusercontent.com/jamenlang/GarageaTrois-PHP-Server/master/GarageaTrois-Config.php')){
+	echo 'Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.';
+	exit;
 }
 
 if($use_gpio == true){
@@ -72,15 +81,6 @@ while(true){
 	echo $localIP;
 	if($localIP != '')
 		break;
-}
-
-if(!$gat){
-	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois',$output);
-}
-	
-if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.githubusercontent.com/jamenlang/GarageaTrois-PHP-Server/master/GarageaTrois-Config.php')){
-	echo 'Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.';
-	exit;
 }
 
 if(!$phpqrcode && $qr_enabled == "1"){
