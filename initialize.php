@@ -22,7 +22,7 @@ if($use_gpio == true){
 }
 
 while(true){
-	$command="/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'";
+	$command="/sbin/ifconfig $configured_interface | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'";
 	$localIP = exec ($command);
 	echo $localIP;
 	if($localIP != '')
@@ -35,6 +35,22 @@ foreach($files as $filename){
 	if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
 		$armzilla = $filename;
 	}
+	if(preg_match('/GarageaTrois/',$filename,$matches )){
+		$gat = $filename;
+	}
+	if(preg_match('/phpqrcode/',$filename,$matches )){
+		$phpqrcode = $filename;
+	}
+}
+
+if(!$gat){
+	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois',$output);
+	file_put_contents($logfile, $output);
+}
+
+if(!$phpqrcode){
+	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode',$output);
+	file_put_contents($logfile, $output);
 }
 
 if(!$armzilla){
@@ -54,7 +70,7 @@ if(!$armzilla){
 if($armzilla == ''){
 	$files = scandir($dir);
 	foreach($files as $filename){
-		echo $filename;
+		file_put_contents($logfile, $filename);
 		if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
 			$armzilla = $filename;
 		}
@@ -65,7 +81,8 @@ if ($armzilla != ''){
 	exec("java -jar $dir$armzilla --upnp.config.address=$localIP");
 }
 else {
-	echo 'could not start ' . $armzilla . ' ' . $localIP;
+	$output = 'could not start ' . $dir$armzilla . ' ' . $localIP;
+	file_put_contents($logfile, $output);
 }
 
 ?>
