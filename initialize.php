@@ -49,25 +49,25 @@ if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.git
 if($use_gpio == true){
 	//gpio will need to be initialized before use.
 	exec("/usr/local/bin/gpio readall", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio write $other_relay 1", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio write $light_relay 1", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio write $door_relay 1", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio write $lock_relay 1", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio mode $other_relay OUT", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio mode $light_relay OUT", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio mode $door_relay OUT", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio mode $lock_relay OUT", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	exec("/usr/local/bin/gpio readall", $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 }
 else
 	(($log_to_file == "1") ? file_put_contents($log, 'gpio is not enabled in GarageaTrois-Config.php -skipping initialization.' . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
@@ -75,7 +75,7 @@ else
 while(true){
 	$command="/sbin/ifconfig $configured_interface | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'";
 	$localIP = exec($command, $output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 	echo $localIP;
 	if($localIP != '')
 		break;
@@ -83,7 +83,7 @@ while(true){
 
 if(!$phpqrcode && $qr_enabled == "1"){
 	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode',$output);
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 }
 
 if(!$armzilla){
@@ -119,8 +119,7 @@ if ($armzilla != ''){
 	
 }
 else {
-	$output = "could not start $dir/$armzilla $localIP";
-	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+	(($log_to_file == "1") ? file_put_contents($log, "could not start $dir/$armzilla $localIP" . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 }
 
 ?>
