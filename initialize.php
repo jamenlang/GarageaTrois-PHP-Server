@@ -21,7 +21,7 @@ if($log_to_file == '1'){
 	}
 }
 
-$dir = '/var/www/';
+$dir = '/var/www';
 
 $files = scandir($dir);
 foreach($files as $filename){
@@ -72,7 +72,11 @@ while(true){
 
 if(!$gat){
 	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois',$output);
-	(($log_to_file == "1") ? file_put_contents($log, $output, FILE_APPEND | LOCK_EX) : '');
+}
+	
+if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.githubusercontent.com/jamenlang/GarageaTrois-PHP-Server/master/GarageaTrois-Config.php')){
+	echo 'Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.';
+	exit;
 }
 
 if(!$phpqrcode && $qr_enabled == "1"){
@@ -106,12 +110,12 @@ if($armzilla == ''){
 }
 
 if ($armzilla != ''){
-	exec("java -jar $dir$armzilla --upnp.config.address=$localIP");
+	exec("java -jar $dir/$armzilla --upnp.config.address=$localIP");
 	(($log_to_file == "1") ? file_put_contents($log, 'started armzilla hue emulator', FILE_APPEND | LOCK_EX) : '');
 	
 }
 else {
-	$output = "could not start $dir$armzilla $localIP";
+	$output = "could not start $dir/$armzilla $localIP";
 	(($log_to_file == "1") ? file_put_contents($log, $output, FILE_APPEND | LOCK_EX) : '');
 }
 
