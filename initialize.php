@@ -6,8 +6,10 @@
 if(php_sapi_name() != 'cli'){
 	exit;
 }
+$dir = '/var/www';
 
-include('GarageaTrois/GarageaTrois-Config.php');
+include("$dir/GarageaTrois/GarageaTrois-Config.php");
+include("$dir/GarageaTrois/GarageaTrois-Functions.php");
 
 if($log_to_file == '1'){
 	//create temp file if it doesn't exist
@@ -21,7 +23,7 @@ if($log_to_file == '1'){
 	}
 }
 
-$dir = '/var/www';
+
 
 $files = scandir($dir);
 foreach($files as $filename){
