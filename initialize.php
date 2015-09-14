@@ -12,12 +12,12 @@ include('GarageaTrois/GarageaTrois-Config.php');
 if($log_to_file == '1'){
 	//create temp file if it doesn't exist
 	if (!file_exists($log)) {
-		fopen("$log", "w")
+		fopen("$log", "w");
 		fwrite($log, 'creating log.');
 		fclose($log);
 	}
 	if (!is_writable($log)) {
-		chmod($log,0777)
+		chmod($log,0777);
 	}
 }
 
@@ -111,7 +111,7 @@ if ($armzilla != ''){
 	
 }
 else {
-	$output = 'could not start ' . $dir$armzilla . ' ' . $localIP;
+	$output = "could not start $dir$armzilla $localIP";
 	(($log_to_file == "1") ? file_put_contents($log, $output, FILE_APPEND | LOCK_EX) : '');
 }
 
