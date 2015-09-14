@@ -7,6 +7,9 @@ if(php_sapi_name() != 'cli'){
 	exit;
 }
 $dir = '/var/www';
+$armzilla = '';
+$gat = '';
+$phpqrcode = '';
 
 include("$dir/GarageaTrois/GarageaTrois-Config.php");
 
@@ -35,7 +38,7 @@ foreach($files as $filename){
 	}
 }
 
-if(!$gat){
+if($gat == ''){
 	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois');
 	die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
 }
@@ -82,12 +85,12 @@ while(true){
 		break;
 }
 
-if(!$phpqrcode && $qr_enabled == "1"){
+if($phpqrcode == '' && $qr_enabled == "1"){
 	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode',$output);
 	(($log_to_file == "1") ? file_put_contents($log, print_r($output) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
 }
 
-if(!$armzilla){
+if($armzilla == ''){
 	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 	foreach ($output as $line){
 		if($hue_emulator_link != '')
@@ -100,9 +103,7 @@ if(!$armzilla){
         }
 	exec("wget $hue_emulator_link", $output);
 	(($log_to_file == "1") ? file_put_contents($log, $output . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
-}
 
-if($armzilla == ''){
 	$files = scandir($dir);
 	foreach($files as $filename){
 		file_put_contents($log, $filename . PHP_EOL, FILE_APPEND | LOCK_EX);
