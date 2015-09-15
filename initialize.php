@@ -13,18 +13,23 @@ $armzilla = '';
 $gat = '';
 $phpqrcode = '';
 
-include("$dir/GarageaTrois/GarageaTrois-Config.php");
+if(is_file("$dir/GarageaTrois/GarageaTrois-Config.php")){
+	include("$dir/GarageaTrois/GarageaTrois-Config.php");
 
-if(isset($log_to_file) && $log_to_file == '1'){
-	//create temp file if it doesn't exist
-	if (!file_exists($log)) {
-		$fp = fopen($log, "w");
-		fwrite($fp, 'creating log.');
-		fclose($fp);
+	if(isset($log_to_file) && $log_to_file == '1'){
+		//create temp file if it doesn't exist
+		if (!file_exists($log)) {
+			$fp = fopen($log, "w");
+			fwrite($fp, 'creating log.');
+			fclose($fp);
+		}
+		if (!is_writable($log)) {
+			chmod($log,0777);
+		}
 	}
-	if (!is_writable($log)) {
-		chmod($log,0777);
-	}
+}
+else{
+	echo 'GarageaTrois-Config.php not found. Downloading it in a second.';
 }
 
 $files = scandir($dir);
@@ -36,6 +41,9 @@ foreach($files as $filename){
 		if(is_dir($filename)){
 			$gat = $filename;
 		}
+		if(is_file($filename)){
+			$gat_backup_conifg = $filename;
+		}
 	}
 	if(preg_match('/phpqrcode/',$filename,$matches )){
 		if(is_dir($filename)){
@@ -46,12 +54,17 @@ foreach($files as $filename){
 
 if($gat == ''){
 	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois', $output);
-	die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
+	if(isset($gat_backup_config)){
+		echo 'restoring backup config file.';
+		copy($gat_backup_config,'GarageaTrois/GarageaTrois-Config.php');
+	}
+	else{
+		die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
+	}
 }
-else{
-	require_once("$dir/GarageaTrois/GarageaTrois-Config.php");
-	require_once("$dir/GarageaTrois/GarageaTrois-Functions.php");
-}
+
+require_once("$dir/GarageaTrois/GarageaTrois-Config.php");
+require_once("$dir/GarageaTrois/GarageaTrois-Functions.php");
 
 if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.githubusercontent.com/jamenlang/GarageaTrois-PHP-Server/master/GarageaTrois-Config.php')){
 	logger('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
