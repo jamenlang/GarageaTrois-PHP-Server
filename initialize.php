@@ -18,9 +18,9 @@ include("$dir/GarageaTrois/GarageaTrois-Config.php");
 if($log_to_file == '1'){
 	//create temp file if it doesn't exist
 	if (!file_exists($log)) {
-		fopen($log, "w");
-		fwrite($log, 'creating log.');
-		fclose($log);
+		$fp = fopen($log, "w");
+		fwrite($fp, 'creating log.');
+		fclose($fp);
 	}
 	if (!is_writable($log)) {
 		chmod($log,0777);
