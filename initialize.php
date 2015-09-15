@@ -42,7 +42,7 @@ foreach($files as $filename){
 			$gat = $filename;
 		}
 		if(is_file($filename)){
-			$gat_backup_conifg = $filename;
+			$gat_backup_config = $filename;
 		}
 	}
 	if(preg_match('/phpqrcode/',$filename,$matches )){
@@ -55,6 +55,8 @@ foreach($files as $filename){
 if($gat == ''){
 	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois', $output);
 	if(isset($gat_backup_config)){
+		echo 'deleting default config file.';
+		unlink('GarageaTrois/GarageaTrois-Config.php');
 		echo 'restoring backup config file.';
 		copy($gat_backup_config,'GarageaTrois/GarageaTrois-Config.php');
 	}
