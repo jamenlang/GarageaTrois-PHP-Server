@@ -1,7 +1,5 @@
 <?php
 
-require_once('GarageaTrois-Config.php');
-
 function toggle_relay($gpio_relay){
         exec("/usr/local/bin/gpio write $gpio_relay 0");
         sleep(2);
@@ -77,6 +75,7 @@ function _isCurl(){
 }
 
 function logger($data){
+	require_once('GarageaTrois-Config.php');
 	if($log_to_file != "1"){
 		return;
 	}
