@@ -1,6 +1,6 @@
 <?php
 
-require_once('GarageaTrois-Functions.php');
+require_once('GarageaTrois-Config.php');
 
 function toggle_relay($gpio_relay){
         exec("/usr/local/bin/gpio write $gpio_relay 0");
