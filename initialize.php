@@ -33,67 +33,70 @@ foreach($files as $filename){
 		$armzilla = $filename;
 	}
 	if(preg_match('/GarageaTrois/',$filename,$matches )){
-		$gat = $filename;
+		if(is_dir($filename)){
+			$gat = $filename;
+		}
 	}
 	if(preg_match('/phpqrcode/',$filename,$matches )){
-		$phpqrcode = $filename;
+		if(is_dir($filename)){
+			$phpqrcode = $filename;
+		}
 	}
 }
 
 if($gat == ''){
-	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois', %output);
-	log($output);
-	log('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
+	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois', $output);
 	die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
 }
-
-require_once("$dir/GarageaTrois/GarageaTrois-Config.php");
-require_once("$dir/GarageaTrois/GarageaTrois-Functions.php");
+else{
+	require_once("$dir/GarageaTrois/GarageaTrois-Config.php");
+	require_once("$dir/GarageaTrois/GarageaTrois-Functions.php");
+}
 
 if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.githubusercontent.com/jamenlang/GarageaTrois-PHP-Server/master/GarageaTrois-Config.php')){
-	log('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
+	logger('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
 	die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
 }
 
 if($use_gpio == true){
 	//gpio will need to be initialized before use.
 	exec("/usr/local/bin/gpio readall", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio write $other_relay 1", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio write $light_relay 1", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio write $door_relay 1", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio write $lock_relay 1", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio mode $other_relay OUT", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio mode $light_relay OUT", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio mode $door_relay OUT", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio mode $lock_relay OUT", $output);
-	log($output);
+	logger($output);
 	exec("/usr/local/bin/gpio readall", $output);
-	log($output);
+	logger($output);
 }
 else
-	log('gpio is not enabled in GarageaTrois-Config.php -skipping initialization.');
+	logger('gpio is not enabled in GarageaTrois-Config.php -skipping initialization.');
 
 while(true){
 	$command="/sbin/ifconfig $configured_interface | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'";
 	$localIP = exec($command, $output);
-	log($output);
+	logger($output);
 	echo $localIP;
-	log($localIP);
+	logger($localIP);
 	if($localIP != '')
 		break;
 }
 
 if($phpqrcode == '' && $qr_enabled == "1"){
 	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode',$output);
-	log($output);
+	logger($output);
 }
 
 if($armzilla == ''){
@@ -108,24 +111,24 @@ if($armzilla == ''){
 		}
         }
 	exec("wget $hue_emulator_link", $output);
-	log($output);
+	logger($output);
 
 	$files = scandir($dir);
 	foreach($files as $filename){
 		if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
-			log($filename);
+			logger($filename);
 			$armzilla = $filename;
 		}
 	}
 }
 
 if ($armzilla != ''){
-	log('starting armzilla hue emulator');
-	log("java -jar $dir/$armzilla --upnp.config.address=$localIP");
+	logger('starting armzilla hue emulator');
+	logger("java -jar $dir/$armzilla --upnp.config.address=$localIP");
 	exec("java -jar $dir/$armzilla --upnp.config.address=$localIP");
 }
 else {
-	log("could not start $dir/$armzilla $localIP");
+	logger("could not start $dir/$armzilla $localIP");
 }
 
 ?>
