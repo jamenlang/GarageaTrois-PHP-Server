@@ -1,5 +1,7 @@
 <?php
 
+require_once('GarageaTrois-Functions.php');
+
 function toggle_relay($gpio_relay){
         exec("/usr/local/bin/gpio write $gpio_relay 0");
         sleep(2);
@@ -73,4 +75,19 @@ function getSslPage($url) {
 function _isCurl(){
 	return function_exists('curl_version');
 }
+
+function log($data){
+	if($log_to_file != "1"){
+		return;
+	}
+	if(is_array($data)){
+		foreach($data as $line){
+			file_put_contents($log, $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+		}
+	}
+	else{
+		file_put_contents($log, $data . PHP_EOL, FILE_APPEND | LOCK_EX);
+	}
+}
+
 ?>
