@@ -75,7 +75,7 @@ function _isCurl(){
 }
 
 function logger($data){
-	require_once('GarageaTrois-Config.php');
+	include('GarageaTrois-Config.php');
 	if($log_to_file != "1"){
 		return;
 	}
