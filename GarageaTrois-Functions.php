@@ -76,7 +76,7 @@ function _isCurl(){
 	return function_exists('curl_version');
 }
 
-function log($data){
+function logger($data){
 	if($log_to_file != "1"){
 		return;
 	}
