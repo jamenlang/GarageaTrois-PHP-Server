@@ -15,7 +15,7 @@ $phpqrcode = '';
 
 include("$dir/GarageaTrois/GarageaTrois-Config.php");
 
-if($log_to_file == '1'){
+if(isset($log_to_file) && $log_to_file == '1'){
 	//create temp file if it doesn't exist
 	if (!file_exists($log)) {
 		$fp = fopen($log, "w");
