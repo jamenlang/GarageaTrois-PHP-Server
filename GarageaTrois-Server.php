@@ -13,7 +13,7 @@ if (!isset($_POST) || empty($_POST)){
 	exit;
 }
 
-(($log_to_file == "1") ? file_put_contents($log, print_r($_POST,true) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+logger(print_r($_POST,true));
 
 //Get POST data and assign new variables.
 $name = sanitize($_POST['Name']);
@@ -178,15 +178,15 @@ if (isset($adminaction) && $adminaction !='')
 				}
 			}
 			
-			(($log_to_file == "1") ? file_put_contents($log, 'uid ' . $old_uid . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+			logger('uid ' . $old_uid);
 
 			if ($uid_exists == '1')
 			{
-				(($log_to_file == "1") ? file_put_contents($log, 'uid ' . $uid_exists . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+				logger('uid ' . $uid_exists);
 
 				$sql = 'Update auth set uid="' . $uid . '", allowed="' . $allowed . '" where name="' . $name . '"';
 				
-				(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+				logger($sql);
 
 				if(! $retval = mysql_query($sql))
 				{
@@ -198,12 +198,12 @@ if (isset($adminaction) && $adminaction !='')
 			}
 			else {
 				//this is experimental 5/29/14
-				(($log_to_file == "1") ? file_put_contents($log, 'uid ' . $uid_exists . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+				logger('uid ' . $uid_exists);
 
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 
-				(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+				logger($sql);
 
 				if(! $retval = mysql_query($sql))
 				{
@@ -220,7 +220,7 @@ if (isset($adminaction) && $adminaction !='')
 
 			$sql = 'Select * from auth where uid="' . $uid . '"';
 
-			(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+			logger($sql);
 			
 			$dbres = mysql_query($sql);
 
@@ -236,11 +236,11 @@ if (isset($adminaction) && $adminaction !='')
 				}
 			}
 
-			(($log_to_file == "1") ? file_put_contents($log, $old_name . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+			logger($old_name);
 			
 			if ($name_exists == '1')
 			{
-				(($log_to_file == "1") ? file_put_contents($log, 'name ' . $name_exists . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+				logger('name ' . $name_exists);
 				$sql = 'Update auth set name="' . $name . '", allowed="' . $allowed . '" where uid="' . $uid . '"';
 				
 				if(! $retval = mysql_query($sql))
@@ -252,10 +252,10 @@ if (isset($adminaction) && $adminaction !='')
 			}
 			else {
 				//this is experimental 5/29/14
-				(($log_to_file == "1") ? file_put_contents($log, 'name ' . $name_exists . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+				logger('name ' . $name_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-				(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+				logger($sql);
 
 				if(! $retval = mysql_query($sql))
 				{
@@ -389,23 +389,23 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 		$table = 'auth';
 	if (isset($table) && $table != '')
 	{
-		(($log_to_file == "1") ? file_put_contents($log, $table . ' log requsted by app.' . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+		logger($table . ' log requsted by app.');
 		$con=mysql_connect($hostname, $username, $password)or die("cannot connect");
 		mysql_select_db($db_name)or die("cannot select DB");
 		$sql = "select * from " . $table . " order by date desc";
-		(($log_to_file == "1") ? file_put_contents($log, $sql . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+		logger($sql);
 		$result = mysql_query($sql);
 		$json = array();
 
 		if(mysql_num_rows($result)){
 			while($row=mysql_fetch_assoc($result)){
-				(($log_to_file == "1") ? file_put_contents($log, 'row ' . $row . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+				logger('row ' . $row);
 				$json[ $table . '_info'][]=$row;
 			}
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		(($log_to_file == "1") ? file_put_contents($log, print_r($json) . PHP_EOL, FILE_APPEND | LOCK_EX) : '');
+		logger(print_r($json));
 		exit;
 	}
 }
