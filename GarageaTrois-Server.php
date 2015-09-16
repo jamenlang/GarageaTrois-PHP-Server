@@ -146,9 +146,65 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 	}
 }
 
+if (!isset($uid))
+{
+	echo "No user";
+	exit;
+}
+
+$dbhandle = mysql_connect($hostname, $username, $password)
+	or die("Unable to connect to MySQL");
+
+$selected = mysql_select_db($db_name,$dbhandle)
+	or die("Could not select " . $db_name);
+
+$result = mysql_query("SELECT * FROM auth");
+//fetch tha data from the database
+while ($row = mysql_fetch_array($result)) {
+	if ($row{'allowed'} == "1"){
+		$allowed_users[$row{'uid'}] = $row{'name'};
+		
+		if ($row{'admin'} == "1"){
+			$admin_users[$row{'uid'}] = $row{'name'};
+		}
+	}
+	else {
+		$disallowed_users[$row{'uid'}] = $row{'name'};
+	}
+	$users[$row{'uid'}] = $row{'name'};
+}
+if($dummy_admin){
+	$admin_users[$dummy_admin] = 'dummy admin';
+	$users[$dummy_admin] = 'dummy admin';
+	$allowed_users[$dummy_admin] = 'dummy admin';
+}
+
+$result = mysql_query("SELECT * FROM device");
+//fetch tha data from the database
+while ($row = mysql_fetch_array($result)) {
+
+	if ($row{'allowed'} == "1"){
+		$allowed_devices[$row{'did'}] = $row{'did'};
+
+		if ($row{'force_nfc'} == "1"){
+			$nfc_only_devices[$row{'did'}] = $row{'did'};
+		}
+	}
+	else {
+		$disallowed_devices[$row{'did'}] = $row{'did'};
+	}
+	if ($row[did] == $did){
+		$did_exists = '1';
+		$nfc_allowed = $row['nfc'];
+		$did_allowed = $row['allowed'];
+		//echo 'did exists';
+	}
+	$devices[$row{'did'}] = $row{'did'};
+}
+
 /************ ADMINISTRATIVE ACTION SENT BY APP ************/
 
-if (isset($adminaction) && $adminaction !='')
+if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $did_exists != '0' && $did_allowed != '0')
 {
 	if($adminaction != "Revok" && $adminaction != "Grant")
 	{
@@ -379,7 +435,7 @@ if (isset($adminaction) && $adminaction !='')
 
 /************ ADMINISTRATIVE LOG REQUESTED BY APP ************/
 
-if (isset($_POST['Admin']) && $_POST['Admin'] != '')
+if (isset($_POST['Admin']) && $_POST['Admin'] != '' && isset($allowed_users[$uid]) && $did_exists != '0' && $did_allowed != '0')
 {
 	if ($_POST['Admin'] == 'viewlog')
 		$table = 'log';
@@ -409,64 +465,9 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 	}
 }
 
-if (!isset($uid))
-{
-	echo "No user";
-	exit;
-}
-
-$dbhandle = mysql_connect($hostname, $username, $password)
-	or die("Unable to connect to MySQL");
-
-$selected = mysql_select_db($db_name,$dbhandle)
-	or die("Could not select " . $db_name);
-
-$result = mysql_query("SELECT * FROM auth");
-//fetch tha data from the database
-while ($row = mysql_fetch_array($result)) {
-	if ($row{'allowed'} == "1"){
-		$allowed_users[$row{'uid'}] = $row{'name'};
-		
-		if ($row{'admin'} == "1"){
-			$admin_users[$row{'uid'}] = $row{'name'};
-		}
-	}
-	else {
-		$disallowed_users[$row{'uid'}] = $row{'name'};
-	}
-	$users[$row{'uid'}] = $row{'name'};
-}
-if($dummy_admin){
-	$admin_users[$dummy_admin] = 'dummy admin';
-	$users[$dummy_admin] = 'dummy admin';
-}
-
-$result = mysql_query("SELECT * FROM device");
-//fetch tha data from the database
-while ($row = mysql_fetch_array($result)) {
-
-	if ($row{'allowed'} == "1"){
-		$allowed_devices[$row{'did'}] = $row{'did'};
-
-		if ($row{'force_nfc'} == "1"){
-			$nfc_only_devices[$row{'did'}] = $row{'did'};
-		}
-	}
-	else {
-		$disallowed_devices[$row{'did'}] = $row{'did'};
-	}
-	if ($row[did] == $did){
-		$did_exists = '1';
-		$nfc_allowed = $row['nfc'];
-		$did_allowed = $row['allowed'];
-		//echo 'did exists';
-	}
-	$devices[$row{'did'}] = $row{'did'};
-}
-
 /************ ACTION REQUESTED BY APP ************/
 
-if (isset($switch) && $switch != '' && isset($allowed_users[$row{'uid'}]) && $did_exists != '0' && $did_allowed != '0'){
+if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exists != '0' && $did_allowed != '0'){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
 	if($geofence_enabled == 'true')
