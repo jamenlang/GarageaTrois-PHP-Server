@@ -16,26 +16,26 @@ $output = '';
 $dir = '/var/www';
 $files = scandir($dir);
 foreach($files as $filename){
-	echo $filename;
+	//echo $filename;
 	if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
 		$armzilla = $filename;
 	}
 }
-if(!$armzilla){
+if(!$armzilla && $hue_emulator_ip != 'myawesomedomain-or-an-ip-address'){
 	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 	foreach ($output as $line){
 		if($hue_emulator_link != '')
 			continue;
 		preg_match('/\bhttp.*jar\b/',$line, $matches);
 			if($matches[0])
-					$hue_emulator_link = $matches[0];
+				$hue_emulator_link = $matches[0];
 	}
 	$hue_emulator_result = '<li><a href="' . $hue_emulator_link . '">Link to Armzilla\'s Hue Emulator</a></li>';
 }
 else
 	$hue_emulator_result = '<li><a href="GarageaTrois-Echo.php">Link to Hue Emulator Configurator</a></li>';
 
-if($qr_enabled == '1' && file_exists('../phpqrcode/lib/full/qrlib.php')){
+if($qr_enabled == '1' && file_exists('/var/www/phpqrcode/lib/full/qrlib.php')){
 	if(isset($_GET['showlink'])){
 		include('../phpqrcode/lib/full/qrlib.php');
 		define('IMAGE_WIDTH',$qr_size);
