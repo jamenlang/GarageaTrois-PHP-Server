@@ -16,18 +16,18 @@ if (!isset($_POST) || empty($_POST)){
 logger(print_r($_POST,true));
 
 //Get POST data and assign new variables.
-$name = sanitize($_POST['Name']);
-$nfc = sanitize($_POST['NFC']);
-$did = sanitize($_POST['DID']);
-$uid = sanitize($_POST['UID']);
-$switch = sanitize($_POST['switch']);
-$device_latitude = sanitize($_POST['Latitude']);
-$device_longitude = sanitize($_POST['Longitude']);
-$adminaction = sanitize($_POST['AdminAction']);
-$number = sanitize($_POST['TelNum']);
-$devicealias = sanitize($_POST['DeviceName']);
-$hasnfc = (sanitize($_POST['hasNFC']) == true ? '1' : '0');
-$change = sanitize($_POST['Change']);
+$name = sanitize(isset($_POST['Name']) ? $_POST['Name'] : '');
+$nfc = sanitize(isset($_POST['NFC']) ? $_POST['NFC'] : '');
+$did = sanitize(isset($_POST['DID']) ? $_POST['DID'] : '');
+$uid = sanitize(isset($_POST['UID']) ? $_POST['UID'] : '');
+$switch = sanitize(isset($_POST['switch']) ? $_POST['switch'] : '');
+$device_latitude = sanitize(isset($_POST['Latitude']) ? $_POST['Latitude'] : '');
+$device_longitude = sanitize(isset($_POST['Longitude']) ? $_POST['Longitude'] : '');
+$adminaction = sanitize(isset($_POST['AdminAction']) ? $_POST['AdminAction'] : '');
+$number = sanitize(isset($_POST['TelNum']) ? $_POST['TelNum'] : '');
+$devicealias = sanitize(isset($_POST['DeviceName']) ? $_POST['DeviceName'] : '');
+$hasnfc = (sanitize(isset($_POST['hasNFC']) ? $_POST['hasNFC'] : '') == true ? '1' : '0');
+$change = sanitize(isset($_POST['Change']) ? $_POST['Change']) : '');
 
 $dbhandle = mysql_connect($hostname, $username, $password)
 	or die("Unable to connect to MySQL");
