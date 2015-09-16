@@ -113,7 +113,10 @@ if($phpqrcode == '' && $qr_enabled == "1"){
 	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode',$output);
 	logger($output);
 }
-
+if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address'){
+	logger('$hue_emulator_ip is not configured, exiting.');
+	exit;
+}
 if($armzilla == ''){
 	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 	foreach ($output as $line){
