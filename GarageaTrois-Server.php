@@ -399,7 +399,6 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '')
 
 		if(mysql_num_rows($result)){
 			while($row=mysql_fetch_assoc($result)){
-				logger('row ' . print_r($row));
 				$json[ $table . '_info'][]=$row;
 			}
 		}
