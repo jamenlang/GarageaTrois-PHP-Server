@@ -86,10 +86,10 @@ else{
 - or add here -
 <table>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-<tr><td><label>Name</label></td><td><input placeholder="garage light" type="text" id="name" name="name"/></tr>
-<tr><td><label>Device Type</label></td><td><input placeholder="switch" type="text" id="deviceType" name="deviceType"/></tr>
-<tr><td><label>onURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" size="190" type="text" id="onUrl" name="onUrl"/></tr>
-<tr><td><label>offURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" size="190" type="text" id="offUrl" name="offUrl"/></tr>
+<tr><td><label>Name</label></td><td><input placeholder="garage light" value="garage light" type="text" id="name" name="name"/></tr>
+<tr><td><label>Device Type</label></td><td><input placeholder="switch" value="switch" type="text" id="deviceType" name="deviceType"/></tr>
+<tr><td><label>onURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" size="190" type="text" id="onUrl" name="onUrl"/></tr>
+<tr><td><label>offURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" size="190" type="text" id="offUrl" name="offUrl"/></tr>
 <tr><td><input type="submit" value="add device"></td></tr>
 </form>
 </table>
