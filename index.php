@@ -1,5 +1,6 @@
 <?php
 require('GarageaTrois-Config.php');
+require('GarageaTrois-Functions.php');
 
 if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
 	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/jamenlang/GarageaTrois/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
@@ -12,7 +13,7 @@ if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
 	}
 }
 $output = '';
-$dir = '/home/pi';
+$dir = '/var/www';
 $files = scandir($dir);
 foreach($files as $filename){
 	echo $filename;
@@ -123,20 +124,3 @@ echo (($test != 0) ? $test . ' items need your attention.<br /><br />' : 'Nothin
 </body>
 
 </html>
-<?php
-function _isCurl(){
-	return function_exists('curl_version');
-}
-
-function getSslPage($url) {
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-	curl_setopt($ch, CURLOPT_HEADER, false);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_REFERER, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-	$result = curl_exec($ch);
-	curl_close($ch);
-	return sha1($result);
-}
