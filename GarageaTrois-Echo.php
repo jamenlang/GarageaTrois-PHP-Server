@@ -35,7 +35,6 @@ if($_POST){
 	curl_close($curl);
 	$response = json_decode($json_response, true);
 	var_dump($response);
-	exit;
 }
 
 if(isset($_GET['id']) && $_GET['id'] = 'action'){
