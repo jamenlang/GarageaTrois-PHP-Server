@@ -23,13 +23,13 @@ if(is_file("$dir/GarageaTrois/GarageaTrois-Config.php")){
 			fwrite($fp, 'creating log.');
 			fclose($fp);
 		}
-		if (!is_writable($log)) {
-			chmod($log,0777);
+		if (!chmod($log,0777)) {
+			echo 'failed to make log writable.';
 		}
 	}
 }
 else{
-	echo 'GarageaTrois-Config.php not found. Downloading it in a second.';
+	echo 'GarageaTrois-Config.php not found. Downloading it now.';
 }
 
 $files = scandir($dir);
