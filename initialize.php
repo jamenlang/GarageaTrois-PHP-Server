@@ -9,7 +9,7 @@ if(php_sapi_name() != 'cli'){
 
 $dir = '/var/www';
 
-if(getcwd != $dir){
+if(getcwd() != $dir){
 	copy('/var/www/GarageaTrois/initialize.php', '/var/www/initialize.php');
 	echo('this script must be placed in /var/www/, a copy has been made and this file will be destroyed.');
 	unlink('/var/www/GarageaTrois/initialize.php');
