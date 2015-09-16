@@ -10,6 +10,9 @@ require('GarageaTrois-Config.php');
 $dir = dirname($_SERVER['PHP_SELF']);
 
 if($_POST){
+	if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/configurator.html'){
+		die('$hue_configurator_url needs to be configured in GarageaTrois-Config.php');
+	}
 	$content = json_encode($_POST);
 
 	$curl = curl_init($hue_devices_url);
