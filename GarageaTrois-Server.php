@@ -436,8 +436,11 @@ while ($row = mysql_fetch_array($result)) {
 	}
 	$users[$row{'uid'}] = $row{'name'};
 }
-if($dummy_admin)
+if($dummy_admin){
 	$admin_users[$dummy_admin] = 'dummy admin';
+	$users[$dummy_admin] = 'dummy admin';
+}
+
 $result = mysql_query("SELECT * FROM device");
 //fetch tha data from the database
 while ($row = mysql_fetch_array($result)) {
