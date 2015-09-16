@@ -455,12 +455,18 @@ while ($row = mysql_fetch_array($result)) {
 	else {
 		$disallowed_devices[$row{'did'}] = $row{'did'};
 	}
+	if ($row[did] == $did){
+		$did_exists = '1';
+		$nfc_allowed = $row['nfc'];
+		$did_allowed = $row['allowed'];
+		//echo 'did exists';
+	}
 	$devices[$row{'did'}] = $row{'did'};
 }
 
 /************ ACTION REQUESTED BY APP ************/
 
-if (isset($switch) && $switch != ''){
+if (isset($switch) && $switch != '' && isset($allowed_users[$row{'uid'}]) && $did_exists != '0' && $did_allowed != '0'){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
 	if($geofence_enabled == 'true')
