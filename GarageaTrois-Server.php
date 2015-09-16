@@ -27,7 +27,7 @@ $adminaction = sanitize(isset($_POST['AdminAction']) ? $_POST['AdminAction'] : '
 $number = sanitize(isset($_POST['TelNum']) ? $_POST['TelNum'] : '');
 $devicealias = sanitize(isset($_POST['DeviceName']) ? $_POST['DeviceName'] : '');
 $hasnfc = (sanitize(isset($_POST['hasNFC']) ? $_POST['hasNFC'] : '') == true ? '1' : '0');
-$change = sanitize(isset($_POST['Change']) ? $_POST['Change']) : '');
+$change = sanitize(isset($_POST['Change']) ? $_POST['Change'] : '');
 
 $dbhandle = mysql_connect($hostname, $username, $password)
 	or die("Unable to connect to MySQL");
