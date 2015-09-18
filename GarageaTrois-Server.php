@@ -20,6 +20,10 @@ $name = sanitize(isset($_POST['Name']) ? $_POST['Name'] : '');
 $nfc = sanitize(isset($_POST['NFC']) ? $_POST['NFC'] : '');
 $did = sanitize(isset($_POST['DID']) ? $_POST['DID'] : '');
 $uid = sanitize(isset($_POST['UID']) ? $_POST['UID'] : '');
+$cname = sanitize(isset($_POST['CName']) ? $_POST['CName'] : '');
+$cnfc = sanitize(isset($_POST['CNFC']) ? $_POST['CNFC'] : '');
+$cdid = sanitize(isset($_POST['CDID']) ? $_POST['CDID'] : '');
+$cuid = sanitize(isset($_POST['CUID']) ? $_POST['CUID'] : '');
 $switch = sanitize(isset($_POST['switch']) ? $_POST['switch'] : '');
 $device_latitude = sanitize(isset($_POST['Latitude']) ? $_POST['Latitude'] : '');
 $device_longitude = sanitize(isset($_POST['Longitude']) ? $_POST['Longitude'] : '');
@@ -163,7 +167,7 @@ $result = mysql_query("SELECT * FROM auth");
 while ($row = mysql_fetch_array($result)) {
 	if ($row{'allowed'} == "1"){
 		$allowed_users[$row{'uid'}] = $row{'name'};
-		
+
 		if ($row{'admin'} == "1"){
 			$admin_users[$row{'uid'}] = $row{'name'};
 		}
@@ -220,28 +224,28 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 	{
 		if ($change == 'change_uid'){
 			//update the uid where name = $name
-			$sql = 'Select * from auth where name="' . $name . '"';
+			$sql = 'Select * from auth where name="' . $cname . '"';
 			$dbres = mysql_query($sql);
 
 			while ($row = mysql_fetch_assoc($dbres))
 			{
 				//print_r($row);
-				if ($row[name] == $name){
+				if ($row[name] == $cname){
 					$old_uid = $row[uid];
 					$uid_exists = '1';
 					//echo 'uid exists';
 					//the did already exists; so we need to fail because duh.
 				}
 			}
-			
+
 			logger('uid ' . $old_uid);
 
 			if ($uid_exists == '1')
 			{
 				logger('uid ' . $uid_exists);
 
-				$sql = 'Update auth set uid="' . $uid . '", allowed="' . $allowed . '" where name="' . $name . '"';
-				
+				$sql = 'Update auth set uid="' . $cuid . '", allowed="' . $allowed . '" where name="' . $cname . '"';
+
 				logger($sql);
 
 				if(! $retval = mysql_query($sql))
@@ -249,7 +253,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 					die('Could not enter data: ' . mysql_error());
 				}
 
-				echo 'UID changed from ' . $old_uid . ' to ' . $uid . ' for ' . $name;
+				echo 'UID changed from ' . $old_uid . ' to ' . $cuid . ' for ' . $cname;
 				exit;
 			}
 			else {
@@ -257,7 +261,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				logger('uid ' . $uid_exists);
 
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $cname . '","' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 
 				logger($sql);
 
@@ -267,23 +271,23 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				}
 
 				//echo 'User: ' . $name . ' UID: ' . $uid . ' ' . $allowed;
-				echo 'New User: ' . $name . ' UID: ' . $uid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
+				echo 'New User: ' . $cname . ' UID: ' . $cuid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
 				exit;
 			}
 		}
 		if ($change == 'change_name'){
 		//update the name where name = $uid
 
-			$sql = 'Select * from auth where uid="' . $uid . '"';
+			$sql = 'Select * from auth where uid="' . $cuid . '"';
 
 			logger($sql);
-			
+
 			$dbres = mysql_query($sql);
 
 			while ($row = mysql_fetch_assoc($dbres))
 			{
 				//print_r($row);
-				if ($row[uid] == $uid){
+				if ($row[uid] == $cuid){
 					$old_name = $row[name];
 					$name_exists = '1';
 					//echo 'uid exists';
@@ -293,24 +297,24 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 			}
 
 			logger($old_name);
-			
+
 			if ($name_exists == '1')
 			{
 				logger('name ' . $name_exists);
-				$sql = 'Update auth set name="' . $name . '", allowed="' . $allowed . '" where uid="' . $uid . '"';
-				
+				$sql = 'Update auth set name="' . $cname . '", allowed="' . $allowed . '" where uid="' . $cuid . '"';
+
 				if(! $retval = mysql_query($sql))
 				{
 					die('Could not enter data: ' . mysql_error());
 				}
-				echo 'Name changed from ' . $old_name . ' to ' . $name . ' for ' . $uid;
+				echo 'Name changed from ' . $old_name . ' to ' . $cname . ' for UID: ' . $cuid;
 				exit;
 			}
 			else {
 				//this is experimental 5/29/14
 				logger('name ' . $name_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $cname . '","' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 				logger($sql);
 
 				if(! $retval = mysql_query($sql))
@@ -318,21 +322,21 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 					die('Could not enter data: ' . mysql_error());
 				}
 
-				echo 'New User: ' . $name . ' UID: ' . $uid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
+				echo 'New User: ' . $cname . ' UID: ' . $cuid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
 				exit;
 			}
 		}
 	}
 
-	if (isset($uid) && $uid !='')
+	if (isset($cuid) && $cuid !='')
 	{
 		//we need to run a select to find out if the user id already exists.
-		$sql = 'Select * from auth where uid="' . $uid . '"';
+		$sql = 'Select * from auth where uid="' . $cuid . '"';
 		$dbres = mysql_query($sql);
 
 		while ($row = mysql_fetch_assoc($dbres))
 		{
-			if ($row[uid] == $uid){
+			if ($row[uid] == $cuid){
 				$old_name = $row[name];
 				$uid_exists = '1';
 				//echo 'uid exists';
@@ -341,17 +345,17 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 		}
 	}
 
-	if (isset($did) && $did !='')
+	if (isset($cdid) && $cdid !='')
 	{
 		//we need to run a select to find out if the device id already exists.
-		$sql = 'Select * from device where did="' . $did . '"';
+		$sql = 'Select * from device where did="' . $cdid . '"';
 		$dbres = mysql_query($sql);
 
 
 		while ($row = mysql_fetch_assoc($dbres))
 		{
 			//print_r($row);
-			if ($row[did] == $did){
+			if ($row[did] == $cdid){
 				$did_exists = '1';
 				//echo 'did exists';
 				//the did already exists; so we need to run an update query instead of insert.
@@ -361,53 +365,59 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 
 	if($adminaction == "Grant" || $adminaction == "Revok")
 	{
-		if (isset($nfc) && $nfc != ''){
+		if (isset($cnfc) && $cnfc != ''){
 			if ($nfc == 'nonexclusive'){
 				//set nfc = allowed (unless we're revoking priviledges)
-				$nfc = (($adminaction == "Revok") ? '0' : '1');
+				$cnfc = (($adminaction == "Revok") ? '0' : '1');
 				$forcenfc = '0';
 			}
-			if ($nfc == 'exclusive'){
+			if ($cnfc == 'exclusive'){
 				//set nfc = allowed because it has to be for exclusive access... if the priviledge is revoked then nfc is disabled entirely.
-				$nfc = (($adminaction == "Revok") ? '0' : '1');
+				$cnfc = (($adminaction == "Revok") ? '0' : '1');
 				$forcenfc = (($adminaction == "Revok") ? '0' : '1');
 			}
 		}
 
-		if ($uid_exists == '1' && isset($uid) && $uid !=''){
+		if ($uid_exists == '1' && isset($cuid) && $cuid !=''){
 			//update .. where uid = $uid
-			$sql = 'update auth set allowed="' . $allowed . '", name="' . $name . '", date="' . date('Y-m-d H:i:s') . '" where uid= "' . $uid . '"';
+			$sql = 'update auth set allowed="' . $allowed . '", name="' . $cname . '", date="' . date('Y-m-d H:i:s') . '" where uid= "' . $cuid . '"';
+
+			logger($sql);
 
 			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
 			//echo $uid . ' already exists. Auth updated.';
-			echo "Privileges for " . $name . " (" . $uid . ") " . $adminaction . "ed";
+			echo "Privileges for " . $cname . " (" . $cuid . ") " . $adminaction . "ed";
 			exit;
 		}
 
-		if ($did_exists == '1' && isset($did) && $did !=''){
+		if ($did_exists == '1' && isset($cdid) && $cdid !=''){
 			//update .. where did = $did
-			$sql = 'update device set allowed="' . $allowed . '", nfc="' . $nfc . '", force_nfc="' . $forcenfc . '", date="' . date('Y-m-d H:i:s') . '" where did= "' . $did . '"';
+			$sql = 'update device set allowed="' . $allowed . '", nfc="' . $cnfc . '", force_nfc="' . $forcenfc . '", date="' . date('Y-m-d H:i:s') . '" where did= "' . $cdid . '"';
+
+			logger($sql);
 
 			//file_put_contents("post.log", $sql);
 			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
 			}
-			echo "Privileges for " . $did . " " . $adminaction . "ed";
+			echo "Privileges for " . $cdid . " " . $adminaction . "ed";
 
 			exit;
 		}
 
 		if ($did_exists != '1' && $uid_exists != '1'){
 			//this is a new user. insert.
-			if ($uid != ''){
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $name . '","' . $uid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+			if ($cuid != ''){
+				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $cname . '","' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				logger($sql);
 			}
-			if ($did != ''){
-				$sql = 'INSERT INTO device (nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $nfc . '","' . $hasnfc . '", "' . $forcenfc . '", "' . $did . '", "' . $allowed . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
+			if ($cdid != ''){
+				$sql = 'INSERT INTO device (nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $cnfc . '","' . $hasnfc . '", "' . $forcenfc . '", "' . $cdid . '", "' . $allowed . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
+				logger($sql);
 			}
 
 			if(! $retval = mysql_query($sql))
@@ -415,17 +425,17 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				die('Could not enter data: ' . mysql_error());
 			}
 			else{
-				if (isset($did) && $did != '')
+				if (isset($cdid) && $cdid != '')
 				{
-					echo "Privileges for " . $did . " " . $adminaction . "ed";
+					echo "Privileges for " . $cdid . " " . $adminaction . "ed";
 
-					$stringData = $did . ' ' . $adminaction . "ed" . "\n";
+					$stringData = $cdid . ' ' . $adminaction . "ed" . "\n";
 					mailer("Device " . $granted, $stringData, $number);
 					exit;
 				}
-				if (isset($name) && $name != '')
+				if (isset($cname) && $cname != '')
 				{
-					echo "Privileges for " . $name . " (" . $uid . ") " . $adminaction . "ed. " . (isset($number) && $number != '' ? "User has been notified @ " . $number : "");
+					echo "Privileges for " . $cname . " (" . $cuid . ") " . $adminaction . "ed. " . (isset($number) && $number != '' ? "User has been notified @ " . $number : "");
 					exit;
 				}
 			}
@@ -476,7 +486,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 		if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
 			$switch = $switch . ' Denied (Geofence Empty)';
 			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
-			
+
 			if(!$retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
