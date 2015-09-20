@@ -42,9 +42,9 @@ if(isset($_GET['id']) && $_GET['id'] = 'action'){
 
 	$url = "http://$_SERVER[HTTP_HOST]$dir/GarageaTrois-Server.php";
 	$fields = array(
-		'UID' => urlencode($echo_uid),
-		'DID' => urlencode($echo_did),
-		'DeviceName' => urlencode($echo_name),
+		'UID' => urlencode($_GET['uid']),
+		'DID' => urlencode($_GET['did']),
+		'DeviceName' => urlencode($_GET['name']),
 		'hasNFC' => urlencode('false'),
 		'switch' => urlencode(ucfirst($_GET['switch'])),
 		'Latitude' => urlencode(ucfirst($garage_latitude)),
@@ -88,8 +88,8 @@ else{
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 <tr><td><label>Name</label></td><td><input placeholder="garage light" value="garage light" type="text" id="name" name="name"/></tr>
 <tr><td><label>Device Type</label></td><td><input placeholder="switch" value="switch" type="text" id="deviceType" name="deviceType"/></tr>
-<tr><td><label>onURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" size="190" type="text" id="onUrl" name="onUrl"/></tr>
-<tr><td><label>offURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light" size="190" type="text" id="offUrl" name="offUrl"/></tr>
+<tr><td><label>onURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>&name=<$echo_name>" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>&name=<$echo_name>" size="190" type="text" id="onUrl" name="onUrl"/></tr>
+<tr><td><label>offURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>&name=<$echo_name>" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>&name=<$echo_name>" size="190" type="text" id="offUrl" name="offUrl"/></tr>
 <tr><td><input type="submit" value="add device"></td></tr>
 </form>
 </table>
