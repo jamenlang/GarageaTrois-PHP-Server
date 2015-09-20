@@ -206,6 +206,13 @@ while ($row = mysql_fetch_array($result)) {
 	$devices[$row{'did'}] = $row{'did'};
 }
 
+if($did = $echo_did && $echo_did != ''){
+        $did_exists = '1';
+        $did_allowed = '1';
+        $allowed_users[] = $echo_uid;
+        $devices[$did] = $did;
+}
+
 /************ ADMINISTRATIVE ACTION SENT BY APP ************/
 
 if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $did_exists != '0' && $did_allowed != '0')
