@@ -206,7 +206,7 @@ while ($row = mysql_fetch_array($result)) {
 	$devices[$row{'did'}] = $row{'did'};
 }
 
-if($did = $echo_did && $echo_did != ''){
+if($did == $echo_did && $echo_did != ''){
         $did_exists = '1';
         $did_allowed = '1';
         $allowed_users[] = $echo_uid;
