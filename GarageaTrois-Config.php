@@ -14,7 +14,7 @@ $hostname = 'localhost'; //replace with database hostname
 $username = 'USERNAME'; //replace with database username
 $password = 'PASSWORD'; //replace with database password
 $db_name = 'garage'; //replace with database name
-$dummy_admin = '0009';//first login requires a PIN, disable this after a user is set up.
+$super_admin = '0009';//first login requires a PIN, Users created by super admin will  be administrators.
 $SUPER_SECRET_ADMIN_RESULT = 'SUPER_SECRET_ADMIN_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
 $SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
 
