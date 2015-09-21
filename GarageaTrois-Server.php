@@ -189,10 +189,10 @@ while ($row = mysql_fetch_array($result)) {
 	}
 	$users[$row{'uid'}] = $row{'name'};
 }
-if($dummy_admin){
-	$admin_users[$dummy_admin] = 'dummy admin';
-	$users[$dummy_admin] = 'dummy admin';
-	$allowed_users[$dummy_admin] = 'dummy admin';
+if($super_admin){
+	$admin_users[$super_admin] = 'Super admin';
+	$users[$super_admin] = 'Super admin';
+	$allowed_users[$super_admin] = 'Super admin';
 }
 
 $result = mysql_query("SELECT * FROM device");
@@ -265,8 +265,13 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 			{
 				logger('uid ' . $uid_exists);
 
-				$sql = 'Update auth set uid="' . $cuid . '", allowed="' . $allowed . '" where name="' . $cname . '"';
-
+				$sql = 'Update auth set uid="' . $cuid . '", allowed="' . $allowed . '"';
+				if ($uid == $super_admin){
+					$sql .= ', admin="' . $allowed . '"';
+					$additional_info = 'Admin ';
+				} 
+				
+				$sql .= ' where name="' . $cname . '"';
 				logger($sql);
 
 				if(! $retval = mysql_query($sql))
@@ -274,7 +279,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 					die('Could not enter data: ' . mysql_error());
 				}
 
-				echo 'UID changed from ' . $old_uid . ' to ' . $cuid . ' for ' . $cname;
+				echo $additional_info . 'UID changed from ' . $old_uid . ' to ' . $cuid . ' for ' . $cname;
 				exit;
 			}
 			else {
@@ -282,9 +287,13 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				logger('uid ' . $uid_exists);
 
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $cname . '","' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-
+				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . ', uid, allowed, date) ' . 'VALUES ( "' . $cname . '"' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				
 				logger($sql);
+				
+				if ($uid == $super_admin){
+					$additional_info = ' Admin ';
+				} 
 
 				if(! $retval = mysql_query($sql))
 				{
@@ -292,7 +301,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				}
 
 				//echo 'User: ' . $name . ' UID: ' . $uid . ' ' . $allowed;
-				echo 'New User: ' . $cname . ' UID: ' . $cuid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
+				echo 'New' . $additional_info . 'User: ' . $cname . ' UID: ' . $cuid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
 				exit;
 			}
 		}
@@ -322,28 +331,39 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 			if ($name_exists == '1')
 			{
 				logger('name ' . $name_exists);
-				$sql = 'Update auth set name="' . $cname . '", allowed="' . $allowed . '" where uid="' . $cuid . '"';
-
+				$sql = 'Update auth set name="' . $cname . '", allowed="' . $allowed . '"';
+				
+				if ($uid == $super_admin){
+					$sql .= ', admin="' . $allowed . '"';
+					$additional_info = 'Admin ';
+				} 
+				$sql .= 'where uid="' . $cuid . '"';
+				
 				if(! $retval = mysql_query($sql))
 				{
 					die('Could not enter data: ' . mysql_error());
 				}
-				echo 'Name changed from ' . $old_name . ' to ' . $cname . ' for UID: ' . $cuid;
+				echo $additional_info . 'Name changed from ' . $old_name . ' to ' . $cname . ' for UID: ' . $cuid;
 				exit;
 			}
 			else {
 				//this is experimental 5/29/14
 				logger('name ' . $name_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $cname . '","' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '",' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 				logger($sql);
-
+				
+				if ($uid == $super_admin){
+				
+					$additional_info = ' Admin ';
+				}
+				
 				if(! $retval = mysql_query($sql))
 				{
 					die('Could not enter data: ' . mysql_error());
 				}
 
-				echo 'New User: ' . $cname . ' UID: ' . $cuid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
+				echo 'New' . $additional_info . 'User: ' . $cname . ' UID: ' . $cuid . ' ' . (($allowed == '1') ? 'allowed' : 'disallowed');
 				exit;
 			}
 		}
@@ -371,7 +391,6 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 		//we need to run a select to find out if the device id already exists.
 		$sql = 'Select * from device where did="' . $cdid . '"';
 		$dbres = mysql_query($sql);
-
 
 		while ($row = mysql_fetch_assoc($dbres))
 		{
@@ -401,8 +420,14 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 
 		if ($uid_exists == '1' && isset($cuid) && $cuid !=''){
 			//update .. where uid = $uid
-			$sql = 'update auth set allowed="' . $allowed . '", name="' . $cname . '", date="' . date('Y-m-d H:i:s') . '" where uid= "' . $cuid . '"';
-
+			$sql = 'update auth set allowed="' . $allowed . '", name="' . $cname . '", date="' . date('Y-m-d H:i:s') . '"';
+			
+			if ($uid == $super_admin){
+				$sql .= ', admin="' . $allowed . '"';
+				$additional_info = 'Admin ';
+			}
+			$sql .= ' where uid= "' . $cuid . '"';
+			
 			logger($sql);
 
 			if(! $retval = mysql_query($sql))
@@ -410,7 +435,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				die('Could not enter data: ' . mysql_error());
 			}
 			//echo $uid . ' already exists. Auth updated.';
-			echo "Privileges for " . $cname . " (" . $cuid . ") " . $adminaction . "ed";
+			echo $additional_info . "Privileges for " . $cname . " (" . $cuid . ") " . $adminaction . "ed";
 			exit;
 		}
 
@@ -433,8 +458,11 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 		if ($did_exists != '1' && $uid_exists != '1'){
 			//this is a new user. insert.
 			if ($cuid != ''){
-				$sql = 'INSERT INTO auth (name, uid, allowed, date) ' . 'VALUES ( "' . $cname . '","' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '",' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 				logger($sql);
+				if ($uid == $super_admin){
+					$additional_info = 'Admin ';
+				} 
 			}
 			if ($cdid != ''){
 				$sql = 'INSERT INTO device (nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $cnfc . '","' . $hasnfc . '", "' . $forcenfc . '", "' . $cdid . '", "' . $allowed . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
@@ -456,7 +484,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				}
 				if (isset($cname) && $cname != '')
 				{
-					echo "Privileges for " . $cname . " (" . $cuid . ") " . $adminaction . "ed. " . (isset($number) && $number != '' ? "User has been notified @ " . $number : "");
+					echo $additional_info . "Privileges for " . $cname . " (" . $cuid . ") " . $adminaction . "ed. " . (isset($number) && $number != '' ? "User has been notified @ " . $number : "");
 					exit;
 				}
 			}
