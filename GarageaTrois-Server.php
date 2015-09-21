@@ -80,6 +80,8 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 		if (($did_exists == '0' && $did_allowed == '0') || ($did_exists == '1' && $nfc_allowed != '1')){
 			$sql = 'INSERT INTO log (uid, ip, action, did, number, latitude, longitude, date) VALUES ( "' . "NFC (" . $uid . ')","' . $_SERVER['REMOTE_ADDR'] . '","' . 'Denied' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 
+			logger($sql);
+
 			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
@@ -88,11 +90,13 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 			//insert some helpful stuff about the device here.
 			if ($did_exists == '0'){
 				$sql = 'INSERT INTO device (alias, nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . '0' . '", "' . $did . '", "' . '1' . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
+				logger($sql);
 			}
 			else{
 				$sql = 'update device set alias = "' . $devicealias . '", has_nfc = "' . $hasnfc . '", force_nfc = "' . $forcenfc . '", number = "' . $number . '", date = "' . date('Y-m-d H:i:s') . '" where did = "' . $did . '";';
+				logger($sql);
 			}
-			
+
 			if(! $retval = mysql_query($sql))
 			{
 				die('Could not enter data: ' . mysql_error());
@@ -121,6 +125,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 			}
 
 			$sql = 'INSERT INTO log (uid, ip, action, did, number, latitude, longitude, date) VALUES ( "' . $uid . '","' . $_SERVER['REMOTE_ADDR'] . '","' . 'Granted' . '","' . $did . '","' . $number . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+			logger($sql);
 
 			if(! $retval = mysql_query($sql))
 			{
@@ -129,6 +134,7 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 			//maybe update the device too.
 
 			$sql = 'update device set alias="' . $devicealias . '", nfc="' . $nfc_allowed . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+			logger($sql);
 
 			if(! $retval = mysql_query($sql))
 			{
@@ -153,6 +159,12 @@ if (isset($uid) && $uid == 'nfc0' && isset($did) && $did !=''){
 if (!isset($uid))
 {
 	echo "No user";
+	exit;
+}
+
+if (!isset($did))
+{
+	echo "No device";
 	exit;
 }
 
@@ -206,11 +218,13 @@ while ($row = mysql_fetch_array($result)) {
 	$devices[$row{'did'}] = $row{'did'};
 }
 
-if($did == $echo_did && $echo_did != ''){
-        $did_exists = '1';
-        $did_allowed = '1';
-        $allowed_users[] = $echo_uid;
-        $devices[$did] = $did;
+if(($did == $echo_did && $echo_did != '') && ($uid == $echo_uid && $echo_uid != '')){
+	$did_exists = '1';
+	$did_allowed = '1';
+	$allowed_users[$uid] = $echo_name;
+	$allowed_devices[$did] = $did;
+	$devices[$did] = $did;
+	$users[$uid] = $echo_name;
 }
 
 /************ ADMINISTRATIVE ACTION SENT BY APP ************/
@@ -477,7 +491,7 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '' && isset($allowed_users[$uid
 		}
 		mysql_close($con);
 		echo json_encode($json);
-		logger(print_r($json));
+		//logger(print_r($json));
 		exit;
 	}
 }
@@ -487,12 +501,18 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '' && isset($allowed_users[$uid
 if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exists != '0' && $did_allowed != '0'){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
+	ob_end_clean();
+	header("Connection: close");
+	ignore_user_abort(); // optional
+	ob_start();
+
 	if($geofence_enabled == 'true')
 	{
 		$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
 		if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
 			$switch = $switch . ' Denied (Geofence Empty)';
 			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+			logger($sql);
 
 			if(!$retval = mysql_query($sql))
 			{
@@ -506,6 +526,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 		{
 			$switch = $switch . ' Denied (Geofence ' . $distance_away . ' ' . $geofence_unit_of_measurement . ')';
 			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+			logger($sql);
 
 			if(!$retval = mysql_query($sql))
 			{
@@ -553,20 +574,36 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 		}
 		echo 'Lock toggled';
 	}
+	$size = ob_get_length();
+	header("Content-Length: $size");
+	ob_end_flush(); // Strange behaviour, will not work
+	flush();// Unless both are called !
+	// Do processing here 
 
 	$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","'. date('Y-m-d H:i:s') . '" )';
+	logger($sql);
 
 	if(! $retval = mysql_query($sql))
 	{
+		logger('died');
 		die('Could not enter data: ' . mysql_error());
 	}
 
 	$stringData = $switch . " toggled\n";
+	logger($stringData);
+
 	$txt = $users[$uid] . " toggled " . $switch . ' @ ' . $stringData;
+	logger($txt);
+
 	mailer($stringData, $txt);
 	exit;
 }
 else{
+	ob_end_clean();
+	header("Connection: close");
+	ignore_user_abort(); // optional
+	ob_start();
+
 	if($log_attempts == 'true' && $max_attempts > 0){
 		$sql = "SELECT COUNT(*) AS `attempts` FROM `log` WHERE `ip` = '{$_SERVER[REMOTE_ADDR]}' AND `action` = 'Denied' AND `date` > DATE_SUB(NOW(),INTERVAL '{$attempt_interval}' MINUTE)";
 		$result = mysql_query($sql);
@@ -579,6 +616,7 @@ else{
 				{
 					//maybe update device here.
 					$sql = 'update device set allowed="0", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+					logger($sql);
 
 					if(! $retval = mysql_query($sql))
 					{
@@ -588,6 +626,7 @@ else{
 				else {
 					//insert some helpful stuff about the device here.
 					$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . $did . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
+					logger($sql);
 
 					if(! $retval = mysql_query($sql))
 					{
@@ -600,6 +639,11 @@ else{
 		}
 	}
 	if (!isset($uid))
+	{
+		echo 'Log in';
+		exit;
+	}
+	else if (!isset($did))
 	{
 		echo 'Log in';
 		exit;
@@ -625,7 +669,14 @@ else{
 		echo 'Access denied';
 	}
 
+	$size = ob_get_length();
+	header("Content-Length: $size");
+	ob_end_flush(); // Strange behaviour, will not work
+	flush();// Unless both are called !
+	// Do processing here 
+
 	$sql = 'INSERT INTO log (name, ip, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+	logger($sql);
 
 	if(! $retval = mysql_query($sql))
 	{
@@ -636,6 +687,7 @@ else{
 	{
 		//maybe update device here.
 		$sql = 'update device set allowed="1", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+		logger($sql);
 
 		if(! $retval = mysql_query($sql))
 		{
@@ -645,6 +697,7 @@ else{
 	else {
 		//insert some helpful stuff about the device here.
 		$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '1' . '", "' . $hasnfc . '", "' . $did . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
+		logger($sql);
 
 		if(! $retval = mysql_query($sql))
 		{
