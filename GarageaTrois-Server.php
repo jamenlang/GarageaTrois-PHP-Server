@@ -287,7 +287,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				logger('uid ' . $uid_exists);
 
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
-				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . ', uid, allowed, date) ' . 'VALUES ( "' . $cname . '"' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '"' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 				
 				logger($sql);
 				
@@ -406,7 +406,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 	if($adminaction == "Grant" || $adminaction == "Revok")
 	{
 		if (isset($cnfc) && $cnfc != ''){
-			if ($nfc == 'nonexclusive'){
+			if ($cnfc == 'nonexclusive'){
 				//set nfc = allowed (unless we're revoking priviledges)
 				$cnfc = (($adminaction == "Revok") ? '0' : '1');
 				$forcenfc = '0';
