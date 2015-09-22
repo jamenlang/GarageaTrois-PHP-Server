@@ -72,6 +72,24 @@ if($gat == ''){
 	}
 }
 
+if(is_file("$dir/GarageaTrois/GarageaTrois-Config.php")){
+	include("$dir/GarageaTrois/GarageaTrois-Config.php");
+
+	if(isset($log_to_file) && $log_to_file == '1'){
+		//create temp file if it doesn't exist
+		if (!file_exists($log)) {
+			$fp = fopen($log, "w");
+			fwrite($fp, 'creating log.');
+			fclose($fp);
+		}
+		if (!chmod($log,0777)) {
+			echo 'failed to make log writable.';
+		}
+	}
+	else
+		unlink($log);
+}
+
 require_once("$dir/GarageaTrois/GarageaTrois-Config.php");
 require_once("$dir/GarageaTrois/GarageaTrois-Functions.php");
 
