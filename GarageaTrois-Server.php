@@ -350,7 +350,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				//this is experimental 5/29/14
 				logger('name ' . $name_exists);
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
-				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '",' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '"' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 				logger($sql);
 
 				if ($uid == $super_admin){
@@ -462,7 +462,7 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				logger($sql);
 				if ($uid == $super_admin){
 					$additional_info = 'Admin ';
-				} 
+				}
 			}
 			if ($cdid != ''){
 				$sql = 'INSERT INTO device (nfc, has_nfc, force_nfc, did, allowed, number, date) ' . 'VALUES ( "' . $cnfc . '","' . $hasnfc . '", "' . $forcenfc . '", "' . $cdid . '", "' . $allowed . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
@@ -500,8 +500,10 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '' && isset($allowed_users[$uid
 		$table = 'log';
 	if ($_POST['Admin'] == 'viewdevices')
 		$table = 'device';
-	if ($_POST['Admin'] == 'viewusers')
+	if ($_POST['Admin'] == 'viewusers'){
 		$table = 'auth';
+		$new_columns = Array('uid' => '0000','allowed' => '1','date' => 'never','name' => 'new user','admin' => '0');
+	}
 	if (isset($table) && $table != '')
 	{
 		logger($table . ' log requsted by app.');
@@ -512,8 +514,12 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '' && isset($allowed_users[$uid
 		$result = mysql_query($sql);
 		$json = array();
 
-		if(mysql_num_rows($result)){
+		if($new_columns)
+			$json[ $table . '_info'][]= $new_columns;
+
+		if(mysql_num_rows($result) > 0){
 			while($row=mysql_fetch_assoc($result)){
+				$x = $x + 1;
 				$json[ $table . '_info'][]=$row;
 			}
 		}
