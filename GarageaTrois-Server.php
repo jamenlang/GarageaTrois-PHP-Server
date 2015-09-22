@@ -407,12 +407,12 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 	{
 		if (isset($cnfc) && $cnfc != ''){
 			if ($cnfc == 'nonexclusive'){
-				//set nfc = allowed (unless we're revoking priviledges)
+				//set nfc = allowed (unless we're revoking privileges)
 				$cnfc = (($adminaction == "Revok") ? '0' : '1');
 				$forcenfc = '0';
 			}
 			if ($cnfc == 'exclusive'){
-				//set nfc = allowed because it has to be for exclusive access... if the priviledge is revoked then nfc is disabled entirely.
+				//set nfc = allowed because it has to be for exclusive access... if the privileges are revoked then nfc is disabled entirely.
 				$cnfc = (($adminaction == "Revok") ? '0' : '1');
 				$forcenfc = (($adminaction == "Revok") ? '0' : '1');
 			}
