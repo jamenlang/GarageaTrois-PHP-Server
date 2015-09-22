@@ -455,10 +455,10 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 			exit;
 		}
 
-		if ($did_exists != '1' && $uid_exists != '1'){
+		if ($did_exists != '1' || $uid_exists != '1'){
 			//this is a new user. insert.
 			if ($cuid != ''){
-				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '",' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
+				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '"' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 				logger($sql);
 				if ($uid == $super_admin){
 					$additional_info = 'Admin ';
