@@ -88,8 +88,8 @@ if(sha1_file('GarageaTrois-Config.php') == getSslPage('https://raw.githubusercon
 	$test++;
 }
 
-if($dummy_admin == '0009'){
-	echo '<li>$dummy_admin needs to be updated or removed in GarageaTrois-Config.php</li>';
+if($super_admin == '0009'){
+	echo '<li>$super_admin needs to be updated or removed in GarageaTrois-Config.php</li>';
 	$test++;
 }
 
