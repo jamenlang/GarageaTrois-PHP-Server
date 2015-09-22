@@ -269,8 +269,8 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				if ($uid == $super_admin){
 					$sql .= ', admin="' . $allowed . '"';
 					$additional_info = 'Admin ';
-				} 
-				
+				}
+
 				$sql .= ' where name="' . $cname . '"';
 				logger($sql);
 
@@ -288,12 +288,12 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '"' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
-				
+
 				logger($sql);
-				
+
 				if ($uid == $super_admin){
 					$additional_info = ' Admin ';
-				} 
+				}
 
 				if(! $retval = mysql_query($sql))
 				{
@@ -332,13 +332,13 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 			{
 				logger('name ' . $name_exists);
 				$sql = 'Update auth set name="' . $cname . '", allowed="' . $allowed . '"';
-				
+
 				if ($uid == $super_admin){
 					$sql .= ', admin="' . $allowed . '"';
 					$additional_info = 'Admin ';
-				} 
+				}
 				$sql .= 'where uid="' . $cuid . '"';
-				
+
 				if(! $retval = mysql_query($sql))
 				{
 					die('Could not enter data: ' . mysql_error());
@@ -352,12 +352,12 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 				//$sql = 'insert into auth (uid, allowed, name) values ('{'$uid'}', '{'$allowed'}', '{'$name'}')';
 				$sql = 'INSERT INTO auth (name, ' . (($uid == $super_admin) ? 'admin, ' : '') . 'uid, allowed, date) ' . 'VALUES ( "' . $cname . '",' . (($uid == $super_admin) ? ',"1"' : '') . ',"' . $cuid . '", "' . $allowed . '", "' . date('Y-m-d H:i:s') . '" )';
 				logger($sql);
-				
+
 				if ($uid == $super_admin){
-				
+
 					$additional_info = ' Admin ';
 				}
-				
+
 				if(! $retval = mysql_query($sql))
 				{
 					die('Could not enter data: ' . mysql_error());
@@ -421,13 +421,13 @@ if (isset($adminaction) && $adminaction !='' && isset($allowed_users[$uid]) && $
 		if ($uid_exists == '1' && isset($cuid) && $cuid !=''){
 			//update .. where uid = $uid
 			$sql = 'update auth set allowed="' . $allowed . '", name="' . $cname . '", date="' . date('Y-m-d H:i:s') . '"';
-			
+
 			if ($uid == $super_admin){
 				$sql .= ', admin="' . $allowed . '"';
 				$additional_info = 'Admin ';
 			}
 			$sql .= ' where uid= "' . $cuid . '"';
-			
+
 			logger($sql);
 
 			if(! $retval = mysql_query($sql))
@@ -634,10 +634,22 @@ else{
 
 	if($log_attempts == 'true' && $max_attempts > 0){
 		$sql = "SELECT COUNT(*) AS `attempts` FROM `log` WHERE `ip` = '{$_SERVER[REMOTE_ADDR]}' AND `action` = 'Denied' AND `date` > DATE_SUB(NOW(),INTERVAL '{$attempt_interval}' MINUTE)";
+		logger($sql);
 		$result = mysql_query($sql);
 		$attempts = mysql_result($result, 0);
+		logger($attempts);
+		logger($max_attempts -1);
+
 		if($attempts >= $max_attempts){
 			echo 'Maximum login attempts reached';
+			$size = ob_get_length();
+			header("Content-Length: $size");
+			ob_end_flush(); // Strange behaviour, will not work
+			flush();// Unless both are called !
+			// Do processing here 
+
+		}
+		if($attempts == $max_attempts){
 			if($block_after_max_attempts == 'true')
 			{
 				if (array_key_exists($did, $devices))
@@ -661,20 +673,17 @@ else{
 						die('Could not enter data: ' . mysql_error());
 					}
 				}
-			mailer("Blocked Device " . $devicealias . '(' . $did . ')', 'Maximum login attempts (' . $max_attempts . ') has been reached by ' . $devicealias . '(' . $did . ')');
+				mailer("Blocked Device " . $devicealias . '(' . $did . ')', 'Maximum login attempts (' . $max_attempts . ') has been reached by ' . $devicealias . '(' . $did . ')');
 			}
-			exit;
 		}
 	}
 	if (!isset($uid))
 	{
 		echo 'Log in';
-		exit;
 	}
 	else if (!isset($did))
 	{
 		echo 'Log in';
-		exit;
 	}
 	else if (array_key_exists($did, $disallowed_devices)){
 		$granted = 'Denied (Device)';
@@ -714,7 +723,7 @@ else{
 	if (array_key_exists($did, $devices))
 	{
 		//maybe update device here.
-		$sql = 'update device set allowed="1", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+		$sql = 'update device set allowed="' . (($did_allowed) ? $did_allowd : '0') . '", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
 		logger($sql);
 
 		if(! $retval = mysql_query($sql))
