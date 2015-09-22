@@ -103,7 +103,7 @@ if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.git
 }
 
 if($use_gpio == true){
-	if(!exec("gpio -v"))
+	if(!exec("gpio -v")){
 		exec("git clone git://git.drogon.net/wiringPi");
 		exec("cd wiringPi");
 		exec("./build");
