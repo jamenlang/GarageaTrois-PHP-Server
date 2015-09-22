@@ -7,6 +7,10 @@ if(php_sapi_name() != 'cli'){
 	exit;
 }
 
+if(!exec('git --version')){
+	exec('apt-get install git-core');
+}
+
 $dir = '/var/www';
 
 if(getcwd() != $dir){
@@ -99,6 +103,11 @@ if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.git
 }
 
 if($use_gpio == true){
+	if(!exec("gpio -v"))
+		exec("git clone git://git.drogon.net/wiringPi");
+		exec("cd wiringPi");
+		exec("./build");
+	}
 	//gpio will need to be initialized before use.
 	exec("/usr/local/bin/gpio readall", $output);
 	logger($output);
@@ -168,9 +177,19 @@ if($armzilla == ''){
 }
 
 if ($armzilla != ''){
-	logger('starting armzilla hue emulator');
-	logger("java -jar $dir/$armzilla --upnp.config.address=$localIP");
-	exec("java -jar $dir/$armzilla --upnp.config.address=$localIP");
+	$output = '';
+	//check if amazon-echo-bridge is in the running applications list
+	exec("ps ax | grep amazon-echo-bridge", $output);
+	if(is_array($output))
+		$output = implode(',',$output);
+	if(stristr($output, "java")){
+		logger('armzilla hue emulator is already started.');
+	}
+	else{
+		logger('starting armzilla hue emulator');
+		logger("java -jar $dir/$armzilla --upnp.config.address=$localIP");
+		exec("java -jar $dir/$armzilla --upnp.config.address=$localIP");
+	}
 }
 else {
 	logger("could not start $dir/$armzilla $localIP");
