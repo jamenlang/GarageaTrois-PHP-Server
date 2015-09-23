@@ -729,7 +729,7 @@ else{
 	if (array_key_exists($did, $devices))
 	{
 		//maybe update device here.
-		$sql = 'update device set allowed="' . (($did_allowed) ? $did_allowd : '0') . '", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
+		$sql = 'update device set allowed="1", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
 		logger($sql);
 
 		if(! $retval = mysql_query($sql))
