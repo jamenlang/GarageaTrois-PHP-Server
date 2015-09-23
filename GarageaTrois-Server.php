@@ -643,10 +643,9 @@ else{
 		logger($sql);
 		$result = mysql_query($sql);
 		$attempts = mysql_result($result, 0);
-		logger($attempts);
-		logger($max_attempts -1);
+		logger('attempt ' . $attempts . ' of ' . $max_attempts . (($block_after_max_attempts == 'true') ? ' until blocking DID' . $did : ''));
 
-		if($attempts >= $max_attempts){
+		if($attempts > $max_attempts){
 			echo 'Maximum login attempts reached';
 			$size = ob_get_length();
 			header("Content-Length: $size");
@@ -658,8 +657,10 @@ else{
 		if($attempts == $max_attempts){
 			if($block_after_max_attempts == 'true')
 			{
+				logger('$block_after_max_attempts = ' . $block_after_max_attempts);
 				if (array_key_exists($did, $devices))
 				{
+					logger('$block_after_max_attempts = ' . $block_after_max_attempts . ', array_key_exists($did, $devices)');
 					//maybe update device here.
 					$sql = 'update device set allowed="0", alias="' . $devicealias . '", has_nfc="' . $hasnfc . '", number="' . $number . '", date="' . date('Y-m-d H:i:s') . '" where did="' . $did . '"';
 					logger($sql);
@@ -670,6 +671,7 @@ else{
 					}
 				}
 				else {
+					logger('$block_after_max_attempts = ' . $block_after_max_attempts . ', !array_key_exists($did, $devices)');
 					//insert some helpful stuff about the device here.
 					$sql = 'INSERT INTO device (alias, allowed, has_nfc, did, number, date) ' . 'VALUES ( "' . $devicealias . '","' . '0' . '", "' . $hasnfc . '", "' . $did . '", "' . $number . '", "' . date('Y-m-d H:i:s') . '" )';
 					logger($sql);
