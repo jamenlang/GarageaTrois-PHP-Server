@@ -10,8 +10,8 @@ require('GarageaTrois-Config.php');
 $dir = dirname($_SERVER['PHP_SELF']);
 
 if($_POST){
-	if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/configurator.html'){
-		die('$hue_configurator_url needs to be configured in GarageaTrois-Config.php');
+	if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/configurator.html' || $use_hue_emulator != true ){
+		die('$hue_emulator/configurator variables need to be configured in GarageaTrois-Config.php');
 	}
 	$content = json_encode($_POST);
 
@@ -71,8 +71,8 @@ if(isset($_GET['id']) && $_GET['id'] = 'action'){
 	echo $result;
 }
 
-if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/configurator.html'){
-	echo 'warning: $hue_configurator_url needs to be configured in GarageaTrois-Config.php';
+if($hue_configurator_url == 'http://myawesomedomain-or-an-ip-address:8080/configurator.html' || $use_hue_emulator != true){
+	echo 'warning: $hue_emulator/configurator variables need to be configured in GarageaTrois-Config.php';
 }
 else{
 	if($hue_emulator_ip == 'localhost'){
@@ -88,8 +88,8 @@ else{
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 <tr><td><label>Name</label></td><td><input placeholder="garage light" value="garage light" type="text" id="name" name="name"/></tr>
 <tr><td><label>Device Type</label></td><td><input placeholder="switch" value="switch" type="text" id="deviceType" name="deviceType"/></tr>
-<tr><td><label>onURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>&name=<$echo_name>" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>&name=<$echo_name>" size="190" type="text" id="onUrl" name="onUrl"/></tr>
-<tr><td><label>offURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>&name=<$echo_name>" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>&name=<$echo_name>" size="190" type="text" id="offUrl" name="offUrl"/></tr>
+<tr><td><label>onURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>" size="190" type="text" id="onUrl" name="onUrl"/></tr>
+<tr><td><label>offURL</label></td><td><input placeholder="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>" value="<?php echo "http://$_SERVER[HTTP_HOST]$dir";?>/GarageaTrois-Echo.php?id=action&switch=light&uid=<$echo_uid>&did=<$echo_did>" size="190" type="text" id="offUrl" name="offUrl"/></tr>
 <tr><td><input type="submit" value="add device"></td></tr>
 </form>
 </table>
