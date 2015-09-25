@@ -21,7 +21,7 @@ foreach($files as $filename){
 		$armzilla = $filename;
 	}
 }
-if(!$armzilla && $hue_emulator_ip != 'myawesomedomain-or-an-ip-address'){
+if(!$armzilla && $hue_emulator_ip != 'myawesomedomain-or-an-ip-address' && $use_hue_emulator != false){
 	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 	foreach ($output as $line){
 		if($hue_emulator_link != '')
