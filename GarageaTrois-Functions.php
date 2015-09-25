@@ -76,7 +76,7 @@ function _isCurl(){
 
 function logger($data){
 	include('GarageaTrois-Config.php');
-	if($log_to_file != "1"){
+	if(!$log_to_file){
 		return;
 	}
 	if(is_array($data)){
