@@ -79,6 +79,7 @@ $carriers = array (
 /************ Amazon Echo Support
 This is for Echo Support, currently working through http://github.com/armzilla's Hue Emulator.************/
 
+$use_hue_emulator = false; //set to true to enable hue emulator
 $hue_emulator_ip = 'myawesomedomain-or-an-ip-address'; //set to localhost if using a raspberry pi for both garageatrois and hue emulator
 $hue_configurator_url = "http://$hue_emulator_ip:8080/configurator.html"; //url for the hue emulator device manager
 $hue_devices_url = "http://$hue_emulator_ip:8080/api/devices";
