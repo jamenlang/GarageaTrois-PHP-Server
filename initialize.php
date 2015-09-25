@@ -111,29 +111,56 @@ if($use_gpio == true){
 	//gpio will need to be initialized before use.
 	exec("/usr/local/bin/gpio readall", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio write $other_relay 1", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio write $light_relay 1", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio write $door_relay 1", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio write $lock_relay 1", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio mode $other_relay OUT", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio mode $light_relay OUT", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio mode $door_relay OUT", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio mode $lock_relay OUT", $output);
 	logger($output);
+	$output = '';
 	exec("/usr/local/bin/gpio readall", $output);
 	logger($output);
+	$output = '';
 }
 else
 	logger('gpio is not enabled in GarageaTrois-Config.php -skipping initialization.');
 
+
+if($phpqrcode == '' && $qr_enabled == "1"){
+	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode',$output);
+	logger($output);
+}
+
+if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address' || $use_hue_emulator != false;){
+	logger('$hue_emulator variables are not configured, exiting.');
+	exit;
+}
+
+$counter = 0;
 while(true){
+	if($counter > 100){
+		logger('could not parse ip address from ' . $configured_interface);
+		break;
+	}
+	$counter += 1;
 	$command="/sbin/ifconfig $configured_interface | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'";
 	$localIP = exec($command, $output);
 	logger($output);
@@ -141,16 +168,6 @@ while(true){
 	logger($localIP);
 	if($localIP != '')
 		break;
-}
-
-if($phpqrcode == '' && $qr_enabled == "1"){
-	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode',$output);
-	logger($output);
-}
-
-if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address'){
-	logger('$hue_emulator_ip is not configured, exiting.');
-	exit;
 }
 
 if($armzilla == ''){
