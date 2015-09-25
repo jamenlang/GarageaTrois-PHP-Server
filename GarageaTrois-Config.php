@@ -23,14 +23,14 @@ $configured_interface = 'wlan0'; //e.g. eth0, set to interface that server will 
 
 /************ Configuration for Logging ************/
 
-$log_to_file = '1'; //after everything is installed and working you'll want to disable logging.
+$log_to_file = true; //after everything is installed and working you'll want to disable logging.
 $log = '/var/www/GarageaTrois/logfile.txt'; //change to whatever you'd like
 
 /************ Configuration for IP Logging ************/
-$log_attempts = 'true';
+$log_attempts = true;
 $max_attempts = '3'; //per $attempt_interval in minutes for blocking crackers
 $attempt_interval = '15';
-$block_after_max_attempts = 'false'; //set to true to add the device id to disallowed devices.
+$block_after_max_attempts = false; //set to true to add the device id to disallowed devices.
 
 /************ Configuration for NFC
 If you want to be able to open the door with an NFC tag, just write a tag to start the NFC activity of this app.
@@ -51,8 +51,10 @@ $apk_link = 'http://files.myawesomedomain.net/garageatrois.apk';
 Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points. 
 If you have a use for it, by all means try it out.************/
 
-$geofence_enabled = 'true'; //set to true to enable or false to disable the geofence.
-$geofence_return_result = 'true'; //set to true for testing or to attract stalkers, set to false to disable.
+$geofence_autologin_enabled = false; //set to true to skip pin entry at your specified location.
+$geofence_autologin_user_type = 'user' //set to either user or admin
+$geofence_enabled = true; //set to true to enable or false to disable the geofence.
+$geofence_return_result = true; //set to true for testing or to attract stalkers, set to false to disable.
 $garage_latitude = '32.9697'; //set to garage latitude
 $garage_longitude = '-96.80322'; //set to garage longitude
 $geofence_unit_of_measurement = 'meters'; // use meters, kilometers or miles;
