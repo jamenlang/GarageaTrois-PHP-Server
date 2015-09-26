@@ -149,7 +149,7 @@ if($phpqrcode == '' && $qr_enabled == "1"){
 	logger($output);
 }
 
-if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address' || $use_hue_emulator != false;){
+if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address' || $use_hue_emulator != false){
 	logger('$hue_emulator variables are not configured, exiting.');
 	exit;
 }
