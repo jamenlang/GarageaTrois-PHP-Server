@@ -4,30 +4,28 @@
 # run sudo crontab -e and add this as @reboot cd /var/www/; php initialize.php
 
 if(php_sapi_name() != 'cli'){
-	logger('initialize was initialized from the web... exiting.');
 	exit;
 }
 
 if(!exec('git --version')){
-	logger('git-core is not installed, downloading and installing.');
+	echo 'installing git-core';
 	exec('apt-get install git-core');
 }
 
-$counter= 0;
+$counter=0;
 
 if(!function_exists('curl_version')){
-	logger('php5-curl is not installed, downloading and installing.');
+	echo 'installing php5-curl';
 	exec('apt-get install php5-curl', $output);
 	while(!function_exists('curl_version')){
 		if($counter > 20){
-			logger('man, php5-curl takes a long time to install.');
+			echo 'expired waiting for php5-curl';
 			break;
 		}
-
-		logger('waiting for php5-curl to finish installing.');
+		echo 'wating for php5-curl';
 		$counter += 1;
 		sleep(15);
-	}	
+	}
 }
 
 $dir = '/var/www';
@@ -62,27 +60,35 @@ else{
 	echo 'GarageaTrois-Config.php not found. Downloading it now.';
 }
 
+echo 'scanning for additional files and folders.';
+
 $files = scandir($dir);
 foreach($files as $filename){
 	if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
+		echo 'amazon-echo-bridge found.';
 		$armzilla = $filename;
 	}
 	if(preg_match('/GarageaTrois/',$filename,$matches )){
 		if(is_dir($filename)){
+			echo 'GaT directory found.';
 			$gat = $filename;
 		}
 		if(is_file($filename)){
+			echo 'GaT backup config file found.';
 			$gat_backup_config = $filename;
 		}
 	}
 	if(preg_match('/phpqrcode/',$filename,$matches )){
 		if(is_dir($filename)){
+			echo 'phpqrcode found.';
 			$phpqrcode = $filename;
 		}
 	}
 }
 
 if($gat == ''){
+	echo 'GaT not found, downloading.';
+
 	exec('git clone https://github.com/jamenlang/GarageaTrois-PHP-Server.git GarageaTrois', $output);
 	if(isset($gat_backup_config)){
 		echo 'deleting default config file.';
@@ -125,21 +131,26 @@ $counter = 0;
 
 if($use_gpio == true){
 	if(!exec("gpio -v")){
+		echo 'wiringpi is not installed, downloading now.';
 		logger('wiringpi is not installed, downloading now.');
 		exec("git clone git://git.drogon.net/wiringPi");
-		exec("cd wiringPi");
+		chdir("$dir/wiringPi");
 		exec("./build");
+		echo 'wiringpi is being being compiled...';
 		logger('wiringpi is being being compiled...');
 		while(!exec('gpio -v')){
 			if($counter > 20){
+				echo 'man, wiringpi takes a long time to install.';
 				logger('man, wiringpi takes a long time to install.');
 				break;
 			}
 
+			echo 'waiting for wiringpi to finish installing.';
 			logger('waiting for wiringpi to finish installing.');
 			$counter += 1;
 			sleep(15);
 		}
+		chdir($dir);
 	}
 	//gpio will need to be initialized before use.
 	exec("/usr/local/bin/gpio readall", $output);
@@ -173,22 +184,26 @@ if($use_gpio == true){
 	logger($output);
 	$output = '';
 }
-else
+else{
+	echo 'gpio is not enabled in GarageaTrois-Config.php -skipping initialization.';
 	logger('gpio is not enabled in GarageaTrois-Config.php -skipping initialization.');
-
+}
 
 if($phpqrcode == '' && $qr_enabled == "1"){
 	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode', $output);
+	print_r($output);
 	logger($output);
 }
 
 if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address' || $use_hue_emulator != false){
+	echo '$hue_emulator variables are not configured, exiting.';
 	logger('$hue_emulator variables are not configured, exiting.');
 	exit;
 }
 
 $counter = 0;
 if(!exec('java -version')){
+	echo 'java not installed, downloading java. this may take a few minutes...';
 	logger('java not installed, downloading java. this may take a few minutes...');
 	exec('sh -c \'echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" >> /etc/apt/sources.list\'', $output);
 	logger($output);
@@ -214,21 +229,25 @@ if(!exec('java -version')){
 	exec('sudo apt-get install oracle-java8-set-default');
 	while(!exec('java -version')){
 		if($counter > 20){
+			echo 'man, java takes a long time to install.';
 			logger('man, java takes a long time to install.');
 			break;
 		}
+		echo 'waiting for java to finish installing.';
 		logger('waiting for java to finish installing.');
 		$counter += 1;
 		sleep(15);
 	}
 }
 else{
+	echo 'java is installed.';
 	logger('java is installed.');
 }
 
 $counter = 0;
 while(true){
 	if($counter > 100){
+		echo 'could not parse ip address from ' . $configured_interface;
 		logger('could not parse ip address from ' . $configured_interface);
 		break;
 	}
