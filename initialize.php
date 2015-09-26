@@ -15,10 +15,10 @@ if(!exec('git --version')){
 
 $counter= 0;
 
-if(!_isCurl()){
+if(!function_exists('curl_version')){
 	logger('php5-curl is not installed, downloading and installing.');
 	exec('apt-get install php5-curl', $output);
-	while(!_isCurl()){
+	while(!function_exists('curl_version')){
 		if($counter > 20){
 			logger('man, php5-curl takes a long time to install.');
 			break;
