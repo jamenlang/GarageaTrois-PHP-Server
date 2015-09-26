@@ -102,11 +102,23 @@ if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.git
 	die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
 }
 
+$counter = 0
+
 if($use_gpio == true){
 	if(!exec("gpio -v")){
+		logger('wiringpi is not installed, downloading now.');
 		exec("git clone git://git.drogon.net/wiringPi");
 		exec("cd wiringPi");
 		exec("./build");
+		logger('wiringpi is being being compiled...');
+		while(!exec('gpio -v')){
+		if($counter > 20){
+			logger('man, wiringpi takes a long time to install.');
+			break;
+		}
+		logger('waiting for wiringpi to finish installing.');
+		$counter += 1;
+		sleep 15;
 	}
 	//gpio will need to be initialized before use.
 	exec("/usr/local/bin/gpio readall", $output);
@@ -145,13 +157,52 @@ else
 
 
 if($phpqrcode == '' && $qr_enabled == "1"){
-	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode',$output);
+	exec('git clone git://git.code.sf.net/p/phpqrcode/git phpqrcode', $output);
 	logger($output);
 }
 
 if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address' || $use_hue_emulator != false){
 	logger('$hue_emulator variables are not configured, exiting.');
 	exit;
+}
+
+$counter = 0;
+if(!exec('java -version')){
+	logger('java not installed, downloading java. this may take a few minutes...');
+	exec('sh -c \'echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" >> /etc/apt/sources.list\'', $output);
+	logger($output);
+	$output = '';
+	exec('sh -c \'echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" >> /etc/apt/sources.list\'', $output);
+	logger($output);
+	$output = '';
+	exec('sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886', $output);
+	logger($output);
+	$output = '';
+	exec('sudo apt-get update', $output);
+	logger($output);
+	$output = '';
+	exec('echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections', $output);
+	logger($output);
+	$output = '';
+	exec('sudo apt-get install oracle-java8-installer', $output);
+	logger($output);
+	$output = '';
+	exec('sudo update-java-alternatives -s java-8-oracle', $output);
+	logger($output);
+	$output = '';
+	exec('sudo apt-get install oracle-java8-set-default');
+	while(!exec('java -version')){
+		if($counter > 20){
+			logger('man, java takes a long time to install.');
+			break;
+		}
+		logger('waiting for java to finish installing.');
+		$counter += 1;
+		sleep 15;
+	}
+}
+else{
+	logger('java is installed.');
 }
 
 $counter = 0;
