@@ -102,7 +102,7 @@ if(sha1_file("$dir/$gat/GarageaTrois-Config.php") == getSslPage('https://raw.git
 	die('Configuration options need to be set in GarageaTrois-Config.php, check index.php for other options that need to be configured.');
 }
 
-$counter = 0
+$counter = 0;
 
 if($use_gpio == true){
 	if(!exec("gpio -v")){
