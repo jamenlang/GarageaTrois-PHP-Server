@@ -187,12 +187,25 @@ while ($row = mysql_fetch_array($result)) {
 	else {
 		$disallowed_users[$row{'uid'}] = $row{'name'};
 	}
-	$users[$row{'uid'}] = $row{'name'};
+	//set an array for all users
+	$all_users[$row{'uid'}] = $row{'name'};
 }
 if($super_admin){
 	$admin_users[$super_admin] = 'Super admin';
-	$users[$super_admin] = 'Super admin';
+	$all_users[$super_admin] = 'Super admin';
 	$allowed_users[$super_admin] = 'Super admin';
+}
+if($geofence_autologin_enabled && $uid == 'gps0'){
+	//set gps0 to the correct admin/user assignment from the config file.
+	if($geofence_autologin_user_type == 'admin'){
+		$impromtu_title = 'GPS Admin'
+		$admin_users['gps0'] = 'GPS Admin';
+	}
+	if($geofence_autologin_user_type == 'user'){
+		$impromtu_title = 'GPS User'
+		$all_users['gps0'] = 'GPS User';
+	}
+	$allowed_users['gps0'] = $impromtu_title;
 }
 
 $result = mysql_query("SELECT * FROM device");
@@ -224,7 +237,7 @@ if(($did == $echo_did && $echo_did != '') && ($uid == $echo_uid && $echo_uid != 
 	$allowed_users[$uid] = $echo_name;
 	$allowed_devices[$did] = $did;
 	$devices[$did] = $did;
-	$users[$uid] = $echo_name;
+	$all_users[$uid] = $echo_name;
 }
 
 /************ ADMINISTRATIVE ACTION SENT BY APP ************/
@@ -545,7 +558,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 		$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
 		if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
 			$switch = $switch . ' Denied (Geofence Empty)';
-			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 			logger($sql);
 
 			if(!$retval = mysql_query($sql))
@@ -559,7 +572,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 		if($distance_away >= $geofence_maximum_allowed_distance)
 		{
 			$switch = $switch . ' Denied (Geofence ' . $distance_away . ' ' . $geofence_unit_of_measurement . ')';
-			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 			logger($sql);
 
 			if(!$retval = mysql_query($sql))
@@ -614,7 +627,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 	flush();// Unless both are called !
 	// Do processing here 
 
-	$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","'. date('Y-m-d H:i:s') . '" )';
+	$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","'. date('Y-m-d H:i:s') . '" )';
 	logger($sql);
 
 	if(! $retval = mysql_query($sql))
@@ -626,7 +639,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 	$stringData = $switch . " toggled\n";
 	logger($stringData);
 
-	$txt = $users[$uid] . " toggled " . $switch . ' @ ' . $stringData;
+	$txt = $all_users[$uid] . " toggled " . $switch . ' @ ' . $stringData;
 	logger($txt);
 
 	mailer($stringData, $txt);
@@ -720,7 +733,7 @@ else{
 	flush();// Unless both are called !
 	// Do processing here 
 
-	$sql = 'INSERT INTO log (name, ip, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+	$sql = 'INSERT INTO log (name, ip, uid, did, number, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '","' . $number . '","' . $granted . '","' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
 	logger($sql);
 
 	if(! $retval = mysql_query($sql))
@@ -750,7 +763,7 @@ else{
 		}
 	}
 
-	$stringData = $users[$uid] . ' from ' . $did . "\n";
+	$stringData = $all_users[$uid] . ' from ' . $did . "\n";
 	mailer("User " . $granted, $stringData);
 }
 
