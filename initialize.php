@@ -202,7 +202,8 @@ if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address' || $use_hue_emulator =
 }
 
 $counter = 0;
-if(!exec('java -version')){
+$result = exec('command -v java >/dev/null && echo "true" || echo "false"');
+if(!$result){
 	echo 'java not installed, downloading java. this may take a few minutes...';
 	logger('java not installed, downloading java. this may take a few minutes...');
 	exec('sh -c \'echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" >> /etc/apt/sources.list\'', $output);
@@ -227,7 +228,9 @@ if(!exec('java -version')){
 	logger($output);
 	$output = '';
 	exec('sudo apt-get install oracle-java8-set-default');
-	while(!exec('java -version')){
+	$result = exec('command -v java >/dev/null && echo "true" || echo "false"');
+
+	while(!$result){
 		if($counter > 20){
 			echo 'man, java takes a long time to install.';
 			logger('man, java takes a long time to install.');
@@ -236,6 +239,7 @@ if(!exec('java -version')){
 		echo 'waiting for java to finish installing.';
 		logger('waiting for java to finish installing.');
 		$counter += 1;
+		$result = exec('command -v java >/dev/null && echo "true" || echo "false"');
 		sleep(15);
 	}
 }
@@ -261,13 +265,15 @@ while(true){
 		break;
 }
 
+$hue_emulator_link = '';
+
 if($armzilla == ''){
 	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 	foreach ($output as $line){
 		if($hue_emulator_link != '')
 			continue;
 		preg_match('/\bhttp.*jar\b/',$line, $matches);
-		if($matches[0]){
+		if(isset($matches[0])){
 			$hue_emulator_link = $matches[0];
 			break;
 		}
