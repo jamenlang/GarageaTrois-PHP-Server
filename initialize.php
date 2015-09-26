@@ -112,13 +112,15 @@ if($use_gpio == true){
 		exec("./build");
 		logger('wiringpi is being being compiled...');
 		while(!exec('gpio -v')){
-		if($counter > 20){
-			logger('man, wiringpi takes a long time to install.');
-			break;
+			if($counter > 20){
+				logger('man, wiringpi takes a long time to install.');
+				break;
+			}
+
+			logger('waiting for wiringpi to finish installing.');
+			$counter += 1;
+			sleep(15);
 		}
-		logger('waiting for wiringpi to finish installing.');
-		$counter += 1;
-		sleep 15;
 	}
 	//gpio will need to be initialized before use.
 	exec("/usr/local/bin/gpio readall", $output);
@@ -198,7 +200,7 @@ if(!exec('java -version')){
 		}
 		logger('waiting for java to finish installing.');
 		$counter += 1;
-		sleep 15;
+		sleep(15);
 	}
 }
 else{
