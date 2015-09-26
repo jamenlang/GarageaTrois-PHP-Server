@@ -52,7 +52,7 @@ Geofencing is a pretty popular form of access restriction based on GPS data and 
 If you have a use for it, by all means try it out.************/
 
 $geofence_autologin_enabled = false; //set to true to skip pin entry at your specified location.
-$geofence_autologin_user_type = 'user' //set to either user or admin
+$geofence_autologin_user_type = 'user'; //set to either user or admin
 $geofence_enabled = true; //set to true to enable or false to disable the geofence.
 $geofence_return_result = true; //set to true for testing or to attract stalkers, set to false to disable.
 $garage_latitude = '32.9697'; //set to garage latitude
