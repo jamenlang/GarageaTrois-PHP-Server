@@ -198,11 +198,11 @@ if($super_admin){
 if($geofence_autologin_enabled && $uid == 'gps0'){
 	//set gps0 to the correct admin/user assignment from the config file.
 	if($geofence_autologin_user_type == 'admin'){
-		$impromtu_title = 'GPS Admin'
+		$impromtu_title = 'GPS Admin';
 		$admin_users['gps0'] = 'GPS Admin';
 	}
 	if($geofence_autologin_user_type == 'user'){
-		$impromtu_title = 'GPS User'
+		$impromtu_title = 'GPS User';
 		$all_users['gps0'] = 'GPS User';
 	}
 	$allowed_users['gps0'] = $impromtu_title;
