@@ -4,11 +4,30 @@
 # run sudo crontab -e and add this as @reboot cd /var/www/; php initialize.php
 
 if(php_sapi_name() != 'cli'){
+	logger('initialize was initialized from the web... exiting.');
 	exit;
 }
 
 if(!exec('git --version')){
+	logger('git-core is not installed, downloading and installing.');
 	exec('apt-get install git-core');
+}
+
+$counter= 0;
+
+if(!curl_init()){
+	logger('php5-curl is not installed, downloading and installing.');
+	exec('apt-get install php5-curl', $output);
+	while(!curl_init()){
+		if($counter > 20){
+			logger('man, php5-curl takes a long time to install.');
+			break;
+		}
+
+		logger('waiting for php5-curl to finish installing.');
+		$counter += 1;
+		sleep(15);
+	}	
 }
 
 $dir = '/var/www';
