@@ -2,10 +2,40 @@
 /************ Relay Configuration 
 Set values of the relay to control per variable ************/
 $use_gpio = false; //set to true to use gpio on a raspberry pi
-$other_relay = '0'; //set to relay or WiringPI gpio pin
-$door_relay = '7'; //set to relay or WiringPI gpio pin
-$lock_relay = '8'; //set to relay or WiringPI gpio pin
-$light_relay = '9'; //set to relay or WiringPI gpio pin
+$relay_1 = 0; //set to relay or WiringPI gpio pin
+$relay_2 = 7; //set to relay or WiringPI gpio pin
+$relay_3 = 8; //set to relay or WiringPI gpio pin
+$relay_4 = 9; //set to relay or WiringPI gpio pin
+//continue?
+
+$switch_array = array(
+	$relay_1 => array(
+		'name' => 'Light 1',
+		'app_will_request' => urlencode('Light1'),
+		'trigger' => 'hold', //options are hold, timeout, gpio_callback and toggle.
+		'state' => 'off' //set state to hold, on or off.
+	),
+	$relay_2 => array(
+		'name' => 'Door 1',
+		'app_will_request' => urlencode('Door1'),
+		'trigger' => 'timeout', //options are hold, timeout, gpio_callback and toggle
+		'timeout' => 12 //in seconds
+	),
+	$relay_3 => array(
+		'name' => 'Lock 1',
+		'app_will_request' => urlencode('Lock1'),
+		'trigger' => 'gpio_callback', //options are hold, timeout, gpio_callback and toggle
+		'gpio_callback_pin' => 17, //pin to watch for state changes and therefore results
+		'timeout' => 10 //optional. time to give up after in seconds.
+	),
+	$relay_4 => array(
+		'name' => 'Light 2',
+		'app_will_request' => urlencode('Light2'),
+		'trigger' => 'toggle', //options are hold, timeout, gpio_callback and toggle
+		'timeout' => 2 //in seconds
+	)
+	//continue?
+);
 
 /************ For MYSQL Database (Logging, User authentication and Device authentication)
 Read the README and follow instructions before proceeding ************/
