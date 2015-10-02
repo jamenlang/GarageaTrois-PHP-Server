@@ -1,6 +1,7 @@
 <?php
 /************ I don't believe anything here needs to be modified. ************/
 //require config and function files
+
 require 'GarageaTrois-Config.php';
 require 'GarageaTrois-Functions.php';
 
@@ -586,41 +587,98 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 		}
 	}
 
-	if ($switch == "Light"){
-		if($use_gpio){
-			toggle_relay($light_relay);
+	if($switch == 'retrieve_switches'){
+		foreach($switch_array as $switch_id => $switch_params){
+			$json['switch_info'][]=$switch_array[$switch_id];
 		}
-		else{
-			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $light_relay write");
-			sleep(2);
-			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $light_relay write");
-		}
-		echo 'Light toggled';
+		echo json_encode($json);
+		exit;
 	}
 
-	if ($switch == "Door"){
-		if($use_gpio){
-			toggle_relay($door_relay);
+	$count = 0;
+	foreach($switch_array as $switch_id => $switch_parameters){
+		if($switch == $switch_parameters['app_will_request']){
+			logger($switch . ' found.');
+			logger($count);
+			logger($switch_parameters['trigger']);
+			$return_count = $count;
+			$return_name = $switch_parameters['name'];
+			switch ($switch_parameters['trigger']){
+				case 'hold' :
+					if($switch_parameters['trigger'] == 'hold' && $switch_parameters['state'] != 'off'){
+						$toggled_on = true;
+						toggle_relay($switch_id,1);
+					}
+					if($switch_parameters['trigger'] == 'hold' && $switch_parameters['state'] != 'on'){
+						$toggled_off = true;
+						toggle_relay($switch_id,0);
+					}
+					if($toggled_on != true && $toggled_off == true){
+						$return_state = 0;
+						$return_result = ' holding off.';
+					}
+					if($toggled_on == true && $toggled_off != true){
+						$return_state = 1;
+						$return_result = ' holding on.';
+					}
+					break;
+				case 'toggle' :
+					//blind toggle with optional timeout.
+					toggle_relay($switch_id,1);
+					if($switch_parameters['toggle_timeout'] != '')
+						sleep($switch_parameters['toggle_timeout']);
+					toggle_relay($switch_id,0);
+					$return_state = 2;
+					$return_result = ' toggled.';
+					break;
+
+				case 'gpio_callback' :
+					if($switch_parameters['gpio_callback_pin'] != '' && $use_gpio != false){
+						//get current state.
+						$start_pin_status = get_pin_status($switch_parameters['gpio_callback_pin']);
+						$end_pin_status = $start_pin_status;
+						(($start_pin_status == 1) ? toggle_relay($switch_id,0) : toggle_relay($switch_id,1));
+						while($end_pin_status == $start_pin_status){
+							logger('start pin status: ' . $start_pin_status);
+							logger('end pin status: ' . $end_pin_status);
+							$end_pin_status = get_pin_status($switch_parameters['gpio_callback_pin']);
+							if($switch_parameters['timeout'] != ''){
+								if($loop_counter == $switch_parameters['timeout']){
+									$return_result = ' failure - Timeout reached.';
+									logger($return_result);
+									$return_state = $start_pin_status;
+									break;
+								}
+								logger($loop_counter . ' of ' . (($switch_parameters['timeout']) ? $switch_parameters['timeout'] : 'infinity') . ' seconds reached');
+								$loop_counter++;
+							}
+							sleep(1);
+						}
+						if(!$return_result){
+							$return_state = $end_pin_status;
+							$return_result = ' toggled.';
+						}
+					}
+					break;
+
+				case 'timeout' :
+					//let the app handle the timeout from here.
+					toggle_relay($switch_id);
+					$return_result = ' toggled.';
+					$return_state = 2;
+					break;
+
+				default :
+					break;
+			}
 		}
-		else{
-			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $door_relay write");
-			sleep(2);
-			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $door_relay write");
-		}
-		echo 'Door toggled';
+		$count++;
 	}
 
-	if ($switch == "Lock"){
-		if($use_gpio){
-			toggle_relay($lock_relay);
-		}
-		else{
-			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read setbit $lock_relay write");
-			sleep(2);
-			shell_exec("/usr/local/sbin/portcontrol LPT1DATA read resetbit $lock_relay write");
-		}
-		echo 'Lock toggled';
-	}
+
+	$return_final = $return_count . ',' . $return_state . ',' . $return_name . $return_result;
+	logger($return_final);
+	echo $return_final;
 	$size = ob_get_length();
 	header("Content-Length: $size");
 	ob_end_flush(); // Strange behaviour, will not work
@@ -664,7 +722,7 @@ else{
 			header("Content-Length: $size");
 			ob_end_flush(); // Strange behaviour, will not work
 			flush();// Unless both are called !
-			// Do processing here 
+			// Do processing here
 
 		}
 		if($attempts == $max_attempts){
