@@ -1,9 +1,26 @@
 <?php
 
-function toggle_relay($gpio_relay){
-        exec("/usr/local/bin/gpio write $gpio_relay 0");
-        sleep(2);
-        exec("/usr/local/bin/gpio write $gpio_relay 1");
+function toggle_relay($gpio_relay, $state = 'x'){
+	switch ($state){
+		case '0':
+			exec("/usr/local/bin/gpio write $gpio_relay 1");
+			break;
+		case '1':
+			exec("/usr/local/bin/gpio write $gpio_relay 0");
+			break;
+		case 'x':
+			exec("/usr/local/bin/gpio write $gpio_relay 0");
+			sleep(2);
+			exec("/usr/local/bin/gpio write $gpio_relay 1");
+			break;
+		default:
+			break;
+	}
+}
+
+function get_pin_status($gpio_pin){
+	exec("/usr/local/bin/gpio read $gpio_pin", $result);
+	return end($result);
 }
 
 function mailer($subject, $message, $newuser = ''){
