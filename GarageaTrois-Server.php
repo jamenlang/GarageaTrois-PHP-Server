@@ -2,8 +2,8 @@
 /************ I don't believe anything here needs to be modified. ************/
 //require config and function files
 
-require 'GarageaTrois-Config.php';
-require 'GarageaTrois-Functions.php';
+require('GarageaTrois-Config.php');
+require('GarageaTrois-Functions.php');
 
 // outputs image directly into browser, as PNG stream
 // the code can be downloaded or this can be disabled, you can also use the google API line below.
@@ -192,9 +192,9 @@ while ($row = mysql_fetch_array($result)) {
 	$all_users[$row{'uid'}] = $row{'name'};
 }
 if($super_admin){
-	$admin_users[$super_admin] = 'Super admin';
-	$all_users[$super_admin] = 'Super admin';
-	$allowed_users[$super_admin] = 'Super admin';
+	$admin_users[$super_admin] = 'Super Admin';
+	$all_users[$super_admin] = 'Super Admin';
+	$allowed_users[$super_admin] = 'Super Admin';
 }
 if($geofence_autologin_enabled && $uid == 'gps0'){
 	//set gps0 to the correct admin/user assignment from the config file.
@@ -554,36 +554,42 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 	ignore_user_abort(); // optional
 	ob_start();
 
-	if($geofence_enabled == 'true')
-	{
-		$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
-		if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
-			$switch = $switch . ' Denied (Geofence Empty)';
-			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
-			logger($sql);
-
-			if(!$retval = mysql_query($sql))
-			{
-				die('Could not enter data: ' . mysql_error());
-			}
-			echo 'Geofence Enabled: GPS Empty.';
-			exit;
-		}
-
-		if($distance_away >= $geofence_maximum_allowed_distance)
+	if($geofence_super_admin_override == false || $uid =! $super_admin){
+		logger('true');
+		if($geofence_enabled == true)
 		{
-			$switch = $switch . ' Denied (Geofence ' . $distance_away . ' ' . $geofence_unit_of_measurement . ')';
-			$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
-			logger($sql);
+			$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
+			if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
+				$switch = $switch . ' Denied (Geofence Empty)';
+				$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+				logger($sql);
 
-			if(!$retval = mysql_query($sql))
-			{
-				die('Could not enter data: ' . mysql_error());
+				if(!$retval = mysql_query($sql))
+				{
+					die('Could not enter data: ' . mysql_error());
+				}
+				echo 'Geofence Enabled: GPS Empty.';
+				logger('Geofence Enabled: GPS Empty.');
+
+				exit;
 			}
 
-			echo 'Geofence Enabled: Out of bounds.' . (($geofence_return_result == 'true') ? ' (' . $distance_away . ' ' . $geofence_unit_of_measurement . ')' : '');
-			exit;
-			//this will effectively disable the buttons in the app. The only thing available is administration of users and devices.
+			if($distance_away >= $geofence_maximum_allowed_distance)
+			{
+				$switch = $switch . ' Denied (Geofence ' . $distance_away . ' ' . $geofence_unit_of_measurement . ')';
+				$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '", "' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
+				logger($sql);
+
+				if(!$retval = mysql_query($sql))
+				{
+					die('Could not enter data: ' . mysql_error());
+				}
+
+				echo 'Geofence Enabled: Out of bounds.' . (($geofence_return_result == true) ? ' (' . $distance_away . ' ' . $geofence_unit_of_measurement . ')' : '');
+				logger('Geofence Enabled: Out of bounds.' . (($geofence_return_result == true) ? ' (' . $distance_away . ' ' . $geofence_unit_of_measurement . ')' : ''));
+				exit;
+				//this will effectively disable the buttons in the app. The only thing available is administration of users and devices.
+			}
 		}
 	}
 
@@ -625,8 +631,8 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 				case 'toggle' :
 					//blind toggle with optional timeout.
 					toggle_relay($switch_id,1);
-					if($switch_parameters['toggle_timeout'] != '')
-						sleep($switch_parameters['toggle_timeout']);
+					if($switch_parameters['timeout'] != '')
+						sleep($switch_parameters['timeout']);
 					toggle_relay($switch_id,0);
 					$return_state = 2;
 					$return_result = ' toggled.';
@@ -652,6 +658,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 								logger($loop_counter . ' of ' . (($switch_parameters['timeout']) ? $switch_parameters['timeout'] : 'infinity') . ' seconds reached');
 								$loop_counter++;
 							}
+							//echo '.';
 							sleep(1);
 						}
 						if(!$return_result){
@@ -709,12 +716,12 @@ else{
 	ignore_user_abort(); // optional
 	ob_start();
 
-	if($log_attempts == 'true' && $max_attempts > 0){
+	if($log_attempts == true && $max_attempts > 0){
 		$sql = "SELECT COUNT(*) AS `attempts` FROM `log` WHERE `ip` = '{$_SERVER[REMOTE_ADDR]}' AND `action` = 'Denied' AND `date` > DATE_SUB(NOW(),INTERVAL '{$attempt_interval}' MINUTE)";
 		logger($sql);
 		$result = mysql_query($sql);
 		$attempts = mysql_result($result, 0);
-		logger('attempt ' . $attempts . ' of ' . $max_attempts . (($block_after_max_attempts == 'true') ? ' until blocking DID' . $did : ''));
+		logger('attempt ' . $attempts . ' of ' . $max_attempts . (($block_after_max_attempts == true) ? ' until blocking DID' . $did : ''));
 
 		if($attempts > $max_attempts){
 			echo 'Maximum login attempts reached';
@@ -726,7 +733,7 @@ else{
 
 		}
 		if($attempts == $max_attempts){
-			if($block_after_max_attempts == 'true')
+			if($block_after_max_attempts == true)
 			{
 				logger('$block_after_max_attempts = ' . $block_after_max_attempts);
 				if (array_key_exists($did, $devices))
@@ -774,15 +781,21 @@ else{
 	}
 	else if (array_key_exists($uid, $admin_users)){
 		$granted = 'Admin Granted';
-		echo $SUPER_SECRET_ADMIN_RESULT . ',' . $geofence_enabled;
+		echo md5($SUPER_SECRET_ADMIN_RESULT) . ',' . $geofence_enabled;
 	}
 	else if (array_key_exists($uid, $allowed_users)){
 		$granted = 'Granted';
-		echo $SUPER_SECRET_USER_RESULT . ',' . $geofence_enabled;
+		echo md5($SUPER_SECRET_USER_RESULT) . ',' . $geofence_enabled;
 	}
 	else{
-		$granted = 'Denied';
-		echo 'Access denied';
+		if($uid == "gps0" && !$geofence_autologin_enabled){
+			echo 'Log in by entering your PIN';
+			exit;
+		}
+		else{
+			$granted = 'Denied';
+			echo 'Access denied';
+		}
 	}
 
 	$size = ob_get_length();
