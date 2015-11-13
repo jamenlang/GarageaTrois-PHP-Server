@@ -45,8 +45,8 @@ $username = 'USERNAME'; //replace with database username
 $password = 'PASSWORD'; //replace with database password
 $db_name = 'garage'; //replace with database name
 $super_admin = '0009';//first login requires a PIN, Users created by super admin will  be administrators.
-$SUPER_SECRET_ADMIN_RESULT = 'SUPER_SECRET_ADMIN_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
-$SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; //replace with whatever is in the res/strings.xml file in the android app.
+$SUPER_SECRET_ADMIN_RESULT = 'SUPER_SECRET_ADMIN_RESULT'; //must match the android app setting.
+$SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; //must match the android app setting.
 
 /************ Configuration for Interfaces************/
 $configured_interface = 'wlan0'; //e.g. eth0, set to interface that server will be reachable on.
@@ -81,6 +81,7 @@ $apk_link = 'http://files.myawesomedomain.net/garageatrois.apk';
 Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points. 
 If you have a use for it, by all means try it out.************/
 
+$geofence_super_admin_override = false; //set to true to allow super_admin to override gps restrictions.
 $geofence_autologin_enabled = false; //set to true to skip pin entry at your specified location.
 $geofence_autologin_user_type = 'user'; //set to either user or admin
 $geofence_enabled = true; //set to true to enable or false to disable the geofence.
