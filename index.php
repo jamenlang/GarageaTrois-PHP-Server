@@ -3,6 +3,10 @@ require('GarageaTrois-Config.php');
 require('GarageaTrois-Functions.php');
 
 if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
+	$ip = gethostbyname('github.com');
+	if(!$ip){
+		$dns_result = '<li style="bgcolor: red">A link to the APK file could not be retrieved due to DNS resolution issues. Run resolvconf -a 8.8.8.8 or edit /etc/network/interfaces and add dns-nameservers 8.8.8.8 8.8.4.4</li>';
+	}
 	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/jamenlang/GarageaTrois/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 	foreach ($output as $line){
 		if($apk_link != 'http://files.myawesomedomain.net/garageatrois.apk')
@@ -62,6 +66,11 @@ else
 <?php
 
 $test = '0';
+
+if($dns_result){
+	echo $dns_result;
+	$test++;
+}
 
 if(!_isCurl()){
 	echo '<li>Curl needs to be enabled for some functionality, mostly for echo support and index.php. Run \'sudo apt-get install php5-curl\' to fix this message.</li>';
