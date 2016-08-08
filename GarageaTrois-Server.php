@@ -26,6 +26,8 @@ $cnfc = sanitize(isset($_POST['CNFC']) ? $_POST['CNFC'] : '');
 $cdid = sanitize(isset($_POST['CDID']) ? $_POST['CDID'] : '');
 $cuid = sanitize(isset($_POST['CUID']) ? $_POST['CUID'] : '');
 $switch = sanitize(isset($_POST['switch']) ? $_POST['switch'] : '');
+$motion_thread = (isset($_POST['motion_thread']) ? $_POST['motion_thread'] : '');
+$motion_action = sanitize(isset($_POST['motion_action']) ? $_POST['motion_action'] : '');
 $device_latitude = sanitize(isset($_POST['Latitude']) ? $_POST['Latitude'] : '');
 $device_longitude = sanitize(isset($_POST['Longitude']) ? $_POST['Longitude'] : '');
 $adminaction = sanitize(isset($_POST['AdminAction']) ? $_POST['AdminAction'] : '');
@@ -33,6 +35,14 @@ $number = sanitize(isset($_POST['TelNum']) ? $_POST['TelNum'] : '');
 $devicealias = sanitize(isset($_POST['DeviceName']) ? $_POST['DeviceName'] : '');
 $hasnfc = (sanitize(isset($_POST['hasNFC']) ? $_POST['hasNFC'] : '') == true ? '1' : '0');
 $change = sanitize(isset($_POST['Change']) ? $_POST['Change'] : '');
+
+//logger(print_r($door_relay));
+
+foreach($switch_array as $switch_id => $switch_parameters){
+	if(stristr($switch_parameters['app_will_request'], 'door')){
+		$door_relay = $switch_id;
+	}
+}
 
 $dbhandle = mysql_connect($hostname, $username, $password)
 	or die("Unable to connect to MySQL");
@@ -196,7 +206,7 @@ if($super_admin){
 	$all_users[$super_admin] = 'Super Admin';
 	$allowed_users[$super_admin] = 'Super Admin';
 }
-if($geofence_autologin_enabled && $uid == 'gps0'){
+if($geofence_autologin_enabled && $geofence_enabled && $uid == 'gps0'){
 	//set gps0 to the correct admin/user assignment from the config file.
 	if($geofence_autologin_user_type == 'admin'){
 		$impromtu_title = 'GPS Admin';
@@ -549,6 +559,64 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '' && isset($allowed_users[$uid
 if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exists != '0' && $did_allowed != '0'){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
+
+	if($switch == 'motion'){
+		if($use_motion == true){
+			if($motion_action == 'retrieve_image'){
+				if($snapshots_only == true){
+					$boundary="\n--";
+
+					if(fopen("http://$motion_ip:$motion_view_port/$motion_thread","r")){
+						while (substr_count($r,"Content-Length") != 2) $r.=fread($f,512);
+						$start = strpos($r,'\xff');
+						$end = strpos($r,$boundary,$start)-1;
+						$frame = substr("$r",$start,$end - $start);
+						header("Content-type: image/jpeg");
+						echo $frame;
+					}
+					fclose($f);
+				}
+				else{
+					set_time_limit(0);
+					$fp = fsockopen ($motion_ip, $motion_view_port, $errno, $errstr, 30);
+					if (!$fp) {
+						echo "$errstr ($errno)<br>\n";
+					} else {
+						fputs ($fp, "GET / HTTP/1.0\r\n\r\n");
+						while ($str = trim(fgets($fp, 4096)))
+							header($str);
+						fpassthru($fp);
+						fclose($fp);
+					}
+				}
+			}
+			if($motion_action == 'restart'){
+				$url = "http://" . (($motion_http_username != '') ? $motion_http_username . ':' . $motion_http_password . '@' : '') . "$motion_ip:$motion_control_port/$motion_thread/action/restart";
+				$output = file_get_contents($url);
+				//logger('restarting motion daemon');
+				//logger($url);
+				//logger($motion_thread);
+				//logger($output);
+				echo $output;
+			}
+			if($motion_action == 'snapshot'){
+				file_get_contents("http://" . (($motion_http_username != '') ? $motion_http_username . ':' . $motion_http_password . '@' : '') . "$motion_ip:$motion_control_port/$motion_thread/action/snapshot");
+				//logger('snapshot');
+				echo 'snapshot thread ' . $motion_thread;
+			}
+		}
+		exit;
+		/*
+		if($motion_action = 'snapshot'){
+			file_get_contents("http://$motion_ip:$motion_control_port/$motion_thread/action/snapshot");
+			exit;
+		}
+		if($motion_action = 'restart'){
+			exec('sudo service motion restart');
+			exit;
+		}
+		*/
+	}
 	ob_end_clean();
 	header("Connection: close");
 	ignore_user_abort(); // optional
@@ -559,6 +627,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 		if($geofence_enabled == true)
 		{
 			$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
+			logger($distance_away);
 			if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
 				$switch = $switch . ' Denied (Geofence Empty)';
 				$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
@@ -595,6 +664,14 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 
 	if($switch == 'retrieve_switches'){
 		foreach($switch_array as $switch_id => $switch_params){
+			if(isset($switch_params['gpio_status_pin'])){
+				$switch_array[$switch_id]['current_status'] = (bool) get_pin_status($switch_params['gpio_status_pin']);
+				$switch_array[$switch_id]['reports_current_status'] = (bool) true;
+				logger("pin " . $switch_params['gpio_status_pin'] . get_pin_status($switch_params['gpio_status_pin']));
+			}
+			else{
+				$switch_array[$switch_id]['reports_current_status'] = (bool) false;
+			}
 			$json['switch_info'][]=$switch_array[$switch_id];
 		}
 		echo json_encode($json);
@@ -639,15 +716,17 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 					break;
 
 				case 'gpio_callback' :
-					if($switch_parameters['gpio_callback_pin'] != '' && $use_gpio != false){
+					if($switch_parameters['gpio_status_pin'] != '' && $use_gpio != false){
 						//get current state.
-						$start_pin_status = get_pin_status($switch_parameters['gpio_callback_pin']);
+						$start_pin_status = get_pin_status($switch_parameters['gpio_status_pin']);
 						$end_pin_status = $start_pin_status;
-						(($start_pin_status == 1) ? toggle_relay($switch_id,0) : toggle_relay($switch_id,1));
+						//the app could possibly send an 'open/close/on/off request'
+						//so it doesn't do the toggle if it's already in the requested state.
+						toggle_relay($switch_id);
 						while($end_pin_status == $start_pin_status){
 							logger('start pin status: ' . $start_pin_status);
 							logger('end pin status: ' . $end_pin_status);
-							$end_pin_status = get_pin_status($switch_parameters['gpio_callback_pin']);
+							$end_pin_status = get_pin_status($switch_parameters['gpio_status_pin']);
 							if($switch_parameters['timeout'] != ''){
 								if($loop_counter == $switch_parameters['timeout']){
 									$return_result = ' failure - Timeout reached.';
@@ -781,11 +860,11 @@ else{
 	}
 	else if (array_key_exists($uid, $admin_users)){
 		$granted = 'Admin Granted';
-		echo md5($SUPER_SECRET_ADMIN_RESULT) . ',' . $geofence_enabled;
+		echo md5($SUPER_SECRET_ADMIN_RESULT) . ',' . ($geofence_enabled ? 'true' : 'false');
 	}
 	else if (array_key_exists($uid, $allowed_users)){
 		$granted = 'Granted';
-		echo md5($SUPER_SECRET_USER_RESULT) . ',' . $geofence_enabled;
+		echo md5($SUPER_SECRET_USER_RESULT) . ',' . ($geofence_enabled ? 'true' : 'false');
 	}
 	else{
 		if($uid == "gps0" && !$geofence_autologin_enabled){
