@@ -195,6 +195,18 @@ if($phpqrcode == '' && $qr_enabled == "1"){
 	logger($output);
 }
 
+if($motion_ip != '' && $use_motion == false){
+	echo '$motion variables are not configured, skipping.';
+	logger('$motion variables are not configured, skipping.');
+	//exit;
+}
+else{
+	if(!file_exists("/etc/motion")){
+		exec('apt-get install motion',$output);
+		logger('$motion is not configured, config files for motion can be found in \'/etc/motion/motion.conf\'');
+	}
+}
+
 if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address' || $use_hue_emulator == false){
 	echo '$hue_emulator variables are not configured, exiting.';
 	logger('$hue_emulator variables are not configured, exiting.');
