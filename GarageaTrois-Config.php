@@ -1,7 +1,10 @@
 <?php
-/************ Relay Configuration 
+/************ Relay Configuration
 Set values of the relay to control per variable ************/
-$use_gpio = false; //set to true to use gpio on a raspberry pi
+$use_gpio = true; //set to true to use the default gpio on a raspberry pi
+$use_wiringpi = true; //set to true to use wiringpi gpio packages
+$use_parallel = false; //set to true to use PC parallel port
+
 $relay_1 = 0; //set to relay or WiringPI gpio pin
 $relay_2 = 7; //set to relay or WiringPI gpio pin
 $relay_3 = 8; //set to relay or WiringPI gpio pin
@@ -10,29 +13,41 @@ $relay_4 = 9; //set to relay or WiringPI gpio pin
 
 $switch_array = array(
 	$relay_1 => array(
+		//example for hold trigger
 		'name' => 'Light 1',
 		'app_will_request' => urlencode('Light1'),
-		'trigger' => 'hold', //options are hold, timeout, gpio_callback and toggle.
-		'state' => 'off' //set state to hold, on or off.
+		'trigger' => 'hold', //set trigger {hold,timeout,gpio_callback,toggle}
+		'state' => 'off', //set state to hold {on,off}
+		'invert' => false //force 0 to be 'on' and 1 to be 'off' for trigger, status and callback pins {true,false}
 	),
 	$relay_2 => array(
-		'name' => 'Door 1',
+		//example for timeout trigger
+		'name' => 'Door',
 		'app_will_request' => urlencode('Door1'),
-		'trigger' => 'timeout', //options are hold, timeout, gpio_callback and toggle
-		'timeout' => 12 //in seconds
+		'trigger' => 'timeout', //set trigger {hold,timeout,gpio_callback,toggle}
+		'timeout' => 12, //in seconds, this is the timeout for the timeout
+		'display_progress' => 'during', //display progress in app {during,after}
+		'motion_thread' => '0', //if motion is enabled for this relay/device, replace with thread number
+		'invert' => false //force 0 to be 'on' and 1 to be 'off' for trigger, status and callback pins {true,false}
 	),
 	$relay_3 => array(
-		'name' => 'Lock 1',
+		//example for gpio_callback trigger
+		'name' => 'Lock',
 		'app_will_request' => urlencode('Lock1'),
-		'trigger' => 'gpio_callback', //options are hold, timeout, gpio_callback and toggle
-		'gpio_callback_pin' => 17, //pin to watch for state changes and therefore results
-		'timeout' => 10 //optional. time to give up after in seconds.
+		'trigger' => 'gpio_callback', //set trigger {hold,timeout,gpio_callback,toggle}
+		'timeout' => 10, //optional. this is the timeout for the gpio_callback
+		'motion_thread' => '1', //if motion is enabled for this relay/device, replace with thread number
+		'display_progress' => 'during', //display progress in app {during,after}
+		'gpio_status_pin' => 1, //pin to check for status.
+		'invert' => false //force 0 to be 'on' and 1 to be 'off' for trigger, status and callback pins {true,false}
 	),
 	$relay_4 => array(
+		//example for toggle trigger
 		'name' => 'Light 2',
 		'app_will_request' => urlencode('Light2'),
-		'trigger' => 'toggle', //options are hold, timeout, gpio_callback and toggle
-		'timeout' => 2 //in seconds
+		'trigger' => 'toggle', //set trigger {hold,timeout,gpio_callback,toggle}
+		'timeout' => 2, //in seconds, this is the timeout for the toggle
+		'invert' => false //set to true to force 0 to be 'on' and 1 to be 'off' for trigger, status and callback pins {true,false}
 	)
 	//continue?
 );
@@ -44,23 +59,25 @@ $hostname = 'localhost'; //replace with database hostname
 $username = 'USERNAME'; //replace with database username
 $password = 'PASSWORD'; //replace with database password
 $db_name = 'garage'; //replace with database name
-$super_admin = '0009';//first login requires a PIN, Users created by super admin will  be administrators.
-$SUPER_SECRET_ADMIN_RESULT = 'SUPER_SECRET_ADMIN_RESULT'; //must match the android app setting.
-$SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; //must match the android app setting.
+$super_admin = '0009';//first login requires a PIN, Users created by super admin will be administrators.
+$SUPER_SECRET_ADMIN_RESULT = 'SUPER_SECRET_ADMIN_RESULT'; //make sure the android app setting matches.
+$SUPER_SECRET_USER_RESULT = 'SUPER_SECRET_USER_RESULT'; ////make sure the android app setting matches.
 
 /************ Configuration for Interfaces************/
+
 $configured_interface = 'wlan0'; //e.g. eth0, set to interface that server will be reachable on.
 
 /************ Configuration for Logging ************/
 
-$log_to_file = true; //after everything is installed and working you'll want to disable logging.
+$log_to_file = true; //after everything is installed and working you'll want to disable logging. {true,false}
 $log = '/var/www/GarageaTrois/logfile.txt'; //change to whatever you'd like
 
 /************ Configuration for IP Logging ************/
-$log_attempts = true;
+
+$log_attempts = true; // enable or disable logging {true,false}
 $max_attempts = '3'; //per $attempt_interval in minutes for blocking crackers
 $attempt_interval = '15';
-$block_after_max_attempts = false; //set to true to add the device id to disallowed devices.
+$block_after_max_attempts = false; //set to true to add the device id to disallowed devices. {true,false}
 
 /************ Configuration for NFC
 If you want to be able to open the door with an NFC tag, just write a tag to start the NFC activity of this app.
@@ -78,14 +95,14 @@ $qr_size = '250'; // default is 250 pixels
 $apk_link = 'http://files.myawesomedomain.net/garageatrois.apk';
 
 /************ Configuration for geofence
-Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points. 
+Geofencing is a pretty popular form of access restriction based on GPS data and distance between two points.
 If you have a use for it, by all means try it out.************/
 
-$geofence_super_admin_override = false; //set to true to allow super_admin to override gps restrictions.
-$geofence_autologin_enabled = false; //set to true to skip pin entry at your specified location.
-$geofence_autologin_user_type = 'user'; //set to either user or admin
-$geofence_enabled = true; //set to true to enable or false to disable the geofence.
-$geofence_return_result = true; //set to true for testing or to attract stalkers, set to false to disable.
+$geofence_super_admin_override = false; //set to true to allow super_admin to override gps restrictions. {true,false}
+$geofence_autologin_enabled = false; //set to true to skip pin entry at your specified location. {true,false}
+$geofence_autologin_user_type = 'user'; //set to either user or admin {user,admin}
+$geofence_enabled = true; //set to true to enable or false to disable the geofence. {true,false}
+$geofence_return_result = true; //set to true for testing or to attract stalkers, set to false to disable. {true,false}
 $garage_latitude = '32.9697'; //set to garage latitude
 $garage_longitude = '-96.80322'; //set to garage longitude
 $geofence_unit_of_measurement = 'meters'; // use meters, kilometers or miles;
@@ -109,11 +126,21 @@ $carriers = array (
 	//5 => 'mycarrier.com',
 );
 
+/************ Motion Support
+This is for Motion Support ************/
+
+$use_motion = true; //set to true to use Motion webcam {true,false}
+$motion_ip = 'localhost'; //set to motion url
+$motion_control_port = 8080; //set to motion control port for snapshots and restarting motion
+$motion_view_port = 8081; //set to motion view port for live streaming
+$motion_http_username = 'username'; // if motion http auth is used
+$motion_http_password = 'password'; // if motion http auth is used
+
 /************ Amazon Echo Support
 This is for Echo Support, currently working through http://github.com/armzilla's Hue Emulator.************/
 
-$use_hue_emulator = false; //set to true to enable hue emulator
-$hue_emulator_ip = 'myawesomedomain-or-an-ip-address'; //set to localhost if using a raspberry pi for both garageatrois and hue emulator
+$use_hue_emulator = false; //set to true to enable hue emulator {true,false}
+$hue_emulator_ip = 'localhost'; //set to localhost if using a raspberry pi for both garageatrois and hue emulator
 $hue_configurator_url = "http://$hue_emulator_ip:8080/configurator.html"; //url for the hue emulator device manager
 $hue_devices_url = "http://$hue_emulator_ip:8080/api/devices";
 $echo_name = 'Amazon Echo'; //Name for the device
