@@ -23,6 +23,10 @@ function get_pin_status($gpio_pin){
 	return end($result);
 }
 
+function domain_resolves($domain) {
+	return gethostbyname($domain) != $domain;
+}
+
 function mailer($subject, $message, $newuser = ''){
 	global $admin_mobile, $admin_email, $carriers, $notification_email, $admin_send_to;
 	$from = $notification_email;
@@ -91,6 +95,13 @@ function _isCurl(){
 	return function_exists('curl_version');
 }
 
+function flush_buffers(){
+	ob_end_flush();
+	ob_flush();
+	flush();
+	ob_start();
+}
+
 function logger($data){
 	include('GarageaTrois-Config.php');
 	if(!$log_to_file){
@@ -105,5 +116,3 @@ function logger($data){
 		file_put_contents($log, $data . PHP_EOL, FILE_APPEND | LOCK_EX);
 	}
 }
-
-?>
