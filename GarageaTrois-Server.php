@@ -622,7 +622,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 	ignore_user_abort(); // optional
 	ob_start();
 
-	if($geofence_super_admin_override == false || $uid =! $super_admin){
+	if($geofence_super_admin_override == false || $uid != $super_admin){
 		logger('true');
 		if($geofence_enabled == true)
 		{
