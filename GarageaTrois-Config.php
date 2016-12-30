@@ -25,7 +25,7 @@ $switch_array = array(
 		'name' => 'Door',
 		'app_will_request' => urlencode('Door1'),
 		'trigger' => 'timeout', //set trigger {hold,timeout,gpio_callback,toggle}
-		'timeout' => 12, //in seconds, this is the timeout for the timeout
+		'timeout' => 12, //in seconds, this is the timeout for the timeout		
 		'display_progress' => 'during', //display progress in app {during,after}
 		'motion_thread' => '0', //if motion is enabled for this relay/device, replace with thread number
 		'invert' => false //force 0 to be 'on' and 1 to be 'off' for trigger, status and callback pins {true,false}
@@ -37,6 +37,7 @@ $switch_array = array(
 		'trigger' => 'gpio_callback', //set trigger {hold,timeout,gpio_callback,toggle}
 		'timeout' => 10, //optional. this is the timeout for the gpio_callback
 		'motion_thread' => '1', //if motion is enabled for this relay/device, replace with thread number
+		'support_requested_state' => true, //only allow an action if the requested state does not match the trigger 
 		'display_progress' => 'during', //display progress in app {during,after}
 		'gpio_status_pin' => 1, //pin to check for status.
 		'invert' => false //force 0 to be 'on' and 1 to be 'off' for trigger, status and callback pins {true,false}
@@ -131,8 +132,10 @@ This is for Motion Support ************/
 
 $use_motion = true; //set to true to use Motion webcam {true,false}
 $motion_ip = 'localhost'; //set to motion url
-$motion_control_port = 8080; //set to motion control port for snapshots and restarting motion
-$motion_view_port = 8081; //set to motion view port for live streaming
+$motion_control_port = 8079; //set to motion control port for snapshots and restarting motion
+$motion_view_port = 8078; //set to motion view port for live streaming
+$motion_image_height = 240; //fits nicely on phones
+$motion_image_width = 320; // also fits nicely on phones
 $motion_http_username = 'username'; // if motion http auth is used
 $motion_http_password = 'password'; // if motion http auth is used
 
@@ -140,9 +143,10 @@ $motion_http_password = 'password'; // if motion http auth is used
 This is for Echo Support, currently working through http://github.com/armzilla's Hue Emulator.************/
 
 $use_hue_emulator = false; //set to true to enable hue emulator {true,false}
+$start_port = 8080; // be careful when using with motion or anything else that uses port 8080 and the next 3 consecutive ports
+$use_bws = false; //faster startup and less memory/cpu intensive {true,false}
 $hue_emulator_ip = 'localhost'; //set to localhost if using a raspberry pi for both garageatrois and hue emulator
-$hue_configurator_url = "http://$hue_emulator_ip:8080/configurator.html"; //url for the hue emulator device manager
-$hue_devices_url = "http://$hue_emulator_ip:8080/api/devices";
+
 $echo_name = 'Amazon Echo'; //Name for the device
 $echo_did = ''; //15 characters, maybe the serial number -or- watch the terminal window for the hue emulator and use the id that shows up during a device scan.
 $echo_uid = 'echo'; // set the UID for echo to an unused 4 digit pin, or leave it default
