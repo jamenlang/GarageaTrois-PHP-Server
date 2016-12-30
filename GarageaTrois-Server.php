@@ -722,7 +722,24 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 						$end_pin_status = $start_pin_status;
 						//the app could possibly send an 'open/close/on/off request'
 						//so it doesn't do the toggle if it's already in the requested state.
+						
+						if($switch_parameters['support_requested_state']){
+							if((in_array($req_state,$con_array) && $start_pin_status == '0') || (in_array($req_state,$pro_array) && $start_pin_status == '1')){
+								logger('requested state status is the same as the current status: ' . $start_pin_status);
+                                                               //bws will send 3 consecutive commands with a 10 second cooldown unless it gets a response right away.
+                                                               if($uid == $echo_uid)
+                                                                       echo 'ok';
+                                                               exit;
+                                                       }
+                                                }
+						
 						toggle_relay($switch_id);
+						//bws will send 3 consecutive commands with a 10 second cooldown unless it gets a response right away.
+                                                if($uid == $echo_uid){
+							echo 'ok';
+							exit;
+                                                }
+						
 						while($end_pin_status == $start_pin_status){
 							logger('start pin status: ' . $start_pin_status);
 							logger('end pin status: ' . $end_pin_status);
