@@ -38,6 +38,7 @@ if(getcwd() != $dir){
 }
 
 $armzilla = '';
+$bws = '';
 $gat = '';
 $phpqrcode = '';
 
@@ -67,6 +68,10 @@ foreach($files as $filename){
 	if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
 		echo 'amazon-echo-bridge found.';
 		$armzilla = $filename;
+	}
+	if(preg_match('/ha-bridge/i',$filename,$matches )){
+		echo 'ha-bridge found.';
+		$bws = $filename;
 	}
 	if(preg_match('/GarageaTrois/',$filename,$matches )){
 		if(is_dir($filename)){
@@ -262,6 +267,8 @@ else{
 
 $counter = 0;
 while(true){
+	echo 'attempting to parse ip address from ' . $configured_interface;
+
 	if($counter > 100){
 		echo 'could not parse ip address from ' . $configured_interface;
 		logger('could not parse ip address from ' . $configured_interface);
@@ -279,46 +286,89 @@ while(true){
 
 $hue_emulator_link = '';
 
-if($armzilla == ''){
-	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
-	foreach ($output as $line){
-		if($hue_emulator_link != '')
-			continue;
-		preg_match('/\bhttp.*jar\b/',$line, $matches);
-		if(isset($matches[0])){
-			$hue_emulator_link = $matches[0];
-			break;
+if($use_bws){
+	if($bws == ''){
+		exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/bwssytems/ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
+		foreach ($output as $line){
+			if($hue_emulator_link != '')
+				continue;
+			preg_match('/\bhttp.*jar\b/',$line, $matches);
+			if(isset($matches[0])){
+				$hue_emulator_link = $matches[0];
+				break;
+			}
+        	}
+		exec("wget $hue_emulator_link", $output);
+		logger($output);
+
+		$files = scandir($dir);
+		foreach($files as $filename){
+			if(preg_match('/ha-bridge/i',$filename,$matches )){
+				logger($filename);
+				$bws = $filename;
+			}
 		}
-        }
-	exec("wget $hue_emulator_link", $output);
-	logger($output);
+	}
 
-	$files = scandir($dir);
-	foreach($files as $filename){
-		if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
-			logger($filename);
-			$armzilla = $filename;
+	if ($bws != ''){
+		$output = '';
+		//check if ha-bridge is in the running applications list
+		exec("ps ax | grep ha-bridge", $output);
+		if(is_array($output))
+			$output = implode(',',$output);
+		if(stristr($output, "java")){
+			logger('bws hue emulator is already started.');
+		}
+		else{
+			logger('starting bws hue emulator');
+			logger("java -jar -Dserver.port=$start_port $dir/$bws");
+			exec("java -jar -Dserver.port=$start_port $dir/$bws");
 		}
 	}
-}
-
-if ($armzilla != ''){
-	$output = '';
-	//check if amazon-echo-bridge is in the running applications list
-	exec("ps ax | grep amazon-echo-bridge", $output);
-	if(is_array($output))
-		$output = implode(',',$output);
-	if(stristr($output, "java")){
-		logger('armzilla hue emulator is already started.');
+	else {
+		logger("could not start $dir/$bws $localIP");
 	}
-	else{
-		logger('starting armzilla hue emulator');
-		logger("java -jar $dir/$armzilla --upnp.config.address=$localIP");
-		exec("java -jar $dir/$armzilla --upnp.config.address=$localIP");
+}else{
+	if($armzilla == ''){
+		exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
+		foreach ($output as $line){
+			if($hue_emulator_link != '')
+				continue;
+			preg_match('/\bhttp.*jar\b/',$line, $matches);
+			if(isset($matches[0])){
+				$hue_emulator_link = $matches[0];
+				break;
+			}
+       	 }
+		exec("wget $hue_emulator_link", $output);
+		logger($output);
+
+		$files = scandir($dir);
+		foreach($files as $filename){
+			if(preg_match('/amazon-echo-bridge/i',$filename,$matches )){
+				logger($filename);
+				$armzilla = $filename;
+			}
+		}
+	}
+
+	if ($armzilla != ''){
+		$output = '';
+		//check if amazon-echo-bridge is in the running applications list
+		exec("ps ax | grep amazon-echo-bridge", $output);
+		if(is_array($output))
+			$output = implode(',',$output);
+		if(stristr($output, "java")){
+			logger('armzilla hue emulator is already started.');
+		}
+		else{
+			logger('starting armzilla hue emulator');
+			logger("java -jar $dir/$armzilla --server.port=$start_port --upnp.config.address=$localIP");
+			exec("java -jar $dir/$armzilla --server.port=$start_port --upnp.config.address=$localIP");
+		}
+	}
+	else {
+		logger("could not start $dir/$armzilla $localIP");
 	}
 }
-else {
-	logger("could not start $dir/$armzilla $localIP");
-}
-
 ?>
