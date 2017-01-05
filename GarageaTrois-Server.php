@@ -2,8 +2,7 @@
 /************ I don't believe anything here needs to be modified. ************/
 //require config and function files
 
-require('GarageaTrois-Config.php');
-require('GarageaTrois-Functions.php');
+require('GarageaTrois-Common.php');
 
 // outputs image directly into browser, as PNG stream
 // the code can be downloaded or this can be disabled, you can also use the google API line below.
@@ -25,6 +24,8 @@ $cname = sanitize(isset($_POST['CName']) ? $_POST['CName'] : '');
 $cnfc = sanitize(isset($_POST['CNFC']) ? $_POST['CNFC'] : '');
 $cdid = sanitize(isset($_POST['CDID']) ? $_POST['CDID'] : '');
 $cuid = sanitize(isset($_POST['CUID']) ? $_POST['CUID'] : '');
+$req_state = sanitize(isset($_POST['req_state']) ? $_POST['req_state'] : '');
+$req_percent = sanitize(isset($_POST['req_percent']) ? $_POST['req_percent'] : '');
 $switch = sanitize(isset($_POST['switch']) ? $_POST['switch'] : '');
 $motion_thread = (isset($_POST['motion_thread']) ? $_POST['motion_thread'] : '');
 $motion_action = sanitize(isset($_POST['motion_action']) ? $_POST['motion_action'] : '');
@@ -559,7 +560,6 @@ if (isset($_POST['Admin']) && $_POST['Admin'] != '' && isset($allowed_users[$uid
 if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exists != '0' && $did_allowed != '0'){
 	//we'll put this here since the geofence doesn't apply to NFC or the admin sections.
 	//also prevents user trickery by logging in inside the fence then leaving the app open while they cross the boundry.
-
 	if($switch == 'motion'){
 		if($use_motion == true){
 			if($motion_action == 'retrieve_image'){
@@ -623,11 +623,11 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 	ob_start();
 
 	if($geofence_super_admin_override == false || $uid != $super_admin){
-		logger('true');
 		if($geofence_enabled == true)
 		{
 			$distance_away = distance($garage_latitude, $garage_longitude, $device_latitude, $device_longitude, $geofence_unit_of_measurement);
-			logger($distance_away);
+			logger($garage_latitude.'_'. $garage_longitude.'_'. $device_latitude.'_'. $device_longitude.'_'. $geofence_unit_of_measurement);
+			logger('dist' . $distance_away);
 			if($device_latitude == '' || $device_longitude == '' || $device_latitude == '0.0' || $device_longitude == '0.0'){
 				$switch = $switch . ' Denied (Geofence Empty)';
 				$sql = 'INSERT INTO log (name, ip, uid, did, action, latitude, longitude, date) ' . 'VALUES ( "' . $all_users[$uid] . '","' . $_SERVER['REMOTE_ADDR'] . '","' . $uid . '","' . $did . '", "' . $switch . '", "' . $device_latitude . '","' . $device_longitude . '","' . date('Y-m-d H:i:s') . '" )';
@@ -679,6 +679,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 	}
 
 	$count = 0;
+
 	foreach($switch_array as $switch_id => $switch_parameters){
 		if($switch == $switch_parameters['app_will_request']){
 			logger($switch . ' found.');
@@ -721,31 +722,75 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 						$start_pin_status = get_pin_status($switch_parameters['gpio_status_pin']);
 						$end_pin_status = $start_pin_status;
 						//the app could possibly send an 'open/close/on/off request'
-						//so it doesn't do the toggle if it's already in the requested state.
-						
 						if($switch_parameters['support_requested_state']){
 							if((in_array($req_state,$con_array) && $start_pin_status == '0') || (in_array($req_state,$pro_array) && $start_pin_status == '1')){
 								logger('requested state status is the same as the current status: ' . $start_pin_status);
-                                                               //bws will send 3 consecutive commands with a 10 second cooldown unless it gets a response right away.
-                                                               if($uid == $echo_uid)
-                                                                       echo 'ok';
-                                                               exit;
-                                                       }
-                                                }
-						
+								//bws will send 3 consecutive commands unless it gets a response right away.
+								if($uid == $echo_uid)
+									echo 'ok';
+								exit;
+							}
+						}
+						//dimming
+						if($uid == $echo_uid){
+							echo 'ok';
+							//ob to reply back to ha bridge so it doesn't issue any more commands.
+							$size = ob_get_length();
+							header("Content-Length: $size");
+							ob_end_flush(); // Strange behaviour, will not work
+							flush();// Unless both are called !
+							// Do processing here
+						}
+						if(isset($req_percent) && $req_percent == '100'){
+							unset($req_percent);
+							$req_state = (($start_pin_status) ? 'off' : 'on');
+						}
+						if(isset($req_percent) && $req_percent == '0'){
+							unset($req_percent);
+							$req_state = (($start_pin_status) ? 'on' : 'off');
+						}
+						if(isset($req_percent) && $req_percent != ''){
+							//check if door is open
+							if($start_pin_status == 1){
+								$req_percent = 100 - $req_percent;
+								logger('inverting percentage');
+							}
+							logger($req_percent . ' percent');
+
+							if($switch_parameters['timeout'] != ''){
+								logger('timeout of ' . $switch_parameters['timeout']);
+								logger('initial toggle of relay ' . $switch_id);
+								toggle_relay($switch_id);
+
+								$dimseconds = $switch_parameters['timeout'] * $req_percent / 100;
+								//if($dimseconds < 1)
+								//	exit;
+								logger('seconds to reach before second toggle ' . $dimseconds);
+								usleep(1000000 * $dimseconds);
+								toggle_relay($switch_id);
+								logger('secondary toggle of relay ' . $switch_id);
+
+                                                                $return_state = $start_pin_status;
+								exit;
+                                                        }
+							else{
+								logger('switch timeout is not specified, dim cannot be performed.');
+							}
+						}
+
 						toggle_relay($switch_id);
-						//bws will send 3 consecutive commands with a 10 second cooldown unless it gets a response right away.
-                                                if($uid == $echo_uid){
+						if($uid == $echo_uid){
 							echo 'ok';
 							exit;
-                                                }
-						
+						}
+						$time_start = microtime(true);
+						//logger('start mt ' . microtime());
 						while($end_pin_status == $start_pin_status){
 							logger('start pin status: ' . $start_pin_status);
 							logger('end pin status: ' . $end_pin_status);
 							$end_pin_status = get_pin_status($switch_parameters['gpio_status_pin']);
 							if($switch_parameters['timeout'] != ''){
-								if($loop_counter == $switch_parameters['timeout']){
+								if($loop_counter >= $switch_parameters['timeout']){
 									$return_result = ' failure - Timeout reached.';
 									logger($return_result);
 									$return_state = $start_pin_status;
@@ -754,13 +799,22 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 								logger($loop_counter . ' of ' . (($switch_parameters['timeout']) ? $switch_parameters['timeout'] : 'infinity') . ' seconds reached');
 								$loop_counter++;
 							}
+							//usleep(1000000);
 							//echo '.';
 							sleep(1);
 						}
+						$time_end = microtime(true);
+						$time = $time_end - $time_start;
+
+						logger("loop execution took $time seconds");
+
 						if(!$return_result){
 							$return_state = $end_pin_status;
 							$return_result = ' toggled.';
 						}
+					}
+					else{
+						logger('gpio callback was used but it is not configured.');
 					}
 					break;
 
@@ -777,7 +831,6 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 		}
 		$count++;
 	}
-
 
 	$return_final = $return_count . ',' . $return_state . ',' . $return_name . $return_result;
 	logger($return_final);
