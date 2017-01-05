@@ -25,8 +25,13 @@ foreach($files as $filename){
 		$armzilla = $filename;
 	}
 }
-if(!$armzilla && $hue_emulator_ip != 'myawesomedomain-or-an-ip-address' && $use_hue_emulator != false){
-	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/armzilla/amazon-echo-ha-bridge/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
+if((!$armzilla || !$use_bws) && $hue_emulator_ip != 'myawesomedomain-or-an-ip-address' && $use_hue_emulator != false){
+	if(!$use_bws)
+		$repo = 'armzilla/amazon-echo-ha-bridge/';
+	else
+		$repo = 'bwssystems/ha-bridge/';
+
+	exec('wget --max-redirect=0 $( curl -s https://api.github.com/repos/' . $repo . 'releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
 	foreach ($output as $line){
 		if($hue_emulator_link != '')
 			continue;
@@ -34,7 +39,7 @@ if(!$armzilla && $hue_emulator_ip != 'myawesomedomain-or-an-ip-address' && $use_
 			if($matches[0])
 				$hue_emulator_link = $matches[0];
 	}
-	$hue_emulator_result = '<li><a href="' . $hue_emulator_link . '">Link to Armzilla\'s Hue Emulator</a></li>';
+	$hue_emulator_result = '<li><a href="' . $hue_emulator_link . '">Link to ' . (($use_bws) ? 'BWS\'s' : 'Armzilla\'s') . ' Hue Emulator</a></li>';
 }
 else
 	$hue_emulator_result = '<li><a href="GarageaTrois-Echo.php">Link to Hue Emulator Configurator</a></li>';
@@ -117,7 +122,7 @@ if($use_gpio == false){
 	$test++;
 }
 
-if($hue_url == 'http://myawesomedomain-or-an-ip-address:8080/api/devices'){
+if($hue_url == 'http://myawesomedomain-or-an-ip-address:' . $start_port .'/api/devices'){
 	echo '<li>Hue Emulator URL is not set, you won\'t be able to set up devices for the Amazon Echo without this.</li>';
 	$test++;
 }
