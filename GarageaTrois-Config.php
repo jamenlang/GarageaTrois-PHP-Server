@@ -27,6 +27,7 @@ $switch_array = array(
 		'trigger' => 'timeout', //set trigger {hold,timeout,gpio_callback,toggle}
 		'timeout' => 12, //in seconds, this is the timeout for the timeout		
 		'display_progress' => 'during', //display progress in app {during,after}
+		'support_requested_state' => true, //supports on/off/open/close commands and compares with gpio callback if set.
 		'motion_thread' => '0', //if motion is enabled for this relay/device, replace with thread number
 		'invert' => false //force 0 to be 'on' and 1 to be 'off' for trigger, status and callback pins {true,false}
 	),
