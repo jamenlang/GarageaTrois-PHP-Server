@@ -31,7 +31,7 @@ if(!function_exists('curl_version')){
 $dir = '/var/www';
 
 if(getcwd() != $dir){
-	if(!file_exists($dir . '/GarageaTrois') && file_exists($dir . '/GarageaTrois-PHP-Server'){
+	if(!file_exists($dir . '/GarageaTrois') && file_exists($dir . '/GarageaTrois-PHP-Server')){
 	   echo('moving to ' . $dir . '/GarageaTrois');
 		move($dir . '/GarageaTrois-PHP-Server', $dir . '/GarageaTrois');
 	}
