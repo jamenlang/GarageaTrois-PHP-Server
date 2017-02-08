@@ -31,9 +31,13 @@ if(!function_exists('curl_version')){
 $dir = '/var/www';
 
 if(getcwd() != $dir){
-	copy('/var/www/GarageaTrois/initialize.php', '/var/www/initialize.php');
+	if(!file_exists($dir . '/GarageaTrois') && file_exists($dir . '/GarageaTrois-PHP-Server'){
+	   echo('moving to ' . $dir . '/GarageaTrois');
+		move($dir . '/GarageaTrois-PHP-Server', $dir . '/GarageaTrois');
+	}
+	copy( $dir . '/GarageaTrois/initialize.php', $dir . '/initialize.php');
 	echo('this script must be placed in /var/www/, a copy has been made and this file will be destroyed.');
-	unlink('/var/www/GarageaTrois/initialize.php');
+	unlink($dir . '/GarageaTrois/initialize.php');
 	exit;
 }
 
@@ -220,7 +224,7 @@ if($hue_emulator_ip == 'myawesomedomain-or-an-ip-address' || $use_hue_emulator =
 
 $counter = 0;
 $result = exec('command -v java >/dev/null && echo "true" || echo "false"');
-if(!$result){
+if(!$result || $result == 'false'){
 	echo 'java not installed, downloading java. this may take a few minutes...';
 	logger('java not installed, downloading java. this may take a few minutes...');
 	exec('sh -c \'echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" >> /etc/apt/sources.list\'', $output);
