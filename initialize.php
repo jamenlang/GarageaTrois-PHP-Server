@@ -212,7 +212,8 @@ if($motion_ip != '' && $use_motion == false){
 else{
 	if(!file_exists("/etc/motion")){
 		exec('apt-get -y install motion',$output);
-		logger('$motion is not configured, config files for motion can be found in \'/etc/motion/motion.conf\'');
+		logger('motion is not configured, config files for motion can be found in \'/etc/motion/motion.conf\'');
+		logger('if running motion as daemon, run \'sudo systemctl enable motion\'');
 	}
 }
 
