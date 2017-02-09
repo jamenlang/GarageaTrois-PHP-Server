@@ -9,14 +9,14 @@ if(php_sapi_name() != 'cli'){
 
 if(!exec('git --version')){
 	echo 'installing git-core';
-	exec('apt-get install git-core');
+	exec('apt-get -y install git-core');
 }
 
 $counter=0;
 
 if(!function_exists('curl_version')){
 	echo 'installing php5-curl';
-	exec('apt-get install php5-curl', $output);
+	exec('apt-get -y install php5-curl', $output);
 	while(!function_exists('curl_version')){
 		if($counter > 20){
 			echo 'expired waiting for php5-curl';
@@ -211,7 +211,7 @@ if($motion_ip != '' && $use_motion == false){
 }
 else{
 	if(!file_exists("/etc/motion")){
-		exec('apt-get install motion',$output);
+		exec('apt-get -y install motion',$output);
 		logger('$motion is not configured, config files for motion can be found in \'/etc/motion/motion.conf\'');
 	}
 }
@@ -242,13 +242,13 @@ if(!$result || $result == 'false'){
 	exec('echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections', $output);
 	logger($output);
 	$output = '';
-	exec('sudo apt-get install oracle-java8-installer', $output);
+	exec('sudo apt-get -y install oracle-java8-installer', $output);
 	logger($output);
 	$output = '';
 	exec('sudo update-java-alternatives -s java-8-oracle', $output);
 	logger($output);
 	$output = '';
-	exec('sudo apt-get install oracle-java8-set-default');
+	exec('sudo apt-get -y install oracle-java8-set-default');
 	$result = exec('command -v java >/dev/null && echo "true" || echo "false"');
 
 	while(!$result){
