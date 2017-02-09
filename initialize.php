@@ -205,12 +205,13 @@ if($phpqrcode == '' && $qr_enabled == "1"){
 }
 
 if($motion_ip != '' && $use_motion == false){
+	
 	echo '$motion variables are not configured, skipping.';
 	logger('$motion variables are not configured, skipping.');
 	//exit;
 }
 else{
-	if(!file_exists("/etc/motion")){
+	if(!file_exists("/etc/motion") && $motion_ip == 'localhost'){
 		exec('apt-get -y install motion',$output);
 		logger('motion is not configured, config files for motion can be found in \'/etc/motion/motion.conf\'');
 		logger('if running motion as daemon, run \'sudo systemctl enable motion\' and edit \'/etc/default/motion\'');
