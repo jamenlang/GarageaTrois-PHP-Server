@@ -576,19 +576,30 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
 					}
 					fclose($f);
 				}
-				else{
-					set_time_limit(0);
-					$fp = fsockopen ($motion_ip, $motion_view_port, $errno, $errstr, 30);
-					if (!$fp) {
-						echo "$errstr ($errno)<br>\n";
-					} else {
-						fputs ($fp, "GET / HTTP/1.0\r\n\r\n");
-						while ($str = trim(fgets($fp, 4096)))
-							header($str);
-						fpassthru($fp);
-						fclose($fp);
-					}
-				}
+				 else{
+                                        set_time_limit(0);
+                                        $fp = fsockopen ($motion_ip, $motion_view_port, $errno, $errstr, 30);
+
+                                        if (!$fp) {
+                                                echo "$errstr ($errno)<br>\n";
+                                        }
+                                        else{
+                                                if($motion_http_username != ''){
+                                                        $auth=base64_encode($motion_http_username.":".$motion_http_password);
+                                                        $header="GET / HTTP/1.0\r\n\r\n";
+                                                        $header.="Accept: text/html\r\n";
+                                                        $header.="Authorization: Basic $auth\r\n\r\n";
+                                                        fputs ($fp, $header);
+                                                }
+                                                else {
+                                                        fputs ($fp, "GET / HTTP/1.0\r\n\r\n");
+                                                }
+                                                while ($str = trim(fgets($fp, 4096)))
+                                                        header($str);
+                                                fpassthru($fp);
+                                                fclose($fp);
+                                        }
+                                }
 			}
 			if($motion_action == 'restart'){
 				$url = "http://" . (($motion_http_username != '') ? $motion_http_username . ':' . $motion_http_password . '@' : '') . "$motion_ip:$motion_control_port/$motion_thread/action/restart";
