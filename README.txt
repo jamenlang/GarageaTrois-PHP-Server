@@ -28,11 +28,13 @@ QR code support for apk downloading
 Motion support for hosting or rehosting web connected/ usb cameras
 
 ############# Client Features #############
+
 PIN user identification
+Device ID device identification
 NFC tag support for quick actions and apk downloading
 GPS for geofencing and autologin
 SMS/Email for user additions and notifications
-Administration menu for user modification, permissions and viewing logs
+Administration menu for user/device modification, user/device permissions and viewing logs
 Tablet support
 Viewing motion streams, taking snapshots or restarting service remotely.
 
