@@ -20,7 +20,22 @@ A Raspberry Pi using GPIO, hell the RPi should be able to run the server stuff t
 - OR - 
 
 Anything else you can think of, a server using a z-wave or zigbee switch... but if you're getting that fancy you probably have your own project in mind :P
- 
+
+############# Server Features #############
+
+MySQL supported user management, permissions and event logging
+QR code support for apk downloading
+Motion support for hosting or rehosting web connected/ usb cameras
+
+############# Client Features #############
+PIN user identification
+NFC tag support for quick actions and apk downloading
+GPS for geofencing and autologin
+SMS/Email for user additions and notifications
+Administration menu for user modification, permissions and viewing logs
+Tablet support
+Viewing motion streams, taking snapshots or restarting service remotely.
+
 ############# Starting Off #############
 
 My server didn't have an onboard printer port. I bought a parallel PCI card with a moschip controller (for compatibility reasons)
