@@ -586,7 +586,7 @@ if (isset($switch) && $switch != '' && isset($allowed_users[$uid]) && $did_exist
                                         else{
                                                 if($motion_http_username != ''){
                                                         $auth=base64_encode($motion_http_username.":".$motion_http_password);
-                                                        $header="GET / HTTP/1.0\r\n\r\n";
+                                                        $header="GET / HTTP/$motion_http_version\r\n\r\n";
                                                         $header.="Accept: text/html\r\n";
                                                         $header.="Authorization: Basic $auth\r\n\r\n";
                                                         fputs ($fp, $header);
