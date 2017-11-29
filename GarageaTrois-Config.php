@@ -133,7 +133,7 @@ This is for Motion Support ************/
 
 $use_motion = true; //set to true to use Motion webcam {true,false}
 $motion_ip = 'localhost'; //set to motion url
-$motion_http_version = '1.0' //must match http version in motion.conf or camera connection will time out
+$motion_http_version = '1.0'; //must match http version in motion.conf or camera connection will time out
 $motion_control_port = 8079; //set to motion control port for snapshots and restarting motion
 $motion_view_port = 8078; //set to motion view port for live streaming
 $motion_image_height = 240; //fits nicely on phones
