@@ -141,6 +141,28 @@ $motion_image_width = 320; // also fits nicely on phones
 $motion_http_username = 'username'; // if motion http auth is used
 $motion_http_password = 'password'; // if motion http auth is used
 
+/************ Motion Notes
+motion can be enabled as at startup with sudo systemctl enable motion on debian stretch
+netcam_url can be crafted using this nifty site: www.ispyconnect.com/man.aspx?n=panasonic
+If the camera is mounted upside down for some reason, the image can be flipped with rotate in /etc/motion/motion.conf
+I planned on the same username and password being used for streaming and controlling the camera.
+
+Corresponding Motion Config options in /etc/motion/motion.conf
+
+motion_http_version = '1.0'; //netcam_keepalive
+motion_control_port = 8079; //webcontrol_port
+//if motion is not on this host webcontrol_localhost off
+
+motion_view_port = 8078; //stream_port
+//if motion is not on this host stream_localhost off
+
+motion_image_height = 240; //height
+motion_image_width = 320; //width
+
+//stream_auth_method 1 might be the best bet here
+motion_http_username = 'username'; stream_authentication username:password
+motion_http_password = 'password'; stream_authentication username:password
+*************/
 
 /************ Amazon Echo Support
 This is for Echo Support, currently working through http://github.com/armzilla's Hue Emulator.************/
