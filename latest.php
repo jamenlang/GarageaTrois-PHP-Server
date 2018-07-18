@@ -7,7 +7,7 @@ $mdate = md5(time());
 $tempfile = '/tmp/' . $mdate . '.apk';
 
 if($apk_link == 'http://files.myawesomedomain.net/garageatrois.apk'){
-  exec('wget --max-redirect=0' $(curl -s https://api.github.com/repos/jamenlang/GarageaTrois/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
+  exec('wget --max-redirect=0 $(curl -s https://api.github.com/repos/jamenlang/GarageaTrois/releases/latest | grep \'browser_\' | cut -d\" -f4) 2>&1', $output);
   //print_r($output);
   foreach ($output as $line){
       if($apk_link != 'http://files.myawesomedomain.net/garageatrois.apk')
